@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 
 	"microservices-template-2024/internal/conf"
@@ -32,7 +33,14 @@ var (
 )
 
 func init() {
-	flag.StringVar(&flagconf, "conf", "./configs/config.yaml", "config path, eg: -conf config.yaml")
+	var file string
+	_, err := os.Stat("./configs/config.yaml")
+	if os.IsNotExist(err) {
+		file = "../../configs/config.yaml"
+	} else {
+		file = "./configs/config.yaml"
+	}
+	flag.StringVar(&flagconf, "conf", file, "config path, eg: -conf config.yaml")
 }
 
 func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
@@ -50,9 +58,20 @@ func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
 }
 
 func main() {
-	err := godotenv.Load()
+	cwd, err := os.Getwd()
 	if err != nil {
-		log.Fatalf("err loading: %v", err)
+		fmt.Printf("Error getting current working directory: %v", err)
+	}
+
+	err = godotenv.Load()
+	if err != nil {
+		fmt.Printf("Current working directory: %s", cwd)
+		fmt.Printf("err loading .env: %v", err)
+
+		err = godotenv.Load("../../.env")
+		if err != nil {
+			log.Fatalf("err loading .env: %v", err)
+		}
 	}
 
 	flag.Parse()
@@ -92,7 +111,9 @@ func main() {
 	}
 	defer cleanup()
 
-	server.OpenDBConn()
+	if err := server.OpenDBConn(); err != nil {
+		panic(err)
+	}
 
 	// start and wait for stop signal
 	if err := app.Run(); err != nil {

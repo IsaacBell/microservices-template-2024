@@ -63,6 +63,21 @@ all:
 	make config;
 	make generate;
 
+.PHONY: execute
+execute:
+	./bin/microservices-template-2024
+
+.PHONY: compile
+compile:
+	make build;
+	make execute;
+
+.PHONY: run
+run:
+	make all;
+	make build;
+	make execute;
+
 # show help
 help:
 	@echo ''

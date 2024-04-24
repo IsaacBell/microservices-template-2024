@@ -3,12 +3,19 @@ package server
 import (
 	"fmt"
 	"log"
+	"microservices-template-2024/internal/biz"
 	"os"
 	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
+
+var DB *gorm.DB
+
+func automigrateDBTables() {
+
+}
 
 func DbString() string {
 	user := os.Getenv("COCKROACH_DB_USER")
@@ -22,16 +29,21 @@ func DbString() string {
 	return dsn
 }
 
-func OpenDBConn() {
+func OpenDBConn() error {
 	dsn := DbString()
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	var err error
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatal("failed to connect to database: ", err)
+		return fmt.Errorf("failed to connect to database: %w", err)
 	}
 
 	var now time.Time
-	db.Raw("SELECT NOW()").Scan(&now)
+	DB.Raw("SELECT NOW()").Scan(&now)
 
 	fmt.Println(now)
+
+	DB.AutoMigrate(&biz.User{})
+
+	return nil
 }

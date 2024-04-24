@@ -3,8 +3,7 @@
 
 openapi: 3.0.3
 info:
-    title: Greeter API
-    description: The greeting service definition.
+    title: ""
     version: 0.0.1
 paths:
     /helloworld/{name}:
@@ -26,6 +25,32 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/helloworld.v1.HelloReply'
+    /users/{id}:
+        get:
+            tags:
+                - Users
+            operationId: Users_GetUser
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: name
+                  in: query
+                  schema:
+                    type: string
+                - name: email
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/server.v1.GetUserReply'
 components:
     schemas:
         helloworld.v1.HelloReply:
@@ -34,5 +59,56 @@ components:
                 message:
                     type: string
             description: The response message containing the greetings
+        server.v1.GetUserReply:
+            type: object
+            properties:
+                user:
+                    $ref: '#/components/schemas/server.v1.User'
+        server.v1.User:
+            type: object
+            properties:
+                id:
+                    type: string
+                username:
+                    type: string
+                email:
+                    type: string
+                passwordHash:
+                    type: string
+                firstName:
+                    type: string
+                lastName:
+                    type: string
+                phoneNumber:
+                    type: string
+                avatarUrl:
+                    type: string
+                roles:
+                    type: array
+                    items:
+                        type: string
+                emailVerified:
+                    type: boolean
+                phoneVerified:
+                    type: boolean
+                createdAt:
+                    type: string
+                    format: date-time
+                updatedAt:
+                    type: string
+                    format: date-time
+                lastLoginAt:
+                    type: string
+                    format: date-time
+                timezone:
+                    type: string
+                locale:
+                    type: string
+                metadata:
+                    type: object
+                    additionalProperties:
+                        type: string
 tags:
     - name: Greeter
+      description: The greeting service definition.
+    - name: Users

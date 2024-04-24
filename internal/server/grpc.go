@@ -3,7 +3,8 @@ package server
 import (
 	"fmt"
 	"io/ioutil"
-	v1 "microservices-template-2024/api/helloworld/v1"
+	helloworld "microservices-template-2024/api/helloworld/v1"
+	v1 "microservices-template-2024/api/v1"
 	"microservices-template-2024/internal/conf"
 	"microservices-template-2024/internal/service"
 
@@ -20,7 +21,7 @@ import (
 )
 
 // NewGRPCServer new a gRPC server.
-func NewGRPCServer(c *conf.Server, greeter *service.GreeterService, logger log.Logger) *grpc.Server {
+func NewGRPCServer(c *conf.Server, greeter *service.GreeterService, user *service.UsersService, logger log.Logger) *grpc.Server {
 	exporter, err := stdouttrace.New(stdouttrace.WithWriter(ioutil.Discard))
 	if err != nil {
 		fmt.Printf("creating stdout exporter: %v", err)
@@ -52,6 +53,7 @@ func NewGRPCServer(c *conf.Server, greeter *service.GreeterService, logger log.L
 	}
 
 	srv := grpc.NewServer(opts...)
-	v1.RegisterGreeterServer(srv, greeter)
+	helloworld.RegisterGreeterServer(srv, greeter)
+	v1.RegisterUsersServer(srv, user)
 	return srv
 }

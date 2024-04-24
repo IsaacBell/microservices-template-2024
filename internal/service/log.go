@@ -4,7 +4,7 @@ import (
 	"context"
 	"io"
 
-	pb "microservices-template-2024/api/v1/server"
+	pb "microservices-template-2024/api/v1"
 	"microservices-template-2024/internal/stream"
 )
 
