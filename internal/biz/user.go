@@ -8,6 +8,7 @@ import (
 	// v1 "microservices-template-2024/api/helloworld/v1"
 
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -17,7 +18,7 @@ import (
 
 type User struct {
 	gorm.Model
-	ID           string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	ID           string `gorm:"primaryKey" protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Username     string `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
 	Email        string `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
 	PasswordHash string `protobuf:"bytes,4,opt,name=password_hash,json=passwordHash,proto3" json:"password_hash,omitempty"`
@@ -34,6 +35,11 @@ type User struct {
 	Timezone string `protobuf:"bytes,15,opt,name=timezone,proto3" json:"timezone,omitempty"`
 	Locale   string `protobuf:"bytes,16,opt,name=locale,proto3" json:"locale,omitempty"`
 	// Metadata map[string]string `protobuf:"bytes,17,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+}
+
+func (u User) BeforeCreate(tx *gorm.DB) (err error) {
+	u.ID = uuid.New().String()
+	return nil
 }
 
 func UserToProtoData(user *User) *v1.User {
