@@ -20,10 +20,8 @@ func NewUsersService(action *biz.UserAction) *UsersService {
 }
 
 func (s *UsersService) CreateUser(ctx context.Context, req *v1.CreateUserRequest) (*v1.CreateUserReply, error) {
-	fmt.Println("--------------------here1----------------------")
 	user := biz.ProtoToUserData(req.User)
 	fmt.Println(user.Email)
-	fmt.Println("--------------------here2----------------------")
 	res, err := s.action.CreateUser(ctx, user)
 	if err != nil {
 		return nil, err
