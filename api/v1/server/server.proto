@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package api.server;
 
-option go_package = "microservices-template-2024/api/server;server";
+option go_package = "microservices-template-2024/api/server";
 option java_multiple_files = true;
 option java_package = "api.server";
 

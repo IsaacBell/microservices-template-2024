@@ -1,7 +1,7 @@
 syntax = "proto3";
 package kratos.api;
 
-option go_package = "microservices-template-2024/internal/conf;conf";
+option go_package = "microservices-template-2024/internal/conf";
 
 import "google/protobuf/duration.proto";
 
