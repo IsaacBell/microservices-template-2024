@@ -19,11 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Server_CreateServer_FullMethodName = "/server.v1.Server/CreateServer"
-	Server_UpdateServer_FullMethodName = "/server.v1.Server/UpdateServer"
-	Server_DeleteServer_FullMethodName = "/server.v1.Server/DeleteServer"
-	Server_GetServer_FullMethodName    = "/server.v1.Server/GetServer"
-	Server_ListServer_FullMethodName   = "/server.v1.Server/ListServer"
+	Server_CreateServer_FullMethodName = "/api.v1.Server/CreateServer"
+	Server_UpdateServer_FullMethodName = "/api.v1.Server/UpdateServer"
+	Server_DeleteServer_FullMethodName = "/api.v1.Server/DeleteServer"
+	Server_GetServer_FullMethodName    = "/api.v1.Server/GetServer"
+	Server_ListServer_FullMethodName   = "/api.v1.Server/ListServer"
 )
 
 // ServerClient is the client API for Server service.
@@ -228,7 +228,7 @@ func _Server_ListServer_Handler(srv interface{}, ctx context.Context, dec func(i
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Server_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "server.v1.Server",
+	ServiceName: "api.v1.Server",
 	HandlerType: (*ServerServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

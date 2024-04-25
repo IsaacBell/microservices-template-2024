@@ -19,7 +19,7 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
-const OperationUsersGetUser = "/server.v1.Users/GetUser"
+const OperationUsersGetUser = "/api.v1.Users/GetUser"
 
 type UsersHTTPServer interface {
 	GetUser(context.Context, *GetUserRequest) (*GetUserReply, error)

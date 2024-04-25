@@ -19,10 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Log_Produce_FullMethodName       = "/server.v1.Log/Produce"
-	Log_Consume_FullMethodName       = "/server.v1.Log/Consume"
-	Log_ConsumeStream_FullMethodName = "/server.v1.Log/ConsumeStream"
-	Log_ProduceStream_FullMethodName = "/server.v1.Log/ProduceStream"
+	Log_Produce_FullMethodName       = "/api.v1.Log/Produce"
+	Log_Consume_FullMethodName       = "/api.v1.Log/Consume"
+	Log_ConsumeStream_FullMethodName = "/api.v1.Log/ConsumeStream"
+	Log_ProduceStream_FullMethodName = "/api.v1.Log/ProduceStream"
 )
 
 // LogClient is the client API for Log service.
@@ -251,7 +251,7 @@ func (x *logProduceStreamServer) Recv() (*ProduceRequest, error) {
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Log_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "server.v1.Log",
+	ServiceName: "api.v1.Log",
 	HandlerType: (*LogServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
