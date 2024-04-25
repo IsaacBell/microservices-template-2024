@@ -18,6 +18,10 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.24.0"
+
+	"github.com/go-kratos/kratos/v2/middleware/metrics"
+	kmetrics "github.com/go-kratos/prometheus/metrics"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 // NewGRPCServer new a gRPC server.
@@ -35,11 +39,15 @@ func NewGRPCServer(c *conf.Server, greeter *service.GreeterService, user *servic
 		),
 	)
 
+	counter := prometheus.NewCounterVec(
+		prometheus.CounterOpts{Name: "kratos_counter"}, []string{"kind", "operation", "code", "reason"})
+
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),
 			logging.Server(logger),
 			tracing.Server(tracing.WithTracerProvider(tp)),
+			metrics.Server(metrics.WithRequests(kmetrics.NewCounter(counter))),
 		),
 	}
 	if c.Grpc.Network != "" {
