@@ -26,15 +26,22 @@ func (s *UsersService) CreateUser(ctx context.Context, req *v1.CreateUserRequest
 	if err != nil {
 		return nil, err
 	}
+
 	fmt.Printf("CreateUser response: ", res)
 	return &v1.CreateUserReply{Ok: true}, nil
 }
+
 func (s *UsersService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest) (*v1.UpdateUserReply, error) {
-	return &v1.UpdateUserReply{}, nil
+	user := biz.ProtoToUserData(req.User)
+	_, err := s.action.UpdateUser(ctx, user)
+	return &v1.UpdateUserReply{Ok: err == nil}, err
 }
+
 func (s *UsersService) DeleteUser(ctx context.Context, req *v1.DeleteUserRequest) (*v1.DeleteUserReply, error) {
-	return &v1.DeleteUserReply{Ok: true}, nil
+	err := s.action.Delete(ctx, req.Id)
+	return &v1.DeleteUserReply{Ok: err == nil}, err
 }
+
 func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.GetUserReply, error) {
 	var u *biz.User
 	var err error
@@ -48,6 +55,14 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 	}
 	return &v1.GetUserReply{User: biz.UserToProtoData(u)}, nil
 }
+
 func (s *UsersService) ListUser(ctx context.Context, req *v1.ListUserRequest) (*v1.ListUserReply, error) {
-	return &v1.ListUserReply{}, nil
+	list, err := s.action.ListAll(ctx)
+	users := make([]*v1.User, len(list))
+
+	for i, u := range list {
+		users[i] = biz.UserToProtoData(u)
+	}
+
+	return &v1.ListUserReply{Users: users, Ok: err == nil}, err
 }

@@ -28,20 +28,12 @@ paths:
     /users/{id}:
         get:
             tags:
-                - Users
-            operationId: Users_GetUser
+                - Transactions
+            operationId: Transactions_GetTransactions
             parameters:
                 - name: id
                   in: path
                   required: true
-                  schema:
-                    type: string
-                - name: name
-                  in: query
-                  schema:
-                    type: string
-                - name: email
-                  in: query
                   schema:
                     type: string
             responses:
@@ -50,21 +42,148 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/server.v1.GetUserReply'
+                                $ref: '#/components/schemas/api.v1.GetTransactionsReply'
 components:
     schemas:
-        helloworld.v1.HelloReply:
+        api.v1.Counterparty:
             type: object
             properties:
-                message:
+                name:
                     type: string
-            description: The response message containing the greetings
-        server.v1.GetUserReply:
+                type:
+                    type: string
+                logoUrl:
+                    type: string
+                website:
+                    type: string
+                entityId:
+                    type: string
+                confidenceLevel:
+                    type: string
+        api.v1.GetTransactionsReply:
+            type: object
+            properties:
+                transaction:
+                    $ref: '#/components/schemas/api.v1.Transaction'
+        api.v1.GetUserReply:
             type: object
             properties:
                 user:
-                    $ref: '#/components/schemas/server.v1.User'
-        server.v1.User:
+                    $ref: '#/components/schemas/api.v1.User'
+        api.v1.Location:
+            type: object
+            properties:
+                address:
+                    type: string
+                city:
+                    type: string
+                region:
+                    type: string
+                postalCode:
+                    type: string
+                country:
+                    type: string
+                lat:
+                    type: number
+                    format: double
+                lon:
+                    type: number
+                    format: double
+                storeNumber:
+                    type: string
+        api.v1.PaymentMeta:
+            type: object
+            properties:
+                byOrderOf:
+                    type: string
+                payee:
+                    type: string
+                payer:
+                    type: string
+                paymentMethod:
+                    type: string
+                paymentProcessor:
+                    type: string
+                ppdId:
+                    type: string
+                reason:
+                    type: string
+                referenceNumber:
+                    type: string
+        api.v1.PersonalFinanceCategory:
+            type: object
+            properties:
+                primary:
+                    type: string
+                detailed:
+                    type: string
+                confidenceLevel:
+                    type: string
+        api.v1.Transaction:
+            type: object
+            properties:
+                accountId:
+                    type: string
+                accountOwner:
+                    type: string
+                amount:
+                    type: number
+                    format: double
+                isoCurrencyCode:
+                    type: string
+                unofficialCurrencyCode:
+                    type: string
+                category:
+                    type: array
+                    items:
+                        type: string
+                categoryId:
+                    type: string
+                checkNumber:
+                    type: string
+                counterparties:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.v1.Counterparty'
+                date:
+                    type: string
+                datetime:
+                    type: string
+                authorizedDate:
+                    type: string
+                authorizedDatetime:
+                    type: string
+                location:
+                    $ref: '#/components/schemas/api.v1.Location'
+                name:
+                    type: string
+                merchantName:
+                    type: string
+                merchantEntityId:
+                    type: string
+                logoUrl:
+                    type: string
+                website:
+                    type: string
+                paymentMeta:
+                    $ref: '#/components/schemas/api.v1.PaymentMeta'
+                paymentChannel:
+                    type: string
+                pending:
+                    type: boolean
+                pendingTransactionId:
+                    type: string
+                personalFinanceCategory:
+                    $ref: '#/components/schemas/api.v1.PersonalFinanceCategory'
+                personalFinanceCategoryIconUrl:
+                    type: string
+                transactionId:
+                    type: string
+                transactionCode:
+                    type: string
+                transactionType:
+                    type: string
+        api.v1.User:
             type: object
             properties:
                 id:
@@ -108,7 +227,14 @@ components:
                     type: object
                     additionalProperties:
                         type: string
+        helloworld.v1.HelloReply:
+            type: object
+            properties:
+                message:
+                    type: string
+            description: The response message containing the greetings
 tags:
     - name: Greeter
       description: The greeting service definition.
+    - name: Transactions
     - name: Users

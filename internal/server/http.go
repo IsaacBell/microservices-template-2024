@@ -36,7 +36,7 @@ func StartPrometheus(srv *http.Server) {
 }
 
 // NewHTTPServer new an HTTP server.
-func NewHTTPServer(c *conf.Server, greeter *service.GreeterService, user *service.UsersService, logger log.Logger) *http.Server {
+func NewHTTPServer(c *conf.Server, greeter *service.GreeterService, user *service.UsersService, trans *service.TransactionsService, logger log.Logger) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),
@@ -55,6 +55,7 @@ func NewHTTPServer(c *conf.Server, greeter *service.GreeterService, user *servic
 	srv := http.NewServer(opts...)
 	helloworld.RegisterGreeterHTTPServer(srv, greeter)
 	v1.RegisterUsersHTTPServer(srv, user)
+	v1.RegisterTransactionsHTTPServer(srv, trans)
 
 	StartPrometheus(srv)
 	return srv

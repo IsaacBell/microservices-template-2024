@@ -60,6 +60,19 @@ func (r *userRepo) FindByEmail(ctx context.Context, email string) (*biz.User, er
 	return u, nil
 }
 
+func (r *userRepo) Delete(ctx context.Context, id string) error {
+	if err := server.DB.Delete(&biz.User{ID: id}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 func (r *userRepo) ListAll(context.Context) ([]*biz.User, error) {
-	return nil, nil
+	var users []*biz.User
+
+	if err := server.DB.Last(&users).Limit(100).Error; err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }

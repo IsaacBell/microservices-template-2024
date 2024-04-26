@@ -102,6 +102,7 @@ func ProtoToUserData(input *v1.User) *User {
 type UserRepo interface {
 	Save(context.Context, *User) (*User, error)
 	Update(context.Context, *User) (*User, error)
+	Delete(context.Context, string) error
 	FindByID(context.Context, string) (*User, error)
 	FindByEmail(context.Context, string) (*User, error)
 	ListAll(context.Context) ([]*User, error)
@@ -144,4 +145,14 @@ func (uc *UserAction) FindUserById(ctx context.Context, id string) (*User, error
 func (uc *UserAction) FindUserByEmail(ctx context.Context, email string) (*User, error) {
 	uc.log.WithContext(ctx).Infof("FindUser: %s", email)
 	return uc.repo.FindByEmail(ctx, email)
+}
+
+func (uc *UserAction) Delete(ctx context.Context, id string) error {
+	uc.log.WithContext(ctx).Infof("Delete User: %s", id)
+	return uc.repo.Delete(ctx, id)
+}
+
+func (uc *UserAction) ListAll(ctx context.Context) ([]*User, error) {
+	uc.log.WithContext(ctx).Infof("List Users")
+	return uc.repo.ListAll(ctx)
 }

@@ -1,0 +1,169 @@
+syntax = "proto3";
+
+package api.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "microservices-template-2024/api/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.v1";
+
+service Transactions {
+	rpc CreateTransactions (CreateTransactionsRequest) returns (CreateTransactionsReply);
+	rpc UpdateTransactions (UpdateTransactionsRequest) returns (UpdateTransactionsReply);
+	rpc DeleteTransactions (DeleteTransactionsRequest) returns (DeleteTransactionsReply);
+	rpc GetTransactions (GetTransactionsRequest) returns (GetTransactionsReply) {
+		option (google.api.http) = {
+      get: "/users/{id}"
+    };
+	};
+	rpc SyncTransactions (GetTransactionsRequest) returns (stream GetTransactionsReply);
+	rpc ListTransactions (ListTransactionsRequest) returns (ListTransactionsReply);
+}
+
+message Account {
+  string account_id = 1;
+  Balances balances = 2;
+  string mask = 3;
+  string name = 4;
+  string official_name = 5;
+  string subtype = 6;
+  string type = 7;
+}
+
+message Balances {
+  double available = 1;
+  double current = 2;
+  string iso_currency_code = 3;
+  double limit = 4;
+  string unofficial_currency_code = 5;
+}
+
+message Location {
+  string address = 1;
+  string city = 2;
+  string region = 3;
+  string postal_code = 4;
+  string country = 5;
+  double lat = 6;
+  double lon = 7;
+  string store_number = 8;
+}
+
+message PaymentMeta {
+  string by_order_of = 1;
+  string payee = 2;
+  string payer = 3;
+  string payment_method = 4;
+  string payment_processor = 5;
+  string ppd_id = 6;
+  string reason = 7;
+  string reference_number = 8;
+}
+
+message PersonalFinanceCategory {
+  string primary = 1;
+  string detailed = 2;
+  string confidence_level = 3;
+}
+
+message Counterparty {
+  string name = 1;
+  string type = 2;
+  string logo_url = 3;
+  string website = 4;
+  string entity_id = 5;
+  string confidence_level = 6;
+}
+
+message Transaction {
+  string account_id = 1;
+  string account_owner = 2;
+  double amount = 3;
+  string iso_currency_code = 4;
+  string unofficial_currency_code = 5;
+  repeated string category = 6;
+  string category_id = 7;
+  string check_number = 8;
+  repeated Counterparty counterparties = 9;
+  string date = 10;
+  string datetime = 11;
+  string authorized_date = 12;
+  string authorized_datetime = 13;
+  Location location = 14;
+  string name = 15;
+  string merchant_name = 16;
+  string merchant_entity_id = 17;
+  string logo_url = 18;
+  string website = 19;
+  PaymentMeta payment_meta = 20;
+  string payment_channel = 21;
+  bool pending = 22;
+  string pending_transaction_id = 23;
+  PersonalFinanceCategory personal_finance_category = 24;
+  string personal_finance_category_icon_url = 25;
+  string transaction_id = 26;
+  string transaction_code = 27;
+  string transaction_type = 28;
+}
+
+message Item {
+  repeated string available_products = 1;
+  repeated string billed_products = 2;
+  string consent_expiration_time = 3;
+  string error = 4;
+  string institution_id = 5;
+  string item_id = 6;
+  string update_type = 7;
+  string webhook = 8;
+}
+
+message TransactionsResponse {
+  repeated Account accounts = 1;
+  repeated Transaction transactions = 2;
+  Item item = 3;
+  int32 total_transactions = 4;
+  string request_id = 5;
+}
+
+message CreateTransactionsRequest {
+  Transaction transaction = 1;
+}
+
+message CreateTransactionsReply {
+  bool ok = 1;
+}
+
+message UpdateTransactionsRequest {
+  Transaction transaction = 1;
+}
+
+message UpdateTransactionsReply {
+  bool ok = 1;
+}
+
+message DeleteTransactionsRequest {
+  string id = 1;
+}
+
+message DeleteTransactionsReply {
+  bool success = 1;
+}
+
+message GetTransactionsRequest {
+  string id = 1;
+}
+
+message GetTransactionsReply {
+  Transaction transaction = 1;
+}
+
+message ListTransactionsRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+}
+
+message ListTransactionsReply {
+  repeated Transaction transactions = 1;
+  string next_page_token = 2;
+}
