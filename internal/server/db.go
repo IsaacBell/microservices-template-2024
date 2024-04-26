@@ -13,8 +13,25 @@ import (
 
 var DB *gorm.DB
 
-func automigrateDBTables() {
+func automigrateDBTables(*gorm.DB) {
+	DB.AutoMigrate(&biz.User{})
+	DB.AutoMigrate(&biz.Transaction{})
+}
 
+func AmountGT1000(db *gorm.DB) *gorm.DB {
+	return db.Where("amount > ?", 1000)
+}
+
+func AmountLT1000(db *gorm.DB) *gorm.DB {
+	return db.Where("amount < ?", 1000)
+}
+
+func Unsynced(db *gorm.DB) *gorm.DB {
+	return db.Where("synced = ?", false)
+}
+
+func Synced(db *gorm.DB) *gorm.DB {
+	return db.Where("synced = ?", true)
 }
 
 func DbString() string {
@@ -43,7 +60,7 @@ func OpenDBConn() error {
 
 	fmt.Println(now)
 
-	DB.AutoMigrate(&biz.User{})
+	automigrateDBTables(DB)
 
 	return nil
 }

@@ -25,15 +25,23 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/helloworld.v1.HelloReply'
-    /users/{id}:
+    /transactions:
         get:
             tags:
                 - Transactions
-            operationId: Transactions_GetTransactions
+            operationId: Transactions_ListTransactions
             parameters:
-                - name: id
-                  in: path
-                  required: true
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  schema:
+                    type: string
+                - name: owner
+                  in: query
                   schema:
                     type: string
             responses:
@@ -42,7 +50,33 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.v1.GetTransactionsReply'
+                                $ref: '#/components/schemas/api.v1.ListTransactionsReply'
+    /users/{id}:
+        get:
+            tags:
+                - Users
+            operationId: Users_GetUser
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: name
+                  in: query
+                  schema:
+                    type: string
+                - name: email
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.GetUserReply'
 components:
     schemas:
         api.v1.Counterparty:
@@ -60,16 +94,22 @@ components:
                     type: string
                 confidenceLevel:
                     type: string
-        api.v1.GetTransactionsReply:
-            type: object
-            properties:
-                transaction:
-                    $ref: '#/components/schemas/api.v1.Transaction'
         api.v1.GetUserReply:
             type: object
             properties:
                 user:
                     $ref: '#/components/schemas/api.v1.User'
+        api.v1.ListTransactionsReply:
+            type: object
+            properties:
+                transactions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.v1.Transaction'
+                nextPageToken:
+                    type: string
+                owner:
+                    type: string
         api.v1.Location:
             type: object
             properties:
@@ -122,6 +162,8 @@ components:
         api.v1.Transaction:
             type: object
             properties:
+                id:
+                    type: string
                 accountId:
                     type: string
                 accountOwner:
@@ -130,8 +172,6 @@ components:
                     type: number
                     format: double
                 isoCurrencyCode:
-                    type: string
-                unofficialCurrencyCode:
                     type: string
                 category:
                     type: array
@@ -183,6 +223,10 @@ components:
                     type: string
                 transactionType:
                     type: string
+                unofficialCurrencyCode:
+                    type: string
+                synced:
+                    type: boolean
         api.v1.User:
             type: object
             properties:

@@ -9,16 +9,32 @@ option java_multiple_files = true;
 option java_package = "api.v1";
 
 service Transactions {
-	rpc CreateTransactions (CreateTransactionsRequest) returns (CreateTransactionsReply);
-	rpc UpdateTransactions (UpdateTransactionsRequest) returns (UpdateTransactionsReply);
-	rpc DeleteTransactions (DeleteTransactionsRequest) returns (DeleteTransactionsReply);
-	rpc GetTransactions (GetTransactionsRequest) returns (GetTransactionsReply) {
+	rpc CreateTransaction (CreateTransactionRequest) returns (CreateTransactionReply) {
+		// option (google.api.http) = {
+    //   post: "/transaction"
+    // };
+	};
+	rpc UpdateTransaction (UpdateTransactionsRequest) returns (UpdateTransactionsReply) {
+		// option (google.api.http) = {
+    //   put: "/transactions/{id}"
+    // };
+	};
+	rpc DeleteTransaction (DeleteTransactionsRequest) returns (DeleteTransactionsReply) {
+		// option (google.api.http) = {
+    //   delete: "/transactions/{id}"
+    // };
+	};
+	rpc GetTransaction (GetTransactionsRequest) returns (GetTransactionsReply) {
+		// option (google.api.http) = {
+    //   get: "/transactions/{id}"
+    // };
+	};
+	rpc SyncTransactions (ListTransactionsRequest) returns (stream GetTransactionsReply);
+	rpc ListTransactions (ListTransactionsRequest) returns (ListTransactionsReply) {
 		option (google.api.http) = {
-      get: "/users/{id}"
+      get: "/transactions"
     };
 	};
-	rpc SyncTransactions (GetTransactionsRequest) returns (stream GetTransactionsReply);
-	rpc ListTransactions (ListTransactionsRequest) returns (ListTransactionsReply);
 }
 
 message Account {
@@ -77,11 +93,11 @@ message Counterparty {
 }
 
 message Transaction {
-  string account_id = 1;
-  string account_owner = 2;
-  double amount = 3;
-  string iso_currency_code = 4;
-  string unofficial_currency_code = 5;
+	string id = 1;
+  string account_id = 2;
+  string account_owner = 3;
+  double amount = 4;
+  string iso_currency_code = 5;
   repeated string category = 6;
   string category_id = 7;
   string check_number = 8;
@@ -105,6 +121,8 @@ message Transaction {
   string transaction_id = 26;
   string transaction_code = 27;
   string transaction_type = 28;
+  string unofficial_currency_code = 29;
+  bool synced = 30;
 }
 
 message Item {
@@ -126,12 +144,13 @@ message TransactionsResponse {
   string request_id = 5;
 }
 
-message CreateTransactionsRequest {
+message CreateTransactionRequest {
   Transaction transaction = 1;
 }
 
-message CreateTransactionsReply {
+message CreateTransactionReply {
   bool ok = 1;
+  string id = 2;
 }
 
 message UpdateTransactionsRequest {
@@ -161,9 +180,11 @@ message GetTransactionsReply {
 message ListTransactionsRequest {
   int32 page_size = 1;
   string page_token = 2;
+  string owner = 3;
 }
 
 message ListTransactionsReply {
   repeated Transaction transactions = 1;
   string next_page_token = 2;
+  string owner = 3;
 }

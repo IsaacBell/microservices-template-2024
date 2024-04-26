@@ -121,9 +121,9 @@ func (uc *UserAction) CreateUser(ctx context.Context, u *User) (*User, error) {
 	uc.log.WithContext(ctx).Infof("CreateUser: %s", u.Email)
 	res, err := uc.repo.Save(ctx, u)
 	if err != nil {
-		fmt.Printf("error creating user: ", err)
+		fmt.Println("error creating user: ", err)
 	}
-	fmt.Printf("create user result: ", res)
+	fmt.Println("create user result: ", res)
 	return res, err
 }
 
@@ -131,9 +131,9 @@ func (uc *UserAction) UpdateUser(ctx context.Context, u *User) (*User, error) {
 	uc.log.WithContext(ctx).Infof("UpdateUser: %s", u.Email)
 	res, err := uc.repo.Update(ctx, u)
 	if err != nil {
-		fmt.Printf("error updating user: ", err)
+		fmt.Println("error updating user: ", err)
 	}
-	fmt.Printf("update user result: ", res)
+	fmt.Println("update user result: ", res)
 	return res, err
 }
 

@@ -18,11 +18,10 @@ func NewTransactionsService(action *biz.TransactionAction) *TransactionsService 
 	return &TransactionsService{action: action}
 }
 
-func (s *TransactionsService) CreateTransaction(ctx context.Context, req *v1.CreateTransactionsRequest) (*v1.CreateTransactionsReply, error) {
+func (s *TransactionsService) CreateTransaction(ctx context.Context, req *v1.CreateTransactionRequest) (*v1.CreateTransactionReply, error) {
 	transaction := biz.ProtoToTransactionData(req.Transaction)
-	_, err := s.action.CreateTransaction(ctx, transaction)
-
-	return &v1.CreateTransactionsReply{Ok: err != nil}, err
+	t, err := s.action.CreateTransaction(ctx, transaction)
+	return &v1.CreateTransactionReply{Ok: err == nil, Id: t.ID}, err
 }
 
 func (s *TransactionsService) UpdateTransaction(ctx context.Context, req *v1.UpdateTransactionsRequest) (*v1.UpdateTransactionsReply, error) {
@@ -41,6 +40,18 @@ func (s *TransactionsService) GetTransaction(ctx context.Context, req *v1.GetTra
 		return nil, err
 	}
 	return &v1.GetTransactionsReply{Transaction: biz.TransactionToProtoData(u)}, nil
+}
+
+func (s *TransactionsService) SyncTransactions(req *v1.ListTransactionsRequest, stream v1.Transactions_SyncTransactionsServer) error {
+	ctx := stream.Context()
+
+	err := s.action.SyncTransactions(ctx, req.Owner, stream)
+	if err != nil {
+		return err
+	}
+
+	<-ctx.Done()
+	return ctx.Err()
 }
 
 func (s *TransactionsService) ListTransaction(ctx context.Context, req *v1.ListTransactionsRequest) (*v1.ListTransactionsReply, error) {
