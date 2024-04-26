@@ -47,6 +47,7 @@ message CreateUserRequest {
 }
 message CreateUserReply {
 	bool ok = 1;
+  string id = 2;
 }
 
 message UpdateUserRequest {
@@ -54,6 +55,7 @@ message UpdateUserRequest {
 }
 message UpdateUserReply {
 	bool ok = 1;
+  string id = 2;
 }
 
 message DeleteUserRequest {

@@ -23,18 +23,15 @@ func (s *UsersService) CreateUser(ctx context.Context, req *v1.CreateUserRequest
 	user := biz.ProtoToUserData(req.User)
 	fmt.Println(user.Email)
 	res, err := s.action.CreateUser(ctx, user)
-	if err != nil {
-		return nil, err
-	}
 
-	fmt.Printf("CreateUser response: ", res)
-	return &v1.CreateUserReply{Ok: true}, nil
+	fmt.Println("CreateUser response: ", res)
+	return &v1.CreateUserReply{Ok: err == nil, Id: res.ID}, err
 }
 
 func (s *UsersService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest) (*v1.UpdateUserReply, error) {
 	user := biz.ProtoToUserData(req.User)
-	_, err := s.action.UpdateUser(ctx, user)
-	return &v1.UpdateUserReply{Ok: err == nil}, err
+	res, err := s.action.UpdateUser(ctx, user)
+	return &v1.UpdateUserReply{Ok: err == nil, Id: res.ID}, err
 }
 
 func (s *UsersService) DeleteUser(ctx context.Context, req *v1.DeleteUserRequest) (*v1.DeleteUserReply, error) {
