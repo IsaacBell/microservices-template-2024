@@ -37,7 +37,7 @@ type User struct {
 	// Metadata map[string]string `protobuf:"bytes,17,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
-func (u User) BeforeCreate(tx *gorm.DB) (err error) {
+func (u User) BeforeCreate(tx *gorm.DB) error {
 	u.ID = uuid.New().String()
 	return nil
 }

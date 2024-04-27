@@ -33,14 +33,14 @@ func (r *transactionRepo) Save(ctx context.Context, t *biz.Transaction) (*biz.Tr
 		}
 	}
 
-	if t, err := t.BeforeCreate(server.DB); err != nil {
-		fmt.Println("Transaction ID: ", t.ID)
+	if err := t.BeforeCreate(server.DB); err != nil {
 		return nil, err
 	}
 
 	if err := server.DB.FirstOrCreate(&t).Error; err != nil {
 		return nil, err
 	}
+	fmt.Println("Transaction ID: ", t.ID)
 
 	return t, nil
 }

@@ -37,7 +37,7 @@ func ConsumeKafkaMessages(topic string, groupId string) {
 		},
 	})
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*120) // Increase the timeout
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30) // Increase the timeout
 	defer cancel()
 	for {
 		message, _ := r.ReadMessage(ctx)

@@ -104,7 +104,7 @@ func (c *logClient) ProduceStream(ctx context.Context, opts ...grpc.CallOption) 
 
 type Log_ProduceStreamClient interface {
 	Send(*ProduceRequest) error
-	Recv() (*ProduceResponse, error)
+	CloseAndRecv() (*ProduceResponse, error)
 	grpc.ClientStream
 }
 
@@ -116,7 +116,10 @@ func (x *logProduceStreamClient) Send(m *ProduceRequest) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *logProduceStreamClient) Recv() (*ProduceResponse, error) {
+func (x *logProduceStreamClient) CloseAndRecv() (*ProduceResponse, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
 	m := new(ProduceResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -226,7 +229,7 @@ func _Log_ProduceStream_Handler(srv interface{}, stream grpc.ServerStream) error
 }
 
 type Log_ProduceStreamServer interface {
-	Send(*ProduceResponse) error
+	SendAndClose(*ProduceResponse) error
 	Recv() (*ProduceRequest, error)
 	grpc.ServerStream
 }
@@ -235,7 +238,7 @@ type logProduceStreamServer struct {
 	grpc.ServerStream
 }
 
-func (x *logProduceStreamServer) Send(m *ProduceResponse) error {
+func (x *logProduceStreamServer) SendAndClose(m *ProduceResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -272,7 +275,6 @@ var Log_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "ProduceStream",
 			Handler:       _Log_ProduceStream_Handler,
-			ServerStreams: true,
 			ClientStreams: true,
 		},
 	},

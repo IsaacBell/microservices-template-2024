@@ -25,6 +25,244 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/helloworld.v1.HelloReply'
+    /liabilities:
+        get:
+            tags:
+                - Liabilities
+            operationId: Liabilities_GetLiabilities
+            parameters:
+                - name: owner
+                  in: query
+                  schema:
+                    type: string
+                - name: since
+                  in: query
+                  schema:
+                    type: string
+                    format: date-time
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.GetLiabilitiesReply'
+    /liabilities/{id}:
+        get:
+            tags:
+                - Liabilities
+            operationId: Liabilities_GetLiability
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.GetLiabilityReply'
+    /transaction:
+        post:
+            tags:
+                - Transactions
+            operationId: Transactions_CreateTransaction
+            parameters:
+                - name: transaction.id
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.accountId
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.accountOwner
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.amount
+                  in: query
+                  schema:
+                    type: number
+                    format: double
+                - name: transaction.isoCurrencyCode
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.category
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        type: string
+                - name: transaction.categoryId
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.checkNumber
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.date
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.datetime
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.authorizedDate
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.authorizedDatetime
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.location.address
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.location.city
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.location.region
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.location.postalCode
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.location.country
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.location.lat
+                  in: query
+                  schema:
+                    type: number
+                    format: double
+                - name: transaction.location.lon
+                  in: query
+                  schema:
+                    type: number
+                    format: double
+                - name: transaction.location.storeNumber
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.name
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.merchantName
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.merchantEntityId
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.logoUrl
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.website
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.paymentMeta.byOrderOf
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.paymentMeta.payee
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.paymentMeta.payer
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.paymentMeta.paymentMethod
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.paymentMeta.paymentProcessor
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.paymentMeta.ppdId
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.paymentMeta.reason
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.paymentMeta.referenceNumber
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.paymentChannel
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.pending
+                  in: query
+                  schema:
+                    type: boolean
+                - name: transaction.pendingTransactionId
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.personalFinanceCategory.primary
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.personalFinanceCategory.detailed
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.personalFinanceCategory.confidenceLevel
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.personalFinanceCategoryIconUrl
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.transactionId
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.transactionCode
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.transactionType
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.unofficialCurrencyCode
+                  in: query
+                  schema:
+                    type: string
+                - name: transaction.synced
+                  in: query
+                  schema:
+                    type: boolean
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.CreateTransactionReply'
     /transactions:
         get:
             tags:
@@ -51,6 +289,24 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.v1.ListTransactionsReply'
+    /transactions/{id}:
+        get:
+            tags:
+                - Transactions
+            operationId: Transactions_GetTransaction
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.GetTransactionsReply'
     /users/{id}:
         get:
             tags:
@@ -79,6 +335,22 @@ paths:
                                 $ref: '#/components/schemas/api.v1.GetUserReply'
 components:
     schemas:
+        api.v1.Apr:
+            type: object
+            properties:
+                aprPercentage:
+                    type: number
+                    format: float
+                aprType:
+                    type: string
+                balanceSubjectToApr:
+                    type: number
+                    format: float
+                interestChargeAmount:
+                    type: number
+                    format: float
+                id:
+                    type: string
         api.v1.Counterparty:
             type: object
             properties:
@@ -94,11 +366,96 @@ components:
                     type: string
                 confidenceLevel:
                     type: string
+        api.v1.CreateTransactionReply:
+            type: object
+            properties:
+                ok:
+                    type: boolean
+                id:
+                    type: string
+        api.v1.CreditLiability:
+            type: object
+            properties:
+                id:
+                    type: string
+                aprs:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.v1.Apr'
+                isOverdue:
+                    type: boolean
+                lastPaymentAmount:
+                    type: number
+                    format: float
+                lastPaymentDate:
+                    type: string
+                lastStatementIssueDate:
+                    type: string
+                lastStatementBalance:
+                    type: number
+                    format: float
+                minimumPaymentAmount:
+                    type: number
+                    format: float
+                nextPaymentDueDate:
+                    type: string
+                accountId:
+                    type: string
+        api.v1.GetLiabilitiesReply:
+            type: object
+            properties:
+                credit:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.v1.CreditLiability'
+                mortgage:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.v1.MortgageLiability'
+                student:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.v1.StudentLiability'
+                ok:
+                    type: boolean
+        api.v1.GetLiabilityReply:
+            type: object
+            properties:
+                ok:
+                    type: boolean
+                liability:
+                    $ref: '#/components/schemas/api.v1.Liability'
+                id:
+                    type: string
+        api.v1.GetTransactionsReply:
+            type: object
+            properties:
+                transaction:
+                    $ref: '#/components/schemas/api.v1.Transaction'
         api.v1.GetUserReply:
             type: object
             properties:
                 user:
                     $ref: '#/components/schemas/api.v1.User'
+        api.v1.InterestRate:
+            type: object
+            properties:
+                percentage:
+                    type: number
+                    format: float
+                type:
+                    type: string
+        api.v1.Liability:
+            type: object
+            properties:
+                id:
+                    type: string
+                credit:
+                    $ref: '#/components/schemas/api.v1.CreditLiability'
+                mortgage:
+                    $ref: '#/components/schemas/api.v1.MortgageLiability'
+                student:
+                    $ref: '#/components/schemas/api.v1.StudentLiability'
         api.v1.ListTransactionsReply:
             type: object
             properties:
@@ -109,6 +466,13 @@ components:
                 nextPageToken:
                     type: string
                 owner:
+                    type: string
+        api.v1.LoanStatus:
+            type: object
+            properties:
+                endDate:
+                    type: string
+                type:
                     type: string
         api.v1.Location:
             type: object
@@ -130,6 +494,59 @@ components:
                     type: number
                     format: double
                 storeNumber:
+                    type: string
+        api.v1.MortgageLiability:
+            type: object
+            properties:
+                id:
+                    type: string
+                accountNumber:
+                    type: string
+                currentLateFee:
+                    type: number
+                    format: float
+                escrowBalance:
+                    type: number
+                    format: float
+                hasPmi:
+                    type: boolean
+                hasPrepaymentPenalty:
+                    type: boolean
+                interestRate:
+                    $ref: '#/components/schemas/api.v1.InterestRate'
+                lastPaymentAmount:
+                    type: number
+                    format: float
+                lastPaymentDate:
+                    type: string
+                loanTerm:
+                    type: string
+                loanTypeDescription:
+                    type: string
+                maturityDate:
+                    type: string
+                nextMonthlyPayment:
+                    type: number
+                    format: float
+                nextPaymentDueDate:
+                    type: string
+                originationDate:
+                    type: string
+                originationPrincipalAmount:
+                    type: number
+                    format: float
+                pastDueAmount:
+                    type: number
+                    format: float
+                propertyAddress:
+                    $ref: '#/components/schemas/api.v1.PropertyAddress'
+                ytdInterestPaid:
+                    type: number
+                    format: float
+                ytdPrincipalPaid:
+                    type: number
+                    format: float
+                accountId:
                     type: string
         api.v1.PaymentMeta:
             type: object
@@ -158,6 +575,112 @@ components:
                 detailed:
                     type: string
                 confidenceLevel:
+                    type: string
+        api.v1.PropertyAddress:
+            type: object
+            properties:
+                city:
+                    type: string
+                country:
+                    type: string
+                postalCode:
+                    type: string
+                region:
+                    type: string
+                street:
+                    type: string
+        api.v1.PslfStatus:
+            type: object
+            properties:
+                estimatedEligibilityDate:
+                    type: string
+                paymentsMade:
+                    type: integer
+                    format: int32
+                paymentsRemaining:
+                    type: integer
+                    format: int32
+        api.v1.RepaymentPlan:
+            type: object
+            properties:
+                description:
+                    type: string
+                type:
+                    type: string
+        api.v1.ServicerAddress:
+            type: object
+            properties:
+                city:
+                    type: string
+                country:
+                    type: string
+                postalCode:
+                    type: string
+                region:
+                    type: string
+                street:
+                    type: string
+        api.v1.StudentLiability:
+            type: object
+            properties:
+                id:
+                    type: string
+                accountNumber:
+                    type: string
+                disbursementDates:
+                    type: array
+                    items:
+                        type: string
+                expectedPayoffDate:
+                    type: string
+                guarantor:
+                    type: string
+                interestRatePercentage:
+                    type: number
+                    format: float
+                isOverdue:
+                    type: boolean
+                lastPaymentAmount:
+                    type: number
+                    format: float
+                lastPaymentDate:
+                    type: string
+                lastStatementIssueDate:
+                    type: string
+                loanName:
+                    type: string
+                loanStatus:
+                    $ref: '#/components/schemas/api.v1.LoanStatus'
+                minimumPaymentAmount:
+                    type: number
+                    format: float
+                nextPaymentDueDate:
+                    type: string
+                originationDate:
+                    type: string
+                originationPrincipalAmount:
+                    type: number
+                    format: float
+                outstandingInterestAmount:
+                    type: number
+                    format: float
+                paymentReferenceNumber:
+                    type: string
+                pslfStatus:
+                    $ref: '#/components/schemas/api.v1.PslfStatus'
+                repaymentPlan:
+                    $ref: '#/components/schemas/api.v1.RepaymentPlan'
+                sequenceNumber:
+                    type: string
+                servicerAddress:
+                    $ref: '#/components/schemas/api.v1.ServicerAddress'
+                ytdInterestPaid:
+                    type: number
+                    format: float
+                ytdPrincipalPaid:
+                    type: number
+                    format: float
+                accountId:
                     type: string
         api.v1.Transaction:
             type: object
@@ -280,5 +803,6 @@ components:
 tags:
     - name: Greeter
       description: The greeting service definition.
+    - name: Liabilities
     - name: Transactions
     - name: Users

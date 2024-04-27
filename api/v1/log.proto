@@ -7,7 +7,7 @@ service Log {
   rpc Produce(ProduceRequest) returns (ProduceResponse) {}
   rpc Consume(ConsumeRequest) returns (ConsumeResponse) {}
   rpc ConsumeStream(ConsumeRequest) returns (stream ConsumeResponse) {}
-  rpc ProduceStream(stream ProduceRequest) returns (stream ProduceResponse) {}
+  rpc ProduceStream(stream ProduceRequest) returns (ProduceResponse) {}
 }
 
 message ProduceRequest {
@@ -22,6 +22,7 @@ message ProduceResponse {
 
 message ConsumeRequest {
   uint64 offset = 1;
+  string topic = 2;
 }
 
 message ConsumeResponse {

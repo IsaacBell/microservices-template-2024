@@ -19,15 +19,62 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
+const OperationTransactionsCreateTransaction = "/api.v1.Transactions/CreateTransaction"
+const OperationTransactionsGetTransaction = "/api.v1.Transactions/GetTransaction"
 const OperationTransactionsListTransactions = "/api.v1.Transactions/ListTransactions"
 
 type TransactionsHTTPServer interface {
+	CreateTransaction(context.Context, *CreateTransactionRequest) (*CreateTransactionReply, error)
+	GetTransaction(context.Context, *GetTransactionsRequest) (*GetTransactionsReply, error)
 	ListTransactions(context.Context, *ListTransactionsRequest) (*ListTransactionsReply, error)
 }
 
 func RegisterTransactionsHTTPServer(s *http.Server, srv TransactionsHTTPServer) {
 	r := s.Route("/")
+	r.POST("/transaction", _Transactions_CreateTransaction0_HTTP_Handler(srv))
+	r.GET("/transactions/{id}", _Transactions_GetTransaction0_HTTP_Handler(srv))
 	r.GET("/transactions", _Transactions_ListTransactions0_HTTP_Handler(srv))
+}
+
+func _Transactions_CreateTransaction0_HTTP_Handler(srv TransactionsHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in CreateTransactionRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationTransactionsCreateTransaction)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CreateTransaction(ctx, req.(*CreateTransactionRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*CreateTransactionReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Transactions_GetTransaction0_HTTP_Handler(srv TransactionsHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetTransactionsRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationTransactionsGetTransaction)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetTransaction(ctx, req.(*GetTransactionsRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetTransactionsReply)
+		return ctx.Result(200, reply)
+	}
 }
 
 func _Transactions_ListTransactions0_HTTP_Handler(srv TransactionsHTTPServer) func(ctx http.Context) error {
@@ -50,6 +97,8 @@ func _Transactions_ListTransactions0_HTTP_Handler(srv TransactionsHTTPServer) fu
 }
 
 type TransactionsHTTPClient interface {
+	CreateTransaction(ctx context.Context, req *CreateTransactionRequest, opts ...http.CallOption) (rsp *CreateTransactionReply, err error)
+	GetTransaction(ctx context.Context, req *GetTransactionsRequest, opts ...http.CallOption) (rsp *GetTransactionsReply, err error)
 	ListTransactions(ctx context.Context, req *ListTransactionsRequest, opts ...http.CallOption) (rsp *ListTransactionsReply, err error)
 }
 
@@ -59,6 +108,32 @@ type TransactionsHTTPClientImpl struct {
 
 func NewTransactionsHTTPClient(client *http.Client) TransactionsHTTPClient {
 	return &TransactionsHTTPClientImpl{client}
+}
+
+func (c *TransactionsHTTPClientImpl) CreateTransaction(ctx context.Context, in *CreateTransactionRequest, opts ...http.CallOption) (*CreateTransactionReply, error) {
+	var out CreateTransactionReply
+	pattern := "/transaction"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationTransactionsCreateTransaction))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *TransactionsHTTPClientImpl) GetTransaction(ctx context.Context, in *GetTransactionsRequest, opts ...http.CallOption) (*GetTransactionsReply, error) {
+	var out GetTransactionsReply
+	pattern := "/transactions/{id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationTransactionsGetTransaction))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
 }
 
 func (c *TransactionsHTTPClientImpl) ListTransactions(ctx context.Context, in *ListTransactionsRequest, opts ...http.CallOption) (*ListTransactionsReply, error) {

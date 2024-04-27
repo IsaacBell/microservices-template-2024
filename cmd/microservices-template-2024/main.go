@@ -60,13 +60,13 @@ func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
 func main() {
 	cwd, err := os.Getwd()
 	if err != nil {
-		fmt.Printf("Error getting current working directory: %v", err)
+		fmt.Println("Error getting current working directory: %v", err)
 	}
 
 	err = godotenv.Load()
 	if err != nil {
-		fmt.Printf("Current working directory: %s", cwd)
-		fmt.Printf("err loading .env: %v", err)
+		fmt.Println("Current working directory: %s", cwd)
+		fmt.Println("err loading .env: %v", err)
 
 		err = godotenv.Load("../../.env")
 		if err != nil {
@@ -102,7 +102,7 @@ func main() {
 
 	bc.Data.Database = &conf.Data_Database{
 		Driver: "postgresql",
-		Source: server.DbString(),
+		Source: server.DbConnString(),
 	}
 
 	app, cleanup, err := wireApp(bc.Server, bc.Data, logger)

@@ -25,10 +25,17 @@ import (
 )
 
 // NewGRPCServer new a gRPC server.
-func NewGRPCServer(c *conf.Server, greeter *service.GreeterService, user *service.UsersService, trans *service.TransactionsService, logger log.Logger) *grpc.Server {
+func NewGRPCServer(
+	c *conf.Server,
+	greeter *service.GreeterService,
+	user *service.UsersService,
+	trans *service.TransactionsService,
+	lias *service.LiabilitiesService,
+	logger log.Logger,
+) *grpc.Server {
 	exporter, err := stdouttrace.New(stdouttrace.WithWriter(ioutil.Discard))
 	if err != nil {
-		fmt.Printf("creating stdout exporter: %v", err)
+		fmt.Println("creating stdout exporter: %v", err)
 		panic(err)
 	}
 
@@ -64,5 +71,6 @@ func NewGRPCServer(c *conf.Server, greeter *service.GreeterService, user *servic
 	helloworld.RegisterGreeterServer(srv, greeter)
 	v1.RegisterUsersServer(srv, user)
 	v1.RegisterTransactionsServer(srv, trans)
+	v1.RegisterLiabilitiesServer(srv, lias)
 	return srv
 }

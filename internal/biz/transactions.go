@@ -44,12 +44,12 @@ type Transaction struct {
 	Synced                         bool                        `protobuf:"bytes,30,opt,name=synced,proto3" json:"synced,omitempty"`
 }
 
-func (t *Transaction) BeforeCreate(tx *gorm.DB) (*Transaction, error) {
+func (t *Transaction) BeforeCreate(tx *gorm.DB) error {
 	if t.ID == "" {
 		t.ID = uuid.New().String()
 	}
 
-	return t, nil
+	return nil
 }
 
 func TransactionToProtoData(trans *Transaction) *v1.Transaction {

@@ -1,0 +1,164 @@
+syntax = "proto3";
+
+package api.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "microservices-template-2024/api/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.v1";
+
+service Liabilities {
+	rpc GetLiability (GetLiabilityRequest) returns (GetLiabilityReply) {
+		option (google.api.http) = {
+      get: "/liabilities/{id}"
+    };
+	};
+  rpc GetLiabilities (GetLiabilitiesRequest) returns (GetLiabilitiesReply) {
+		option (google.api.http) = {
+      get: "/liabilities"
+    };
+	};
+}
+
+message Liability {
+	string id = 1;
+	oneof liability {
+    CreditLiability credit = 2;
+    MortgageLiability mortgage = 3;
+    StudentLiability student = 4;
+  }
+}
+
+message GetLiabilityRequest {
+  string id = 1;
+}
+
+message GetLiabilityReply {
+  bool ok = 1;
+  Liability liability = 2;
+	string id = 5;
+}
+
+message GetLiabilitiesRequest {
+	string owner = 1;
+	google.protobuf.Timestamp since = 2;
+}
+
+message GetLiabilitiesReply {
+  repeated CreditLiability credit = 1;
+  repeated MortgageLiability mortgage = 2;
+  repeated StudentLiability student = 3;
+	bool ok = 4;
+}
+
+message CreditLiability {
+	string id = 1;
+  repeated Apr aprs = 2;
+  bool is_overdue = 3;
+  float last_payment_amount = 4;
+  string last_payment_date = 5;
+  string last_statement_issue_date = 6;
+  float last_statement_balance = 7;
+  float minimum_payment_amount = 8;
+  string next_payment_due_date = 9;
+  string account_id = 10;
+}
+
+message Apr {
+  float apr_percentage = 1;
+  string apr_type = 2;
+  float balance_subject_to_apr = 3;
+  float interest_charge_amount = 4;
+	string id = 5;
+}
+
+message MortgageLiability {
+	string id = 1;
+	string account_number = 2;
+  float current_late_fee = 3;
+  float escrow_balance = 4;
+  bool has_pmi = 5;
+  bool has_prepayment_penalty = 6;
+  InterestRate interest_rate = 7;
+  float last_payment_amount = 8;
+  string last_payment_date = 9;
+  string loan_term = 10;
+  string loan_type_description = 11;
+  string maturity_date = 12;
+  float next_monthly_payment = 13;
+  string next_payment_due_date = 14;
+  string origination_date = 15;
+  float origination_principal_amount = 16;
+  float past_due_amount = 17;
+  PropertyAddress property_address = 18;
+  float ytd_interest_paid = 19;
+  float ytd_principal_paid = 20;
+  string account_id = 21;
+}
+
+message InterestRate {
+  float percentage = 1;
+  string type = 2;
+}
+
+message PropertyAddress {
+  string city = 1;
+  string country = 2;
+  string postal_code = 3;
+  string region = 4;
+  string street = 5;
+}
+
+message StudentLiability {
+	string id = 1;
+  string account_number = 2;
+  repeated string disbursement_dates = 3;
+  string expected_payoff_date = 4;
+  string guarantor = 5;
+  float interest_rate_percentage = 6;
+  bool is_overdue = 7;
+  float last_payment_amount = 8;
+  string last_payment_date = 9;
+  string last_statement_issue_date = 10;
+  string loan_name = 11;
+  LoanStatus loan_status = 12;
+  float minimum_payment_amount = 13;
+  string next_payment_due_date = 14;
+  string origination_date = 15;
+  float origination_principal_amount = 16;
+  float outstanding_interest_amount = 17;
+  string payment_reference_number = 18;
+  PslfStatus pslf_status = 19;
+  RepaymentPlan repayment_plan = 20;
+  string sequence_number = 21;
+  ServicerAddress servicer_address = 22;
+  float ytd_interest_paid = 23;
+  float ytd_principal_paid = 24;
+  string account_id = 25;
+}
+
+message LoanStatus {
+  string end_date = 1;
+  string type = 2;
+}
+
+message PslfStatus {
+  string estimated_eligibility_date = 1;
+  int32 payments_made = 2;
+  int32 payments_remaining = 3;
+}
+
+message RepaymentPlan {
+  string description = 1;
+  string type = 2;
+}
+
+message ServicerAddress {
+  string city = 1;
+  string country = 2;
+  string postal_code = 3;
+  string region = 4;
+  string street = 5;
+}

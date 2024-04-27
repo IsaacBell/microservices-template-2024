@@ -18,12 +18,12 @@ func automigrateDBTables(*gorm.DB) {
 	DB.AutoMigrate(&biz.Transaction{})
 }
 
-func AmountGT1000(db *gorm.DB) *gorm.DB {
-	return db.Where("amount > ?", 1000)
+func AmountGT(db *gorm.DB, amt int) *gorm.DB {
+	return db.Where("amount > ?", amt)
 }
 
-func AmountLT1000(db *gorm.DB) *gorm.DB {
-	return db.Where("amount < ?", 1000)
+func AmountLT(db *gorm.DB, amt int) *gorm.DB {
+	return db.Where("amount < ?", amt)
 }
 
 func Unsynced(db *gorm.DB) *gorm.DB {
@@ -34,7 +34,7 @@ func Synced(db *gorm.DB) *gorm.DB {
 	return db.Where("synced = ?", true)
 }
 
-func DbString() string {
+func DbConnString() string {
 	user := os.Getenv("COCKROACH_DB_USER")
 	pass := os.Getenv("COCKROACH_DB_PASS")
 	url := os.Getenv("COCKROACH_DB_URL")
@@ -47,7 +47,7 @@ func DbString() string {
 }
 
 func OpenDBConn() error {
-	dsn := DbString()
+	dsn := DbConnString()
 
 	var err error
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})

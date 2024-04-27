@@ -10,9 +10,9 @@ option java_package = "api.v1";
 
 service Transactions {
 	rpc CreateTransaction (CreateTransactionRequest) returns (CreateTransactionReply) {
-		// option (google.api.http) = {
-    //   post: "/transaction"
-    // };
+		option (google.api.http) = {
+      post: "/transaction"
+    };
 	};
 	rpc UpdateTransaction (UpdateTransactionsRequest) returns (UpdateTransactionsReply) {
 		// option (google.api.http) = {
@@ -25,9 +25,9 @@ service Transactions {
     // };
 	};
 	rpc GetTransaction (GetTransactionsRequest) returns (GetTransactionsReply) {
-		// option (google.api.http) = {
-    //   get: "/transactions/{id}"
-    // };
+		option (google.api.http) = {
+      get: "/transactions/{id}"
+    };
 	};
 	rpc SyncTransactions (ListTransactionsRequest) returns (stream GetTransactionsReply);
 	rpc ListTransactions (ListTransactionsRequest) returns (ListTransactionsReply) {
