@@ -38,11 +38,12 @@ func StartPrometheus(srv *http.Server) {
 // NewHTTPServer new an HTTP server.
 func NewHTTPServer(
 	c *conf.Server,
+	logger log.Logger,
+	// Each available service
 	greeter *service.GreeterService,
 	user *service.UsersService,
 	trans *service.TransactionsService,
 	lias *service.LiabilitiesService,
-	logger log.Logger,
 ) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(

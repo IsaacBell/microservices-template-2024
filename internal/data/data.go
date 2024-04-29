@@ -7,7 +7,7 @@ import (
 	"github.com/google/wire"
 )
 
-// ProviderSet is data providers.
+// Declare data repos available at runtime
 var ProviderSet = wire.NewSet(NewData, NewGreeterRepo, NewUserRepo, NewTransactionRepo, NewLiabilityRepo)
 
 // Data .

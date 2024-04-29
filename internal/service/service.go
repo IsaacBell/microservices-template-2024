@@ -2,5 +2,5 @@ package service
 
 import "github.com/google/wire"
 
-// ProviderSet is service providers.
+// Declare services available at runtime
 var ProviderSet = wire.NewSet(NewGreeterService, NewUsersService, NewTransactionsService, NewLiabilitiesService)

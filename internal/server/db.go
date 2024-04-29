@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"microservices-template-2024/internal/biz"
+	"microservices-template-2024/internal/conf"
 	"os"
 	"time"
 
@@ -34,6 +35,32 @@ func Synced(db *gorm.DB) *gorm.DB {
 	return db.Where("synced = ?", true)
 }
 
+type Category struct {
+	Primary     string
+	Detailed    string
+	Description string
+}
+
+func SeedCategories(db *gorm.DB) error {
+	records := conf.PersonalFinanceCategories()
+	categories := make([]*Category, len(records))
+
+	for _, record := range records {
+		category := Category{
+			Primary:     record[0],
+			Detailed:    record[1],
+			Description: record[2],
+		}
+		categories = append(categories, &category)
+	}
+
+	if err := db.Create(&categories).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func DbConnString() string {
 	user := os.Getenv("COCKROACH_DB_USER")
 	pass := os.Getenv("COCKROACH_DB_PASS")
@@ -61,6 +88,9 @@ func OpenDBConn() error {
 	fmt.Println(now)
 
 	automigrateDBTables(DB)
+	if err := SeedCategories(DB); err != nil {
+		fmt.Println("Error seeding category data: ", err)
+	}
 
 	return nil
 }

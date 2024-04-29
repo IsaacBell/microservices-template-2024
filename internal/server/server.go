@@ -4,5 +4,5 @@ import (
 	"github.com/google/wire"
 )
 
-// ProviderSet is server providers.
+// Declare server types to run concurrently at runtime
 var ProviderSet = wire.NewSet(NewGRPCServer, NewHTTPServer)

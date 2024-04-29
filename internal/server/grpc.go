@@ -24,14 +24,14 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-// NewGRPCServer new a gRPC server.
 func NewGRPCServer(
 	c *conf.Server,
+	logger log.Logger,
+	// Each available service
 	greeter *service.GreeterService,
 	user *service.UsersService,
 	trans *service.TransactionsService,
 	lias *service.LiabilitiesService,
-	logger log.Logger,
 ) *grpc.Server {
 	exporter, err := stdouttrace.New(stdouttrace.WithWriter(ioutil.Discard))
 	if err != nil {

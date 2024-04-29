@@ -154,8 +154,6 @@ func (uc *TransactionAction) CreateTransaction(ctx context.Context, t *Transacti
 	return res, err
 }
 
-// *fmt.wrapError {msg: "unsupported data type: &[]", err: error(*errors.errorString) ...}
-
 func (uc *TransactionAction) UpdateTransaction(ctx context.Context, t *Transaction) (*Transaction, error) {
 	uc.log.WithContext(ctx).Infof("UpdateTransaction: %s", t.TransactionID)
 	res, err := uc.repo.Update(ctx, t)

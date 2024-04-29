@@ -33,13 +33,7 @@ var (
 )
 
 func init() {
-	var file string
-	_, err := os.Stat("./configs/config.yaml")
-	if os.IsNotExist(err) {
-		file = "../../configs/config.yaml"
-	} else {
-		file = "./configs/config.yaml"
-	}
+	file := conf.ConfigDir() + "config.yaml"
 	flag.StringVar(&flagconf, "conf", file, "config path, eg: -conf config.yaml")
 }
 

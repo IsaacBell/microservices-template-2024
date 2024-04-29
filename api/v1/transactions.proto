@@ -37,6 +37,12 @@ service Transactions {
 	};
 }
 
+message Category {
+  string id = 1;
+  string primary = 2;
+  string 
+}
+
 message Account {
   string account_id = 1;
   Balances balances = 2;
