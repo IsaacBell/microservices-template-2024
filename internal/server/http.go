@@ -35,11 +35,10 @@ func StartPrometheus(srv *http.Server) {
 	srv.Handle("/metrics", promHttp.Handler())
 }
 
-// NewHTTPServer new an HTTP server.
 func NewHTTPServer(
 	c *conf.Server,
 	logger log.Logger,
-	// Each available service
+	// Each available runtime service
 	greeter *service.GreeterService,
 	user *service.UsersService,
 	trans *service.TransactionsService,

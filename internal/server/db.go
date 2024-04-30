@@ -17,6 +17,8 @@ var DB *gorm.DB
 func automigrateDBTables(*gorm.DB) {
 	DB.AutoMigrate(&biz.User{})
 	DB.AutoMigrate(&biz.Transaction{})
+	DB.AutoMigrate(&Exchange{})
+	DB.AutoMigrate(&Category{})
 }
 
 func AmountGT(db *gorm.DB, amt int) *gorm.DB {
@@ -36,25 +38,87 @@ func Synced(db *gorm.DB) *gorm.DB {
 }
 
 type Category struct {
+	gorm.Model
 	Primary     string
 	Detailed    string
 	Description string
 }
 
+type Exchange struct {
+	gorm.Model
+	Code        string
+	Name        string
+	Mic         string
+	Timezone    string
+	Premarket   string
+	Hour        string
+	Postmarket  string
+	CloseDate   string
+	Country     string
+	CountryName string
+	Source      string
+}
+
 func SeedCategories(db *gorm.DB) error {
+	var count int64
+	if err := db.Model(&Exchange{}).Count(&count).Error; err != nil {
+		return err
+	}
+
+	if count > 0 {
+		return nil
+	}
+
 	records := conf.PersonalFinanceCategories()
 	categories := make([]*Category, len(records))
 
-	for _, record := range records {
+	for i, record := range records {
 		category := Category{
 			Primary:     record[0],
 			Detailed:    record[1],
 			Description: record[2],
 		}
-		categories = append(categories, &category)
+		categories[i] = &category
 	}
 
 	if err := db.Create(&categories).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func SeedExchanges(db *gorm.DB) error {
+	var count int64
+	if err := db.Model(&Exchange{}).Count(&count).Error; err != nil {
+		return err
+	}
+
+	if count > 0 {
+		return nil
+	}
+
+	records := conf.FinnhubExchanges()
+	n := len(records)
+	exchanges := make([]*Exchange, 0, n)
+
+	for _, exc := range records {
+		exchanges = append(exchanges, &Exchange{
+			Code:        exc[0],
+			Name:        exc[1],
+			Mic:         exc[2],
+			Timezone:    exc[3],
+			Premarket:   exc[4],
+			Hour:        exc[5],
+			Postmarket:  exc[6],
+			CloseDate:   exc[7],
+			Country:     exc[8],
+			CountryName: exc[9],
+			Source:      exc[10],
+		})
+	}
+
+	if err := db.Create(&exchanges).Error; err != nil {
 		return err
 	}
 
@@ -89,7 +153,10 @@ func OpenDBConn() error {
 
 	automigrateDBTables(DB)
 	if err := SeedCategories(DB); err != nil {
-		fmt.Println("Error seeding category data: ", err)
+		log.Fatalln("Error seeding category data: ", err)
+	}
+	if err := SeedExchanges(DB); err != nil {
+		log.Fatalln("Error seeding exchange data: ", err)
 	}
 
 	return nil

@@ -27,7 +27,7 @@ import (
 func NewGRPCServer(
 	c *conf.Server,
 	logger log.Logger,
-	// Each available service
+	// Each available runtime service
 	greeter *service.GreeterService,
 	user *service.UsersService,
 	trans *service.TransactionsService,

@@ -1,0 +1,129 @@
+syntax = "proto3";
+
+package api.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "microservices-template-2024/api/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.v1";
+
+service Finance {
+  rpc GetStockQuote(GetStockQuoteRequest) returns (GetStockQuoteReply) {
+    option (google.api.http) = {
+      get: "/quote/{symbol}"
+    };
+  };
+  rpc GetUSASpending(GetUSASpendingRequest) returns (GetUSASpendingReply) {
+    option (google.api.http) = {
+      get: "/stock/usa-spending/{symbol}"
+    };
+  };
+  rpc GetSenateLobbying(GetSenateLobbyingRequest) returns (GetSenateLobbyingReply) {
+    option (google.api.http) = {
+      get: "/stock/lobbying/{symbol}"
+    };
+  };
+  rpc WatchTrades(SyncTradesRequest) returns (stream SyncTradesReply);
+}
+
+message StockQuote {
+	double price = 1;
+  double change = 2;
+  double percent_change = 3;
+  double high = 4;
+  double low = 5;
+  double open = 6;
+  double last_close = 7;
+  string symbol = 8;
+}
+
+message GetStockQuoteRequest {
+  string symbol = 1; // symbol, name, isin, or cusip
+}
+
+message GetStockQuoteReply {
+  string symbol = 1;
+	StockQuote quote = 2;
+}
+
+message GetUSASpendingRequest {
+  string symbol = 1; // Symbol (required)
+  string from = 2;   // From date YYYY-MM-DD (required), filter for actionDate
+  string to = 3;     // To date YYYY-MM-DD (required), filter for actionDate
+}
+
+message GetUSASpendingReply {
+  repeated USASpendingData data = 1; // Array of government's spending data points
+  string symbol = 2;                // Symbol
+}
+
+message USASpendingData {
+  string symbol = 1;                          // Symbol
+  string recipient_name = 2;                  // Company's name
+  string recipient_parent_name = 3;           // Company's parent name
+  string country = 4;                         // Recipient's country
+  double total_value = 5;                     // Income reported by lobbying firms
+  string action_date = 6;                     // Period
+  string performance_start_date = 7;          // Performance start date
+  string performance_end_date = 8;            // Performance end date
+  string awarding_agency_name = 9;            // Award agency
+  string awarding_sub_agency_name = 10;       // Award sub-agency
+  string awarding_office_name = 11;           // Award office name
+  string performance_country = 12;            // Performance country
+  string performance_city = 13;               // Performance city
+  string performance_county = 14;             // Performance county
+  string performance_state = 15;              // Performance state
+  string performance_zip_code = 16;           // Performance zip code
+  string performance_congressional_district = 17; // Performance congressional district
+  string award_description = 18;              // Description
+  string naics_code = 19;                     // NAICS code
+  string permalink = 20;                      // Permalink
+}
+
+message GetSenateLobbyingRequest {
+  string symbol = 1; // Symbol (required)
+  string from = 2;   // From date YYYY-MM-DD (required)
+  string to = 3;     // To date YYYY-MM-DD (required)
+}
+
+message GetSenateLobbyingReply {
+  repeated SenateLobbyingData data = 1; // Array of lobbying activities
+  string symbol = 2;                   // Symbol
+}
+
+message SenateLobbyingData {
+  string client_id = 1;            // Client ID
+  string country = 2;              // Country
+  string date = 3;                 // Date
+  string description = 4;          // Description
+  string document_url = 5;         // Document's URL
+  double expenses = 6;             // Expenses reported by the company
+  string house_registrant_id = 7;  // House registrant ID
+  double income = 8;               // Income reported by lobbying firms
+  string name = 9;                 // Company's name
+  string period = 10;              // Period
+  string posted_name = 11;         // Posted name
+  string registrant_id = 12;       // Registrant ID
+  string senate_id = 13;           // Senate ID
+  string symbol = 14;              // Symbol
+  int32 year = 15;                 // Year
+}
+
+message SyncTradesRequest {
+	string symbol = 1;
+}
+message SyncTradesReply {}
+
+message Stock {
+  string currency = 1;
+  string description = 2;
+  string display_symbol = 3;
+  string figi = 4;
+  optional string isin = 5;
+  string mic = 6;
+  optional string share_class_figi = 7;
+  string symbol = 8;
+  optional string symbol2 = 9;
+  string type = 10;
+}

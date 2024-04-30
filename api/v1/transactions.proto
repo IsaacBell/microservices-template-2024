@@ -40,7 +40,8 @@ service Transactions {
 message Category {
   string id = 1;
   string primary = 2;
-  string 
+  string detailed = 3;
+  string description = 4;
 }
 
 message Account {

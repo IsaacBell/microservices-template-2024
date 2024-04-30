@@ -5,4 +5,6 @@ import (
 )
 
 // Declare server types to run concurrently at runtime
-var ProviderSet = wire.NewSet(NewGRPCServer, NewHTTPServer)
+var ProviderSet = wire.NewSet(
+	NewGRPCServer, NewHTTPServer,
+)

@@ -65,6 +65,76 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.v1.GetLiabilityReply'
+    /quote/{symbol}:
+        get:
+            tags:
+                - Finance
+            operationId: Finance_GetStockQuote
+            parameters:
+                - name: symbol
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.GetStockQuoteReply'
+    /stock/lobbying/{symbol}:
+        get:
+            tags:
+                - Finance
+            operationId: Finance_GetSenateLobbying
+            parameters:
+                - name: symbol
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: from
+                  in: query
+                  schema:
+                    type: string
+                - name: to
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.GetSenateLobbyingReply'
+    /stock/usa-spending/{symbol}:
+        get:
+            tags:
+                - Finance
+            operationId: Finance_GetUSASpending
+            parameters:
+                - name: symbol
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: from
+                  in: query
+                  schema:
+                    type: string
+                - name: to
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.GetUSASpendingReply'
     /transaction:
         post:
             tags:
@@ -427,11 +497,36 @@ components:
                     $ref: '#/components/schemas/api.v1.Liability'
                 id:
                     type: string
+        api.v1.GetSenateLobbyingReply:
+            type: object
+            properties:
+                data:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.v1.SenateLobbyingData'
+                symbol:
+                    type: string
+        api.v1.GetStockQuoteReply:
+            type: object
+            properties:
+                symbol:
+                    type: string
+                quote:
+                    $ref: '#/components/schemas/api.v1.StockQuote'
         api.v1.GetTransactionsReply:
             type: object
             properties:
                 transaction:
                     $ref: '#/components/schemas/api.v1.Transaction'
+        api.v1.GetUSASpendingReply:
+            type: object
+            properties:
+                data:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.v1.USASpendingData'
+                symbol:
+                    type: string
         api.v1.GetUserReply:
             type: object
             properties:
@@ -607,6 +702,42 @@ components:
                     type: string
                 type:
                     type: string
+        api.v1.SenateLobbyingData:
+            type: object
+            properties:
+                clientId:
+                    type: string
+                country:
+                    type: string
+                date:
+                    type: string
+                description:
+                    type: string
+                documentUrl:
+                    type: string
+                expenses:
+                    type: number
+                    format: double
+                houseRegistrantId:
+                    type: string
+                income:
+                    type: number
+                    format: double
+                name:
+                    type: string
+                period:
+                    type: string
+                postedName:
+                    type: string
+                registrantId:
+                    type: string
+                senateId:
+                    type: string
+                symbol:
+                    type: string
+                year:
+                    type: integer
+                    format: int32
         api.v1.ServicerAddress:
             type: object
             properties:
@@ -619,6 +750,32 @@ components:
                 region:
                     type: string
                 street:
+                    type: string
+        api.v1.StockQuote:
+            type: object
+            properties:
+                price:
+                    type: number
+                    format: double
+                change:
+                    type: number
+                    format: double
+                percentChange:
+                    type: number
+                    format: double
+                high:
+                    type: number
+                    format: double
+                low:
+                    type: number
+                    format: double
+                open:
+                    type: number
+                    format: double
+                lastClose:
+                    type: number
+                    format: double
+                symbol:
                     type: string
         api.v1.StudentLiability:
             type: object
@@ -750,6 +907,50 @@ components:
                     type: string
                 synced:
                     type: boolean
+        api.v1.USASpendingData:
+            type: object
+            properties:
+                symbol:
+                    type: string
+                recipientName:
+                    type: string
+                recipientParentName:
+                    type: string
+                country:
+                    type: string
+                totalValue:
+                    type: number
+                    format: double
+                actionDate:
+                    type: string
+                performanceStartDate:
+                    type: string
+                performanceEndDate:
+                    type: string
+                awardingAgencyName:
+                    type: string
+                awardingSubAgencyName:
+                    type: string
+                awardingOfficeName:
+                    type: string
+                performanceCountry:
+                    type: string
+                performanceCity:
+                    type: string
+                performanceCounty:
+                    type: string
+                performanceState:
+                    type: string
+                performanceZipCode:
+                    type: string
+                performanceCongressionalDistrict:
+                    type: string
+                awardDescription:
+                    type: string
+                naicsCode:
+                    type: string
+                permalink:
+                    type: string
         api.v1.User:
             type: object
             properties:
@@ -801,6 +1002,7 @@ components:
                     type: string
             description: The response message containing the greetings
 tags:
+    - name: Finance
     - name: Greeter
       description: The greeting service definition.
     - name: Liabilities
