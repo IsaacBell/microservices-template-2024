@@ -99,6 +99,11 @@ func main() {
 		Source: server.DbConnString(),
 	}
 
+	pass := os.Getenv("UPSTASH_REDIS_PASS")
+	url := os.Getenv("UPSTASH_REDIS_URL")
+	path := "rediss://default:" + pass + "@" + url
+	bc.Data.Redis.Addr = path
+
 	app, cleanup, err := wireApp(bc.Server, bc.Data, logger)
 	if err != nil {
 		panic(err)
@@ -108,6 +113,8 @@ func main() {
 	if err := server.OpenDBConn(); err != nil {
 		panic(err)
 	}
+
+	fmt.Println("::::: Core Service online :::::")
 
 	// start and wait for stop signal
 	if err := app.Run(); err != nil {

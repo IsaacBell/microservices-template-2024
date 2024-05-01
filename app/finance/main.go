@@ -138,6 +138,11 @@ func main() {
 		Redis:    bc.Data.Redis,
 	}
 
+	pass := os.Getenv("UPSTASH_REDIS_PASS")
+	url := os.Getenv("UPSTASH_REDIS_URL")
+	path := "rediss://default:" + pass + "@" + url
+	bc.Data.Redis.Addr = path
+
 	app, cleanup, err := wireApp(servers, data, logger)
 	if err != nil {
 		panic(err)
@@ -149,7 +154,7 @@ func main() {
 	}
 
 	finance_util.InitFinnhubClient()
-	fmt.Println("::::: Core service online :::::")
+	fmt.Println("::::: Finance API online :::::")
 	// start and wait for stop signal
 	if err := app.Run(); err != nil {
 		panic(err)

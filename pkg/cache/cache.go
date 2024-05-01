@@ -1,5 +1,9 @@
 package cache
 
-import "github.com/google/wire"
+import (
+	cache_provider "microservices-template-2024/pkg/cache/provider"
 
-var ProviderSet = wire.NewSet(CacheProvider)
+	"github.com/google/wire"
+)
+
+var ProviderSet = wire.NewSet(cache_provider.CacheProvider)
