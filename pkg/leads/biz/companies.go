@@ -22,7 +22,7 @@ type Company struct {
 	Zipcode     string              `protobuf:"bytes,8,opt,name=zipcode,proto3" json:"zipcode,omitempty"`
 	Country     string              `protobuf:"bytes,9,opt,name=country,proto3" json:"country,omitempty"`
 	Name        string              `protobuf:"bytes,10,opt,name=name,proto3" json:"name,omitempty"`
-	Website     string              `protobuf:"bytes,11,opt,name=website,proto3" json:"website,omitempty"`
+	Domain      string              `protobuf:"bytes,11,opt,name=domain,proto3" json:"domain,omitempty"`
 	Industry    string              `protobuf:"bytes,12,opt,name=industry,proto3" json:"industry,omitempty"`
 	Description string              `protobuf:"bytes,13,opt,name=description,proto3" json:"description,omitempty"`
 	Type        leadsV1.CompanyType `protobuf:"varint,14,opt,name=type,proto3,enum=api.v1.CompanyType" json:"type,omitempty"`
@@ -54,7 +54,7 @@ func CompanyToProtoData(company *Company) *leadsV1.Company {
 		Zipcode:     company.Zipcode,
 		Country:     company.Country,
 		Name:        company.Name,
-		Website:     company.Website,
+		Domain:      company.Domain,
 		Industry:    company.Industry,
 		Description: company.Description,
 		Type:        company.Type,
@@ -75,7 +75,7 @@ func ProtoToCompanyData(input *leadsV1.Company) *Company {
 		Zipcode:     input.Zipcode,
 		Country:     input.Country,
 		Name:        input.Name,
-		Website:     input.Website,
+		Domain:      input.Domain,
 		Industry:    input.Industry,
 		Description: input.Description,
 		Type:        input.Type,

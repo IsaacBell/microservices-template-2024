@@ -64,13 +64,17 @@ proto:
 	make config;
 	make generate;
 
-.PHONY: all fin execute
+.PHONY: all fin b2b execute
 all: fin execute
 	wait
 
 .PHONY: fin
 fin:
 	./bin/finance &
+
+.PHONY: b2b
+fin:
+	./bin/b2b &
 
 .PHONY: execute
 execute:

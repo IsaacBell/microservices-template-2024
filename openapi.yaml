@@ -145,7 +145,7 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: lead.company.website
+                - name: lead.company.domain
                   in: query
                   schema:
                     type: string
@@ -693,7 +693,7 @@ components:
                     type: string
                 name:
                     type: string
-                website:
+                domain:
                     type: string
                 industry:
                     type: string

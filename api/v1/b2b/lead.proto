@@ -144,7 +144,7 @@ message Company {
 	string zipcode = 8;
 	string country = 9;
 	string name = 10;
-	string website = 11;
+	string domain = 11;
 	string industry = 12;
 	string description = 13;
 	CompanyType type = 14;
