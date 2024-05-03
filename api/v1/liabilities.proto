@@ -29,6 +29,8 @@ message Liability {
     MortgageLiability mortgage = 3;
     StudentLiability student = 4;
   }
+  bool deleted = 19;
+  bool synced = 20;
 }
 
 message GetLiabilityRequest {

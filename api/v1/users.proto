@@ -40,6 +40,22 @@ message User {
   string timezone = 15;
   string locale = 16;
   map<string, string> metadata = 17;
+  Device device = 18;
+  bool deleted = 19;
+}
+
+enum DeviceType {
+  user = 0;
+}
+
+message Device {
+  string id = 1;
+  DeviceType type = 2;
+  string os = 3;
+  string os_version = 4;
+  string platform = 5;
+  string brand = 6;
+  string model = 7;
 }
 
 message CreateUserRequest {

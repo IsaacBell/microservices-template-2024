@@ -6,6 +6,36 @@ info:
     title: ""
     version: 0.0.1
 paths:
+    /companies:
+        get:
+            tags:
+                - Companies
+            operationId: Companies_ListCompanys
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.ListCompaniesReply'
+    /company/{id}:
+        get:
+            tags:
+                - Companies
+            operationId: Companies_GetCompany
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.GetCompanyReply'
     /helloworld/{name}:
         get:
             tags:
@@ -25,6 +55,221 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/helloworld.v1.HelloReply'
+    /lead:
+        post:
+            tags:
+                - Leads
+            operationId: Leads_CreateLead
+            parameters:
+                - name: lead.id
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.email
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.address1
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.address2
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.phone
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.city
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.state
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.zipcode
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.country
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.title
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.companyId
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.company.id
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.company.email
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.company.address1
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.company.address2
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.company.phone
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.company.city
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.company.state
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.company.zipcode
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.company.country
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.company.name
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.company.website
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.company.industry
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.company.description
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.company.type
+                  in: query
+                  schema:
+                    type: integer
+                    format: enum
+                - name: lead.company.deleted
+                  in: query
+                  schema:
+                    type: boolean
+                - name: lead.company.synced
+                  in: query
+                  schema:
+                    type: boolean
+                - name: lead.company.employeeCount
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: lead.company.yearFounded
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: lead.company.linkedinUrl
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.company.twitterUrl
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.company.facebookUrl
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.position
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.timezone
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.owner
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.summary
+                  in: query
+                  schema:
+                    type: string
+                - name: lead.deleted
+                  in: query
+                  schema:
+                    type: boolean
+                - name: lead.synced
+                  in: query
+                  schema:
+                    type: boolean
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.CreateLeadReply'
+    /lead/{id}:
+        get:
+            tags:
+                - Leads
+            operationId: Leads_GetLead
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.GetLeadReply'
+        delete:
+            tags:
+                - Leads
+            operationId: Leads_DeleteLead
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.DeleteLeadReply'
+    /leads:
+        get:
+            tags:
+                - Leads
+            operationId: Leads_ListLeads
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.ListLeadsReply'
     /liabilities:
         get:
             tags:
@@ -326,6 +571,10 @@ paths:
                   in: query
                   schema:
                     type: boolean
+                - name: transaction.deleted
+                  in: query
+                  schema:
+                    type: boolean
             responses:
                 "200":
                     description: OK
@@ -421,6 +670,54 @@ components:
                     format: float
                 id:
                     type: string
+        api.v1.Company:
+            type: object
+            properties:
+                id:
+                    type: string
+                email:
+                    type: string
+                address1:
+                    type: string
+                address2:
+                    type: string
+                phone:
+                    type: string
+                city:
+                    type: string
+                state:
+                    type: string
+                zipcode:
+                    type: string
+                country:
+                    type: string
+                name:
+                    type: string
+                website:
+                    type: string
+                industry:
+                    type: string
+                description:
+                    type: string
+                type:
+                    type: integer
+                    format: enum
+                deleted:
+                    type: boolean
+                synced:
+                    type: boolean
+                employeeCount:
+                    type: integer
+                    format: int32
+                yearFounded:
+                    type: integer
+                    format: int32
+                linkedinUrl:
+                    type: string
+                twitterUrl:
+                    type: string
+                facebookUrl:
+                    type: string
         api.v1.Counterparty:
             type: object
             properties:
@@ -435,6 +732,24 @@ components:
                 entityId:
                     type: string
                 confidenceLevel:
+                    type: string
+        api.v1.CreateCompanyReply:
+            type: object
+            properties:
+                company:
+                    $ref: '#/components/schemas/api.v1.Company'
+                ok:
+                    type: boolean
+                id:
+                    type: string
+        api.v1.CreateLeadReply:
+            type: object
+            properties:
+                lead:
+                    $ref: '#/components/schemas/api.v1.Lead'
+                ok:
+                    type: boolean
+                id:
                     type: string
         api.v1.CreateTransactionReply:
             type: object
@@ -470,6 +785,56 @@ components:
                 nextPaymentDueDate:
                     type: string
                 accountId:
+                    type: string
+        api.v1.DeleteCompanyReply:
+            type: object
+            properties:
+                id:
+                    type: string
+                ok:
+                    type: boolean
+        api.v1.DeleteLeadReply:
+            type: object
+            properties:
+                id:
+                    type: string
+                ok:
+                    type: boolean
+        api.v1.Device:
+            type: object
+            properties:
+                id:
+                    type: string
+                type:
+                    type: integer
+                    format: enum
+                os:
+                    type: string
+                osVersion:
+                    type: string
+                platform:
+                    type: string
+                brand:
+                    type: string
+                model:
+                    type: string
+        api.v1.GetCompanyReply:
+            type: object
+            properties:
+                ok:
+                    type: boolean
+                company:
+                    $ref: '#/components/schemas/api.v1.Company'
+                id:
+                    type: string
+        api.v1.GetLeadReply:
+            type: object
+            properties:
+                ok:
+                    type: boolean
+                lead:
+                    $ref: '#/components/schemas/api.v1.Lead'
+                id:
                     type: string
         api.v1.GetLiabilitiesReply:
             type: object
@@ -540,6 +905,45 @@ components:
                     format: float
                 type:
                     type: string
+        api.v1.Lead:
+            type: object
+            properties:
+                id:
+                    type: string
+                email:
+                    type: string
+                address1:
+                    type: string
+                address2:
+                    type: string
+                phone:
+                    type: string
+                city:
+                    type: string
+                state:
+                    type: string
+                zipcode:
+                    type: string
+                country:
+                    type: string
+                title:
+                    type: string
+                companyId:
+                    type: string
+                company:
+                    $ref: '#/components/schemas/api.v1.Company'
+                position:
+                    type: string
+                timezone:
+                    type: string
+                owner:
+                    type: string
+                summary:
+                    type: string
+                deleted:
+                    type: boolean
+                synced:
+                    type: boolean
         api.v1.Liability:
             type: object
             properties:
@@ -551,6 +955,16 @@ components:
                     $ref: '#/components/schemas/api.v1.MortgageLiability'
                 student:
                     $ref: '#/components/schemas/api.v1.StudentLiability'
+                deleted:
+                    type: boolean
+                synced:
+                    type: boolean
+        api.v1.ListCompaniesReply:
+            type: object
+            properties: {}
+        api.v1.ListLeadsReply:
+            type: object
+            properties: {}
         api.v1.ListTransactionsReply:
             type: object
             properties:
@@ -907,6 +1321,8 @@ components:
                     type: string
                 synced:
                     type: boolean
+                deleted:
+                    type: boolean
         api.v1.USASpendingData:
             type: object
             properties:
@@ -995,6 +1411,10 @@ components:
                     type: object
                     additionalProperties:
                         type: string
+                device:
+                    $ref: '#/components/schemas/api.v1.Device'
+                deleted:
+                    type: boolean
         helloworld.v1.HelloReply:
             type: object
             properties:
@@ -1002,9 +1422,11 @@ components:
                     type: string
             description: The response message containing the greetings
 tags:
+    - name: Companies
     - name: Finance
     - name: Greeter
       description: The greeting service definition.
+    - name: Leads
     - name: Liabilities
     - name: Transactions
     - name: Users

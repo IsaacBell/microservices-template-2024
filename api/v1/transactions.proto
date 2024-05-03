@@ -130,6 +130,7 @@ message Transaction {
   string transaction_type = 28;
   string unofficial_currency_code = 29;
   bool synced = 30;
+  bool deleted = 31;
 }
 
 message Item {

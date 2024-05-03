@@ -30,6 +30,8 @@ func (r *userRepo) Save(ctx context.Context, u *biz.User) (*biz.User, error) {
 		}
 	}
 
+	u.Deleted = false
+
 	if err := server.DB.Omit("ID").FirstOrCreate(&u).Error; err != nil {
 		return nil, err
 	}

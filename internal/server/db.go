@@ -29,6 +29,10 @@ func AmountLT(db *gorm.DB, amt int) *gorm.DB {
 	return db.Where("amount < ?", amt)
 }
 
+func Active(db *gorm.DB) *gorm.DB {
+	return db.Where("deleted = ?", false)
+}
+
 func Unsynced(db *gorm.DB) *gorm.DB {
 	return db.Where("synced = ?", false)
 }

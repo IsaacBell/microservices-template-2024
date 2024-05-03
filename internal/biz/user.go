@@ -35,6 +35,7 @@ type User struct {
 	Timezone string `protobuf:"bytes,15,opt,name=timezone,proto3" json:"timezone,omitempty"`
 	Locale   string `protobuf:"bytes,16,opt,name=locale,proto3" json:"locale,omitempty"`
 	// Metadata map[string]string `protobuf:"bytes,17,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Deleted bool `protobuf:"bytes,19,name=deleted,proto3" json:"locale,omitempty"`
 }
 
 func (u User) BeforeCreate(tx *gorm.DB) error {
@@ -65,6 +66,7 @@ func UserToProtoData(user *User) *v1.User {
 		Timezone: user.Timezone,
 		Locale:   user.Locale,
 		// Metadata: user.Metadata,
+		Deleted: user.Deleted,
 	}
 }
 
@@ -95,6 +97,7 @@ func ProtoToUserData(input *v1.User) *User {
 	user.Timezone = input.Timezone
 	user.Locale = input.Locale
 	// user.Metadata = input.Metadata
+	user.Deleted = input.Deleted
 
 	return user
 }

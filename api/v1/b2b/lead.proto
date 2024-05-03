@@ -1,0 +1,203 @@
+syntax = "proto3";
+
+package api.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "microservices-template-2024/api/v1/b2b;v1";
+option java_multiple_files = true;
+option java_package = "api.v1";
+
+service Companies {
+	rpc GetCompany (GetCompanyRequest) returns (GetCompanyReply) {
+		option (google.api.http) = {
+      get: "/company/{id}"
+    };
+	};
+	rpc CreateCompany (CreateCompanyRequest) returns (CreateCompanyReply) {
+		option (google.api.http) = {
+      post: "/lead"
+    };
+	};
+	rpc UpdateCompany (UpdateCompanyRequest) returns (UpdateCompanyReply);
+	rpc DeleteCompany (DeleteCompanyRequest) returns (DeleteCompanyReply) {
+		option (google.api.http) = {
+      delete: "/lead/{id}"
+    };
+	};
+	rpc ListCompanys (ListCompaniesRequest) returns (ListCompaniesReply) {
+		option (google.api.http) = {
+      get: "/companies"
+    };
+	};
+}
+
+service Leads {
+	rpc CreateLead (CreateLeadRequest) returns (CreateLeadReply) {
+		option (google.api.http) = {
+      post: "/lead"
+    };
+	};
+	rpc UpdateLead (UpdateLeadRequest) returns (UpdateLeadReply);
+	rpc DeleteLead (DeleteLeadRequest) returns (DeleteLeadReply) {
+		option (google.api.http) = {
+      delete: "/lead/{id}"
+    };
+	};
+	rpc GetLead (GetLeadRequest) returns (GetLeadReply) {
+		option (google.api.http) = {
+      get: "/lead/{id}"
+    };
+	};
+	rpc ListLeads (ListLeadsRequest) returns (ListLeadsReply) {
+		option (google.api.http) = {
+      get: "/leads"
+    };
+	};
+}
+
+message CreateLeadRequest {
+	Lead lead = 1;
+}
+message CreateLeadReply {
+	Lead lead = 1;
+	bool ok = 2;
+	string id = 3;
+}
+
+message CreateCompanyRequest {
+	Company company = 1;
+}
+message CreateCompanyReply {
+	Company company = 1;
+	bool ok = 2;
+	string id = 3;
+}
+
+message UpdateLeadRequest {
+	Lead lead = 1;
+}
+message UpdateLeadReply {
+	bool ok = 1;
+	string id = 2;
+}
+message UpdateCompanyRequest {
+	Company company = 1;
+}
+message UpdateCompanyReply {
+	bool ok = 1;
+	string id = 2;
+}
+
+message DeleteLeadRequest {
+	string id = 1;
+}
+message DeleteLeadReply {
+	string id = 1;
+	bool ok = 2;
+}
+
+message DeleteCompanyRequest {
+	string id = 1;
+}
+message DeleteCompanyReply {
+	string id = 1;
+	bool ok = 2;
+}
+
+message GetLeadRequest {
+	string id = 1;
+}
+message GetLeadReply {
+	bool ok = 1;
+	Lead lead = 2;
+	string id = 3;
+}
+message GetCompanyRequest {
+	string id = 1;
+}
+message GetCompanyReply {
+	bool ok = 1;
+	Company company = 2;
+	string id = 3;
+}
+
+message ListLeadsRequest {}
+message ListLeadsReply {}
+message ListCompaniesRequest {}
+message ListCompaniesReply {}
+
+enum CompanyType {
+	platform = 0; // platform user
+	prospect = 1; // targeted prospect
+}
+
+message Company {
+	string id = 1;
+	string email = 2;
+	string address1 = 3;
+	string address2 = 4;
+	string phone = 5;
+	string city = 6;
+	string state = 7;
+	string zipcode = 8;
+	string country = 9;
+	string name = 10;
+	string website = 11;
+	string industry = 12;
+	string description = 13;
+	CompanyType type = 14;
+	bool deleted = 15;
+	bool synced = 16;
+	int32 employee_count = 17;
+	int32 year_founded = 18;
+	string linkedin_url = 19;
+	string twitter_url = 20;
+	string facebook_url = 21;
+}
+
+message Lead {
+	string id = 1;
+	string email = 2;
+	string address1 = 3;
+	string address2 = 4;
+	string phone = 5;
+	string city = 6;
+	string state = 7;
+	string zipcode = 8;
+	string country = 9;
+	string title = 10;
+	string company_id = 11;
+	Company company = 12;
+	string position = 13;
+	string timezone = 14;
+	string owner = 15;
+	string summary = 16;
+	bool deleted = 17;
+	bool synced = 18;
+}
+
+message DoNotContact {
+	string id = 1;
+	Lead lead = 2;
+	string reason = 3;
+	google.protobuf.Timestamp added_at = 4;
+	repeated string comments = 5;
+}
+
+enum Interval {
+	day = 0;
+	week = 1;
+	month = 2;
+}
+
+message ContactFrequency {
+	int32 num = 1;
+	Interval interval = 2;
+	google.protobuf.Timestamp freq_time = 3;
+	google.protobuf.Timestamp added_at = 4;
+	string lead_id = 5;
+	Lead lead = 6;
+	bool global = 7;
+}
