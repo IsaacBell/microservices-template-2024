@@ -32,6 +32,7 @@ func NewGRPCServer(
 	user *service.UsersService,
 	trans *service.TransactionsService,
 	lias *service.LiabilitiesService,
+	log *service.LogService,
 ) *grpc.Server {
 	exporter, err := stdouttrace.New(stdouttrace.WithWriter(ioutil.Discard))
 	if err != nil {
@@ -72,5 +73,6 @@ func NewGRPCServer(
 	v1.RegisterUsersServer(srv, user)
 	v1.RegisterTransactionsServer(srv, trans)
 	v1.RegisterLiabilitiesServer(srv, lias)
+	v1.RegisterLogServer(srv, log)
 	return srv
 }

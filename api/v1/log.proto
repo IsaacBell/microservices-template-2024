@@ -1,10 +1,16 @@
 syntax = "proto3";
 
+import "google/api/annotations.proto";
+
 package api.v1;
 option go_package = "microservices-template-2024/api/v1/server;v1";
 
 service Log {
-  rpc Produce(ProduceRequest) returns (ProduceResponse) {}
+  rpc Produce(ProduceRequest) returns (ProduceResponse) {
+		option (google.api.http) = {
+      post: "/log"
+    };
+	};
   rpc Consume(ConsumeRequest) returns (ConsumeResponse) {}
   rpc ConsumeStream(ConsumeRequest) returns (stream ConsumeResponse) {}
   rpc ProduceStream(stream ProduceRequest) returns (ProduceResponse) {}
@@ -17,7 +23,10 @@ message ProduceRequest {
 }
 
 message ProduceResponse {
-  uint64 offset = 1;
+  bool ok = 1;
+  uint64 offset = 2;
+  string topic = 3;
+  Record record = 4;
 }
 
 message ConsumeRequest {
@@ -26,7 +35,9 @@ message ConsumeRequest {
 }
 
 message ConsumeResponse {
+  string topic = 1;
   Record record = 2;
+  uint64 offset = 3;
 }
 
 message Record {

@@ -8,6 +8,7 @@ import (
 	"microservices-template-2024/internal/conf"
 	"microservices-template-2024/internal/server"
 	finance_util "microservices-template-2024/pkg/finance/util"
+	stream "microservices-template-2024/pkg/stream"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
@@ -18,7 +19,6 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/joho/godotenv"
 	"google.golang.org/protobuf/types/known/durationpb"
-	// "google.golang.org/grpc"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -31,11 +31,31 @@ var (
 	flagconf string
 
 	id, _ = os.Hostname()
+
+	KafkaTopics = []string{"finance", "finance/cdc"}
 )
 
 func init() {
 	file := conf.ConfigDir() + "config.yaml"
 	flag.StringVar(&flagconf, "conf", file, "config path, eg: -conf config.yaml")
+
+	cwd, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Error getting current working directory: %v", err)
+	}
+
+	err = godotenv.Load()
+	if err != nil {
+		fmt.Println("Current working directory: %s", cwd)
+		fmt.Println("err loading .env: %v", err)
+
+		err = godotenv.Load("../../.env")
+		if err != nil {
+			log.Fatalf("err loading .env: %v", err)
+		}
+	}
+
+	streamKafkaMessages()
 }
 
 func newFinanceApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
@@ -54,23 +74,16 @@ func newFinanceApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.
 	)
 }
 
+func streamKafkaMessages() {
+	for _, topic := range KafkaTopics {
+		stream.StartKafkaConsumer(topic, "core", func(msg string) {
+			log.Infof("Kafka: [", topic, "] ", msg)
+		})
+		fmt.Println("consuming kafka topic: ", topic)
+	}
+}
+
 func main() {
-	cwd, err := os.Getwd()
-	if err != nil {
-		fmt.Println("Error getting current working directory: %v", err)
-	}
-
-	err = godotenv.Load()
-	if err != nil {
-		fmt.Println("Current working directory: %s", cwd)
-		fmt.Println("err loading .env: %v", err)
-
-		err = godotenv.Load("../../.env")
-		if err != nil {
-			log.Fatalf("err loading .env: %v", err)
-		}
-	}
-
 	flag.Parse()
 	fmt.Println("flag", flagconf)
 	logger := log.With(log.NewStdLogger(os.Stdout),
@@ -154,7 +167,13 @@ func main() {
 	}
 
 	finance_util.InitFinnhubClient()
+
 	fmt.Println("::::: Finance API online :::::")
+	stream.ProduceKafkaMessage("main", "Finance Server started")
+	defer stream.ProduceKafkaMessage("main", "Finance Server stopped")
+	stream.ProduceKafkaMessage("finance", "Finance Server started")
+	defer stream.ProduceKafkaMessage("finance", "Finance Server stopped")
+
 	// start and wait for stop signal
 	if err := app.Run(); err != nil {
 		panic(err)

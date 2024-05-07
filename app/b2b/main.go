@@ -7,6 +7,7 @@ import (
 
 	"microservices-template-2024/internal/conf"
 	"microservices-template-2024/internal/server"
+	stream "microservices-template-2024/pkg/stream"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
@@ -30,11 +31,15 @@ var (
 	flagconf string
 
 	id, _ = os.Hostname()
+
+	KafkaTopics = []string{"b2b", "leads", "leads/cdc", "companies"}
 )
 
 func init() {
 	file := conf.ConfigDir() + "config.yaml"
 	flag.StringVar(&flagconf, "conf", file, "config path, eg: -conf config.yaml")
+
+	streamKafkaMessages()
 }
 
 func newB2bApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
@@ -51,6 +56,14 @@ func newB2bApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App 
 			hs,
 		),
 	)
+}
+
+func streamKafkaMessages() {
+	for _, topic := range KafkaTopics {
+		stream.StartKafkaConsumer(topic, "core", func(msg string) {
+			log.Infof("Kafka: [", topic, "] ", msg)
+		})
+	}
 }
 
 func main() {

@@ -2,10 +2,11 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"io"
 
 	v1 "microservices-template-2024/api/v1"
-	"microservices-template-2024/internal/stream"
+	"microservices-template-2024/pkg/stream"
 )
 
 type LogService struct {
@@ -16,25 +17,53 @@ func NewLogService() *LogService {
 	return &LogService{}
 }
 
-func (s *LogService) ProduceLog(ctx context.Context, req *v1.ProduceRequest) (*v1.ProduceResponse, error) {
+func (s *LogService) Produce(ctx context.Context, req *v1.ProduceRequest) (*v1.ProduceResponse, error) {
 	if req.Message == "" {
 		stream.ProduceKafkaMessage(req.Topic, string(req.Record.Value))
 	} else {
 		stream.ProduceKafkaMessage(req.Topic, req.Message)
 	}
-	return &v1.ProduceResponse{}, nil
+	return &v1.ProduceResponse{Ok: true}, nil
 }
-func (s *LogService) ConsumeLog(ctx context.Context, req *v1.ConsumeRequest) (*v1.ConsumeResponse, error) {
+
+func (s *LogService) Consume(ctx context.Context, req *v1.ConsumeRequest) (*v1.ConsumeResponse, error) {
 	return &v1.ConsumeResponse{}, nil
 }
+
 func (s *LogService) ConsumeStream(req *v1.ConsumeRequest, conn v1.Log_ConsumeStreamServer) error {
-	for {
-		err := conn.Send(&v1.ConsumeResponse{})
+	ctx, cancel := stream.StartKafkaConsumer(req.Topic, "core", func(msg string) {
+		fmt.Println("Received Kafka Msg: [", req.Topic, "] ", msg)
+		err := conn.Send(&v1.ConsumeResponse{
+			Record: &v1.Record{
+				Value:  []byte(msg),
+				Offset: 0,
+			},
+		})
 		if err != nil {
-			return err
+			return
 		}
-	}
+	})
+	defer cancel()
+
+	cancelCtx, cancelFn := context.WithCancel(ctx)
+	defer cancelFn()
+
+	go func() {
+		for {
+			select {
+			case <-cancelCtx.Done():
+				cancel()
+				return
+			default:
+				// Do nothing
+			}
+		}
+	}()
+
+	<-ctx.Done()
+	return ctx.Err()
 }
+
 func (s *LogService) ProduceStream(conn v1.Log_ProduceStreamServer) error {
 	for {
 		rec, err := conn.Recv()

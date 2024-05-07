@@ -6,6 +6,7 @@ import (
 
 	v1 "microservices-template-2024/api/v1"
 	"microservices-template-2024/internal/biz"
+	"microservices-template-2024/pkg/stream"
 	// log "microservices-template-2024/internal/service/log"
 )
 
@@ -25,6 +26,8 @@ func (s *UsersService) CreateUser(ctx context.Context, req *v1.CreateUserRequest
 	res, err := s.action.CreateUser(ctx, user)
 
 	fmt.Println("CreateUser response: ", res)
+	stream.ProduceKafkaMessage("main", "New User: "+user.Email)
+
 	return &v1.CreateUserReply{Ok: err == nil, Id: res.ID}, err
 }
 

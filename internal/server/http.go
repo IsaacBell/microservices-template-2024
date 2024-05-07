@@ -43,6 +43,7 @@ func NewHTTPServer(
 	user *service.UsersService,
 	trans *service.TransactionsService,
 	lias *service.LiabilitiesService,
+	log *service.LogService,
 ) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(
@@ -64,6 +65,7 @@ func NewHTTPServer(
 	v1.RegisterUsersHTTPServer(srv, user)
 	v1.RegisterTransactionsHTTPServer(srv, trans)
 	v1.RegisterLiabilitiesHTTPServer(srv, lias)
+	v1.RegisterLogHTTPServer(srv, log)
 
 	StartPrometheus(srv)
 	return srv

@@ -8,6 +8,6 @@ import (
 
 // Declare services available at runtime
 var ProviderSet = wire.NewSet(
-	NewGreeterService, NewUsersService, NewTransactionsService, NewLiabilitiesService,
+	NewGreeterService, NewUsersService, NewTransactionsService, NewLiabilitiesService, NewLogService,
 	finService.NewFinanceService,
 )

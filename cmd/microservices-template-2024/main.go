@@ -7,6 +7,7 @@ import (
 
 	"microservices-template-2024/internal/conf"
 	"microservices-template-2024/internal/server"
+	stream "microservices-template-2024/pkg/stream"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
@@ -30,28 +31,14 @@ var (
 	flagconf string
 
 	id, _ = os.Hostname()
+
+	KafkaTopics = []string{"default", "critical", "main"}
 )
 
 func init() {
 	file := conf.ConfigDir() + "config.yaml"
 	flag.StringVar(&flagconf, "conf", file, "config path, eg: -conf config.yaml")
-}
 
-func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
-	return kratos.New(
-		kratos.ID(id),
-		kratos.Name(Name),
-		kratos.Version(Version),
-		kratos.Metadata(map[string]string{}),
-		kratos.Logger(logger),
-		kratos.Server(
-			gs,
-			hs,
-		),
-	)
-}
-
-func main() {
 	cwd, err := os.Getwd()
 	if err != nil {
 		fmt.Println("Error getting current working directory: %v", err)
@@ -68,6 +55,32 @@ func main() {
 		}
 	}
 
+	streamKafkaMessages()
+}
+
+func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
+	return kratos.New(
+		kratos.ID(id),
+		kratos.Name(Name),
+		kratos.Version(Version),
+		kratos.Metadata(map[string]string{}),
+		kratos.Logger(logger),
+		kratos.Server(
+			gs,
+			hs,
+		),
+	)
+}
+
+func streamKafkaMessages() {
+	for _, topic := range KafkaTopics {
+		stream.StartKafkaConsumer(topic, "core", func(msg string) {
+			log.Infof("Kafka: [", topic, "] ", msg)
+		})
+	}
+}
+
+func main() {
 	flag.Parse()
 	logger := log.With(log.NewStdLogger(os.Stdout),
 		"ts", log.DefaultTimestamp,
