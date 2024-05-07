@@ -66,7 +66,7 @@ func RedisConn(ctx context.Context) *redis.Client {
 	client := redis.NewClient(opt)
 
 	val := client.Get(ctx, "lastConnectedAt").Val()
-	fmt.Println("Redis:: lastConnectedAt", val)
+	fmt.Println("Redis - lastConnectedAt: ", val)
 	client.Set(ctx, "lastConnectedAt", time.Now().String(), 0)
 
 	return client

@@ -1,12 +1,15 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
+	"time"
 
 	"microservices-template-2024/internal/conf"
 	"microservices-template-2024/internal/server"
+	cache "microservices-template-2024/pkg/cache"
 	stream "microservices-template-2024/pkg/stream"
 
 	"github.com/go-kratos/kratos/v2"
@@ -128,6 +131,9 @@ func main() {
 	}
 
 	fmt.Println("::::: Core Service online :::::")
+	ctx := context.Background()
+	ca := cache.Cache(ctx)
+	ca.Set(ctx, "coreServiceStartedAt", time.Now().String(), time.Hour*2)
 
 	// start and wait for stop signal
 	if err := app.Run(); err != nil {
