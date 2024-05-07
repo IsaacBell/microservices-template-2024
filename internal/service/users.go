@@ -6,8 +6,8 @@ import (
 
 	v1 "microservices-template-2024/api/v1"
 	"microservices-template-2024/internal/biz"
-	"microservices-template-2024/pkg/stream"
-	// log "microservices-template-2024/internal/service/log"
+	cache "microservices-template-2024/pkg/cache"
+	stream "microservices-template-2024/pkg/stream"
 )
 
 type UsersService struct {
@@ -39,6 +39,17 @@ func (s *UsersService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest
 
 func (s *UsersService) DeleteUser(ctx context.Context, req *v1.DeleteUserRequest) (*v1.DeleteUserReply, error) {
 	err := s.action.Delete(ctx, req.Id)
+	if err != nil {
+		return &v1.DeleteUserReply{Ok: false}, err
+	}
+
+	go func() {
+		err := cache.Cache(ctx).Del(ctx, req.Id).Err()
+		if err != nil {
+			fmt.Printf("Failed to delete cache entry for user %d: %v \n", req.Id, err)
+		}
+	}()
+
 	return &v1.DeleteUserReply{Ok: err == nil}, err
 }
 

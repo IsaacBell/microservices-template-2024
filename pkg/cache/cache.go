@@ -9,11 +9,11 @@ import (
 )
 
 func Cache(ctx context.Context) *cache_provider.CacheClient {
-	return cache_provider.UseRedis(ctx)
+	return cache_provider.NewCache(ctx)
 }
 
 func CacheProvider(ctx context.Context) *cache_provider.CacheClient {
-	return cache_provider.CacheProvider(ctx)
+	return cache_provider.NewCacheProvider(ctx)
 }
 
 var ProviderSet = wire.NewSet(CacheProvider)

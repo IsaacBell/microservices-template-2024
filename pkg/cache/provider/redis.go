@@ -42,6 +42,10 @@ func (cache *CacheClient) Set(ctx context.Context, key string, value interface{}
 	return cache.cache.Set(ctx, key, value, exp)
 }
 
+func (cache *CacheClient) Del(ctx context.Context, key string) *redis.IntCmd {
+	return cache.cache.Del(ctx, key)
+}
+
 func (cache *CacheClient) GetMapField(ctx context.Context, key string, mapField string) *redis.StringCmd {
 	return cache.cache.HGet(ctx, key, mapField)
 }

@@ -11,10 +11,10 @@ type CacheClient struct {
 	cache *redis.Client
 }
 
-func Cache(ctx context.Context) *CacheClient {
+func NewCache(ctx context.Context) *CacheClient {
 	return UseRedis(ctx)
 }
 
-func CacheProvider(ctx context.Context) *CacheClient {
-	return Cache(ctx)
+func NewCacheProvider(ctx context.Context) *CacheClient {
+	return NewCache(ctx)
 }
