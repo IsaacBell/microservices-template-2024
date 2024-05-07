@@ -28,12 +28,15 @@ func (s *UsersService) CreateUser(ctx context.Context, req *v1.CreateUserRequest
 	fmt.Println("CreateUser response: ", res)
 	stream.ProduceKafkaMessage("main", "New User: "+user.Email)
 
+	cache.Cache(ctx).Set("user:"+req.User.Id, user, 0)
+
 	return &v1.CreateUserReply{Ok: err == nil, Id: res.ID}, err
 }
 
 func (s *UsersService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest) (*v1.UpdateUserReply, error) {
 	user := biz.ProtoToUserData(req.User)
 	res, err := s.action.UpdateUser(ctx, user)
+	cache.Cache(ctx).Set("user:"+req.User.Id, user, 0)
 	return &v1.UpdateUserReply{Ok: err == nil, Id: res.ID}, err
 }
 
@@ -44,7 +47,7 @@ func (s *UsersService) DeleteUser(ctx context.Context, req *v1.DeleteUserRequest
 	}
 
 	go func() {
-		err := cache.Cache(ctx).Del(ctx, req.Id).Err()
+		err := cache.Cache(ctx).Del(req.Id).Err()
 		if err != nil {
 			fmt.Printf("Failed to delete cache entry for user %d: %v \n", req.Id, err)
 		}
@@ -56,14 +59,23 @@ func (s *UsersService) DeleteUser(ctx context.Context, req *v1.DeleteUserRequest
 func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.GetUserReply, error) {
 	var u *biz.User
 	var err error
+
 	if req.Id != nil {
 		u, err = s.action.FindUserById(ctx, *req.Id)
 	} else if req.Email != nil {
 		u, err = s.action.FindUserByEmail(ctx, *req.Email)
 	}
+
 	if err != nil {
 		return nil, err
 	}
+
+	if req.Id != nil {
+		cache.Cache(ctx).Set("user:"+*req.Id, u, 0)
+	} else {
+		cache.Cache(ctx).Set("user:"+*req.Email, u, 0)
+	}
+
 	return &v1.GetUserReply{User: biz.UserToProtoData(u)}, nil
 }
 

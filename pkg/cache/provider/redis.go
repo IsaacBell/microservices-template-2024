@@ -34,26 +34,26 @@ func (cache *CacheClient) UseContext(ctx context.Context) {
 	cache.ctx = ctx
 }
 
-func (cache *CacheClient) Get(ctx context.Context, key string) *redis.StringCmd {
-	return cache.cache.Get(ctx, key)
+func (cache *CacheClient) Get(key string) *redis.StringCmd {
+	return cache.cache.Get(cache.ctx, key)
 }
 
-func (cache *CacheClient) Set(ctx context.Context, key string, value interface{}, exp time.Duration) *redis.StatusCmd {
-	return cache.cache.Set(ctx, key, value, exp)
+func (cache *CacheClient) Set(key string, value interface{}, exp time.Duration) *redis.StatusCmd {
+	return cache.cache.Set(cache.ctx, key, value, exp)
 }
 
-func (cache *CacheClient) Del(ctx context.Context, key string) *redis.IntCmd {
-	return cache.cache.Del(ctx, key)
+func (cache *CacheClient) Del(key string) *redis.IntCmd {
+	return cache.cache.Del(cache.ctx, key)
 }
 
-func (cache *CacheClient) GetMapField(ctx context.Context, key string, mapField string) *redis.StringCmd {
-	return cache.cache.HGet(ctx, key, mapField)
+func (cache *CacheClient) GetMapField(key string, mapField string) *redis.StringCmd {
+	return cache.cache.HGet(cache.ctx, key, mapField)
 }
 
-func (cache *CacheClient) SetMap(ctx context.Context, fieldKey string, values map[string]interface{}) *redis.IntCmd {
+func (cache *CacheClient) SetMap(fieldKey string, values map[string]interface{}) *redis.IntCmd {
 	var out *redis.IntCmd
 	for k, v := range values {
-		out = cache.cache.HSet(ctx, fieldKey, k, v)
+		out = cache.cache.HSet(cache.ctx, fieldKey, k, v)
 		if out.Err() != nil {
 			fmt.Println("error caching map: ", out.Err())
 		}
