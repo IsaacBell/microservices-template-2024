@@ -133,7 +133,7 @@ func main() {
 	fmt.Println("::::: Core Service online :::::")
 	ctx := context.Background()
 	ca := cache.Cache(ctx)
-	ca.Set(ctx, "coreServiceStartedAt", time.Now().String(), time.Hour*2)
+	ca.Set("coreServiceStartedAt", time.Now().String(), time.Hour*2)
 
 	// start and wait for stop signal
 	if err := app.Run(); err != nil {
