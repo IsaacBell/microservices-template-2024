@@ -349,8 +349,10 @@ func ProtoToPropertyData(input *lodgingV1.Property) *Property {
 type PropertyRepo interface {
 	Get(context.Context, string) (*Property, error)
 	Save(context.Context, *Property) (*Property, error)
+	Stats(context.Context, string) (map[string]int64, error)
 	Update(context.Context, *Property) (*Property, error)
 	Delete(context.Context, string) error
+	Search(context.Context, map[string]interface{}) ([]*Property, error)
 }
 
 type PropertyAction struct {
@@ -370,6 +372,30 @@ func (uc *PropertyAction) GetProperty(ctx context.Context, id string) (*Property
 	}
 
 	return property, nil
+}
+
+func (uc *PropertyAction) ListLodging(ctx context.Context, filters map[string]interface{}) ([]*Property, error) {
+	var filtersMask map[string]interface{}
+	if filters["userId"] != nil && filters["userId"] != "" {
+		filtersMask["userId"] = filters["userId"]
+	}
+
+	properties, err := uc.repo.Search(ctx, filtersMask)
+	if err != nil {
+		return nil, err
+	}
+
+	return properties, nil
+}
+
+func (uc *PropertyAction) SearchProperties(ctx context.Context, filters map[string]interface{}) ([]*Property, error) {
+	uc.log.WithContext(ctx).Infof("SearchProperties: %s", filters)
+	properties, err := uc.repo.Search(ctx, filters)
+	if err != nil {
+		return nil, err
+	}
+
+	return properties, nil
 }
 
 func (uc *PropertyAction) CreateProperty(ctx context.Context, p *Property) (*Property, error) {
@@ -395,4 +421,8 @@ func (uc *PropertyAction) UpdateProperty(ctx context.Context, p *Property) (*Pro
 func (uc *PropertyAction) DeleteProperty(ctx context.Context, id string) error {
 	uc.log.WithContext(ctx).Infof("Delete Property: %s", id)
 	return uc.repo.Delete(ctx, id)
+}
+
+func (uc *PropertyAction) GetRealtorStats(ctx context.Context, userId string) (map[string]int64, error) {
+	return uc.repo.Stats(ctx, userId)
 }

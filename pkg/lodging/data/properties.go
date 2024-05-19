@@ -53,6 +53,29 @@ func (r *propertyRepo) Update(ctx context.Context, property *lodging_biz.Propert
 	return property, nil
 }
 
+func (r *propertyRepo) Stats(ctx context.Context, userId string) (map[string]int64, error) {
+	var result struct {
+		TotalProperties int64 `gorm:"column:total_properties"`
+		AveragePrice    int64 `gorm:"column:average_price"`
+		TotalPrice      int64 `gorm:"column:total_price"`
+	}
+
+	if err := server.DB.
+		Model(&lodging_biz.Property{}).
+		Where("userId = ?", userId).
+		Group("address").
+		Select("COUNT(*) AS total_properties, AVG(price) AS average_price, SUM(price) AS total_price").
+		Scan(&result).Error; err != nil {
+		return nil, err
+	}
+
+	return map[string]int64{
+		"total_properties": result.TotalProperties,
+		"average_price":    result.AveragePrice,
+		"total_price":      result.TotalPrice,
+	}, nil
+}
+
 func (r *propertyRepo) Delete(ctx context.Context, id string) error {
 	var property *lodging_biz.Property
 	if err := server.DB.Scopes(server.Active).First(&property, id).Error; err != nil {

@@ -1782,6 +1782,8 @@ components:
                         $ref: '#/components/schemas/api.v1.lodging.ReviewType'
                 reviewStats:
                     $ref: '#/components/schemas/api.v1.lodging.ReviewStatsType'
+                user:
+                    $ref: '#/components/schemas/api.v1.User'
         api.v1.lodging.RealtorStatsReply:
             type: object
             properties:

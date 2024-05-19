@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	lodgingV1 "microservices-template-2024/api/v1/lodging"
 	"microservices-template-2024/internal/conf"
-	propertyService "microservices-template-2024/pkg/lodging/service"
+	lodgingService "microservices-template-2024/pkg/lodging/service"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
@@ -27,7 +27,7 @@ import (
 func NewLodgingGrpcServer(
 	c *conf.Server,
 	logger log.Logger,
-	property *propertyService.PropertyService,
+	property *lodgingService.PropertyService,
 ) *grpc.Server {
 	exporter, err := stdouttrace.New(stdouttrace.WithWriter(ioutil.Discard))
 	if err != nil {
@@ -72,7 +72,7 @@ func NewLodgingGrpcServer(
 func NewLodgingHTTPServer(
 	c *conf.Server,
 	logger log.Logger,
-	property *propertyService.PropertyService,
+	property *lodgingService.PropertyService,
 ) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(

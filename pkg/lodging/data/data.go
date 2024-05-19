@@ -2,13 +2,14 @@ package lodging_data
 
 import (
 	"microservices-template-2024/internal/conf"
+	"microservices-template-2024/internal/data"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 )
 
 var ProviderSet = wire.NewSet(
-	NewData, NewPropertyRepo,
+	NewData, NewPropertyRepo, data.NewUserRepo,
 )
 
 // Data .

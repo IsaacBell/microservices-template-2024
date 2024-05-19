@@ -71,9 +71,9 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 	}
 
 	if req.Id != nil {
-		cache.Cache(ctx).Set("user:"+*req.Id, u, 0)
+		cache.Cache(ctx).Set("user+id:"+*req.Id, u, 0)
 	} else {
-		cache.Cache(ctx).Set("user:"+*req.Email, u, 0)
+		cache.Cache(ctx).Set("user+email:"+*req.Email, u, 0)
 	}
 
 	return &v1.GetUserReply{User: biz.UserToProtoData(u)}, nil

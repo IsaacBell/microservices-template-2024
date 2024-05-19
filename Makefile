@@ -51,6 +51,7 @@ build:
 	mkdir -p bin/ && go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/ ./...
 	cd app/finance && wire
 	cd app/b2b && wire
+	cd app/lodging && wire
 
 .PHONY: generate
 # generate
@@ -64,9 +65,13 @@ proto:
 	make config;
 	make generate;
 
-.PHONY: all fin b2b execute
+.PHONY: all lodging fin b2b execute
 all: fin execute
 	wait
+
+.PHONY: lodging
+fin:
+	./bin/lodging &
 
 .PHONY: fin
 fin:

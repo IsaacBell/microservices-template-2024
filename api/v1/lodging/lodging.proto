@@ -127,7 +127,7 @@ message RealtorStatsRequest {
 }
 
 message RealtorStatsReply {
-  map<string, string> stats = 1;
+  map<string, int64> stats = 1;
 }
 
 message Property {
@@ -151,6 +151,7 @@ message Property {
   repeated SpecificationType specifications = 20;
   repeated ReviewType reviews = 21;
   ReviewStatsType review_stats = 22;
+	User user = 23;
 }
 
 message Location {
@@ -239,4 +240,10 @@ message ReviewStatsType {
 message ReviewBarType {
   int32 count = 1;
   float percent = 2;
+}
+
+message RealtorStats {
+	int32 total_properties = 1;
+	int32 average_price = 2;
+	int32 total_price = 3;
 }
