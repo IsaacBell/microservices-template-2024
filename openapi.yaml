@@ -340,6 +340,216 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.v1.ProduceResponse'
+    /properties:
+        get:
+            tags:
+                - Lodging
+            operationId: Lodging_ListLodging
+            parameters:
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: perPage
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: userId
+                  in: query
+                  schema:
+                    type: string
+                - name: lat
+                  in: query
+                  schema:
+                    type: number
+                    format: double
+                - name: lng
+                  in: query
+                  schema:
+                    type: number
+                    format: double
+                - name: distance
+                  in: query
+                  schema:
+                    type: string
+                - name: area
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: rooms
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: priceGte
+                  in: query
+                  schema:
+                    type: string
+                - name: priceLte
+                  in: query
+                  schema:
+                    type: string
+                - name: sold
+                  in: query
+                  schema:
+                    type: boolean
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.lodging.ListLodgingReply'
+        post:
+            tags:
+                - Lodging
+            operationId: Lodging_CreateLodging
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.v1.lodging.CreateLodgingRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.lodging.CreateLodgingReply'
+    /properties/realtor_stats:
+        get:
+            tags:
+                - Lodging
+            operationId: Lodging_RealtorStats
+            parameters:
+                - name: userId
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.lodging.RealtorStatsReply'
+    /properties/search:
+        get:
+            tags:
+                - Lodging
+            operationId: Lodging_SearchLodging
+            parameters:
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: lat
+                  in: query
+                  schema:
+                    type: number
+                    format: double
+                - name: lng
+                  in: query
+                  schema:
+                    type: number
+                    format: double
+                - name: distance
+                  in: query
+                  schema:
+                    type: string
+                - name: area
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: rooms
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: price
+                  in: query
+                  schema:
+                    type: string
+                - name: sold
+                  in: query
+                  schema:
+                    type: boolean
+                - name: location
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.lodging.SearchLodgingReply'
+    /properties/{id}:
+        get:
+            tags:
+                - Lodging
+            operationId: Lodging_GetLodging
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.lodging.GetLodgingReply'
+        delete:
+            tags:
+                - Lodging
+            operationId: Lodging_DeleteLodging
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.lodging.DeleteLodgingReply'
+    /properties/{property.id}:
+        put:
+            tags:
+                - Lodging
+            operationId: Lodging_UpdateLodging
+            parameters:
+                - name: property.id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.v1.lodging.UpdateLodgingRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.lodging.UpdateLodgingReply'
     /quote/{symbol}:
         get:
             tags:
@@ -1464,6 +1674,217 @@ components:
                     $ref: '#/components/schemas/api.v1.Device'
                 deleted:
                     type: boolean
+                role:
+                    type: string
+                name:
+                    type: string
+                userType:
+                    type: string
+        api.v1.lodging.CreateLodgingReply:
+            type: object
+            properties:
+                property:
+                    $ref: '#/components/schemas/api.v1.lodging.Property'
+        api.v1.lodging.CreateLodgingRequest:
+            type: object
+            properties:
+                property:
+                    $ref: '#/components/schemas/api.v1.lodging.Property'
+        api.v1.lodging.DeleteLodgingReply:
+            type: object
+            properties:
+                success:
+                    type: boolean
+        api.v1.lodging.EquipmentType:
+            type: object
+            properties:
+                img:
+                    type: string
+                name:
+                    type: string
+        api.v1.lodging.GetLodgingReply:
+            type: object
+            properties:
+                property:
+                    $ref: '#/components/schemas/api.v1.lodging.Property'
+        api.v1.lodging.ListLodgingReply:
+            type: object
+            properties:
+                properties:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.v1.lodging.Property'
+        api.v1.lodging.Location:
+            type: object
+            properties:
+                type:
+                    type: string
+                coordinates:
+                    type: array
+                    items:
+                        type: number
+                        format: double
+        api.v1.lodging.Property:
+            type: object
+            properties:
+                id:
+                    type: string
+                title:
+                    type: string
+                description:
+                    type: string
+                address:
+                    type: string
+                area:
+                    type: integer
+                    format: int32
+                rooms:
+                    type: integer
+                    format: int32
+                price:
+                    type: integer
+                    format: int32
+                sold:
+                    type: boolean
+                deleted:
+                    type: boolean
+                images:
+                    type: array
+                    items:
+                        type: string
+                previewImages:
+                    type: array
+                    items:
+                        type: string
+                location:
+                    $ref: '#/components/schemas/api.v1.lodging.Location'
+                userId:
+                    type: string
+                createdAt:
+                    type: string
+                    format: date-time
+                updatedAt:
+                    type: string
+                    format: date-time
+                vendor:
+                    $ref: '#/components/schemas/api.v1.lodging.VendorType'
+                equipments:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.v1.lodging.EquipmentType'
+                specifications:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.v1.lodging.SpecificationType'
+                reviews:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.v1.lodging.ReviewType'
+                reviewStats:
+                    $ref: '#/components/schemas/api.v1.lodging.ReviewStatsType'
+        api.v1.lodging.RealtorStatsReply:
+            type: object
+            properties:
+                stats:
+                    type: object
+                    additionalProperties:
+                        type: string
+        api.v1.lodging.ReviewBarType:
+            type: object
+            properties:
+                count:
+                    type: integer
+                    format: int32
+                percent:
+                    type: number
+                    format: float
+        api.v1.lodging.ReviewStatsType:
+            type: object
+            properties:
+                totalReviews:
+                    type: integer
+                    format: int32
+                averageRating:
+                    type: number
+                    format: float
+                stars:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.v1.lodging.ReviewBarType'
+        api.v1.lodging.ReviewType:
+            type: object
+            properties:
+                avatar:
+                    type: string
+                name:
+                    type: string
+                date:
+                    type: string
+                rating:
+                    type: integer
+                    format: int32
+                location:
+                    type: string
+                review:
+                    type: string
+        api.v1.lodging.SearchLodgingReply:
+            type: object
+            properties:
+                properties:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.v1.lodging.Property'
+        api.v1.lodging.SpecificationType:
+            type: object
+            properties:
+                name:
+                    type: string
+                details:
+                    type: string
+        api.v1.lodging.UpdateLodgingReply:
+            type: object
+            properties:
+                property:
+                    $ref: '#/components/schemas/api.v1.lodging.Property'
+        api.v1.lodging.UpdateLodgingRequest:
+            type: object
+            properties:
+                property:
+                    $ref: '#/components/schemas/api.v1.lodging.Property'
+        api.v1.lodging.VendorType:
+            type: object
+            properties:
+                name:
+                    type: string
+                img:
+                    type: string
+                memberSince:
+                    type: string
+                languages:
+                    type: array
+                    items:
+                        type: string
+                responseRate:
+                    type: integer
+                    format: int32
+                responseTime:
+                    type: string
+                location:
+                    type: string
+                boatName:
+                    type: string
+                boatGuests:
+                    type: integer
+                    format: int32
+                boatCabins:
+                    type: integer
+                    format: int32
+                boatBathrooms:
+                    type: integer
+                    format: int32
+                totalReview:
+                    type: integer
+                    format: int32
         helloworld.v1.HelloReply:
             type: object
             properties:
@@ -1477,6 +1898,7 @@ tags:
       description: The greeting service definition.
     - name: Leads
     - name: Liabilities
+    - name: Lodging
     - name: Log
     - name: Transactions
     - name: Users

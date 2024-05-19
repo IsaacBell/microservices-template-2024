@@ -1,0 +1,242 @@
+syntax = "proto3";
+
+package api.v1.lodging;
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+import "v1/users.proto";
+
+option go_package = "microservices-template-2024/api/v1/lodging;v1";
+option java_multiple_files = true;
+option java_package = "api.v1";
+
+service Lodging {
+  rpc CreateLodging (CreateLodgingRequest) returns (CreateLodgingReply) {
+    option (google.api.http) = {
+      post: "/properties"
+      body: "*"
+    };
+  }
+
+  rpc UpdateLodging (UpdateLodgingRequest) returns (UpdateLodgingReply) {
+    option (google.api.http) = {
+      put: "/properties/{property.id}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteLodging (DeleteLodgingRequest) returns (DeleteLodgingReply) {
+    option (google.api.http) = {
+      delete: "/properties/{id}"
+    };
+  }
+
+  rpc GetLodging (GetLodgingRequest) returns (GetLodgingReply) {
+    option (google.api.http) = {
+      get: "/properties/{id}"
+    };
+  }
+
+  rpc ListLodging (ListLodgingRequest) returns (ListLodgingReply) {
+    option (google.api.http) = {
+      get: "/properties"
+    };
+  }
+
+  rpc SearchLodging (SearchLodgingRequest) returns (SearchLodgingReply) {
+    option (google.api.http) = {
+      get: "/properties/search"
+    };
+  }
+
+  rpc RealtorStats (RealtorStatsRequest) returns (RealtorStatsReply) {
+    option (google.api.http) = {
+      get: "/properties/realtor_stats"
+    };
+  }
+}
+
+message CreateLodgingRequest {
+  Property property = 1;
+}
+
+message CreateLodgingReply {
+  Property property = 1;
+}
+
+message UpdateLodgingRequest {
+  Property property = 1;
+}
+
+message UpdateLodgingReply {
+  Property property = 1;
+}
+
+message DeleteLodgingRequest {
+  string id = 1;
+}
+
+message DeleteLodgingReply {
+  bool success = 1;
+}
+
+message GetLodgingRequest {
+  string id = 1;
+}
+
+message GetLodgingReply {
+  Property property = 1;
+}
+
+message ListLodgingRequest {
+  int32 page = 1;
+  int32 per_page = 2;
+  string user_id = 3;
+  double lat = 4;
+  double lng = 5;
+  string distance = 6;
+  int32 area = 7;
+  int32 rooms = 8;
+  string price_gte = 9;
+  string price_lte = 10;
+  bool sold = 11;
+}
+
+message ListLodgingReply {
+  repeated Property properties = 1;
+}
+
+message SearchLodgingRequest {
+  int32 page = 1;
+  double lat = 2;
+  double lng = 3;
+  string distance = 4;
+  int32 area = 5;
+  int32 rooms = 6;
+  string price = 7;
+  bool sold = 8;
+  string location = 9;
+}
+
+message SearchLodgingReply {
+  repeated Property properties = 1;
+}
+
+message RealtorStatsRequest {
+	string user_id = 1;
+}
+
+message RealtorStatsReply {
+  map<string, string> stats = 1;
+}
+
+message Property {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  string address = 4;
+  int32 area = 5;
+  int32 rooms = 6;
+  int32 price = 7;
+  bool sold = 8;
+  bool deleted = 9;
+  repeated string images = 10;
+  repeated string preview_images = 11;
+  Location location = 13;
+  string user_id = 14;
+  google.protobuf.Timestamp created_at = 16;
+  google.protobuf.Timestamp updated_at = 17;
+  VendorType vendor = 18;
+  repeated EquipmentType equipments = 19;
+  repeated SpecificationType specifications = 20;
+  repeated ReviewType reviews = 21;
+  ReviewStatsType review_stats = 22;
+}
+
+message Location {
+  string type = 1;
+  repeated double coordinates = 2;
+}
+
+message DestinationType {
+  string thumbnail = 1;
+  string slug = 2;
+  string name = 3;
+  string location = 4;
+  map<string, string> additional_fields = 5;
+}
+
+message Instruction {
+  string icon = 1;
+  string title = 2;
+  string description = 3;
+  map<string, string> additional_fields = 4;
+}
+
+message Testimonial {
+  string name = 1;
+  string location = 2;
+  string description = 3;
+  int32 rating = 4;
+  optional string class_name = 5;
+  map<string, string> additional_fields = 6;
+}
+
+message ListingItemType {
+  repeated string slides = 1;
+  string time = 2;
+  string caption = 3;
+  string title = 4;
+  string slug = 5;
+  string location = 6;
+  string price = 7;
+  optional int32 rating = 8;
+  optional string rating_count = 9;
+  optional string user_avatar = 10;
+  map<string, string> additional_fields = 11;
+}
+
+message VendorType {
+  string name = 1;
+  string img = 2;
+  string member_since = 3;
+  repeated string languages = 4;
+  int32 response_rate = 5;
+  string response_time = 6;
+  string location = 7;
+  string boat_name = 8;
+  int32 boat_guests = 9;
+  int32 boat_cabins = 10;
+  int32 boat_bathrooms = 11;
+  int32 total_review = 12;
+}
+
+message EquipmentType {
+  string img = 1;
+  string name = 2;
+}
+
+message SpecificationType {
+  string name = 1;
+  string details = 2;
+}
+
+message ReviewType {
+  string avatar = 1;
+  string name = 2;
+  string date = 3;
+  int32 rating = 4;
+  string location = 5;
+  string review = 6;
+}
+
+message ReviewStatsType {
+  int32 total_reviews = 1;
+  float average_rating = 2;
+  repeated ReviewBarType stars = 3;
+}
+
+message ReviewBarType {
+  int32 count = 1;
+  float percent = 2;
+}

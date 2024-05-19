@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package api.v1;
 
-// import "google/api/http.proto";
 import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
 
@@ -11,15 +10,17 @@ option java_multiple_files = true;
 option java_package = "api.v1";
 
 service Users {
-	rpc CreateUser (CreateUserRequest) returns (CreateUserReply);
-	rpc UpdateUser (UpdateUserRequest) returns (UpdateUserReply);
-	rpc DeleteUser (DeleteUserRequest) returns (DeleteUserReply);
-	rpc GetUser (GetUserRequest) returns (GetUserReply) {
+  rpc CreateUser (CreateUserRequest) returns (CreateUserReply);
+  rpc UpdateUser (UpdateUserRequest) returns (UpdateUserReply);
+  rpc DeleteUser (DeleteUserRequest) returns (DeleteUserReply);
+  rpc GetUser (GetUserRequest) returns (GetUserReply) {
     option (google.api.http) = {
       get: "/users/{id}"
     };
   };
-	rpc ListUser (ListUserRequest) returns (ListUserReply);
+  rpc ListUser (ListUserRequest) returns (ListUserReply);
+  rpc SignUp (SignUpRequest) returns (SignUpReply);
+  rpc SignIn (SignInRequest) returns (SignInReply);
 }
 
 message User {
@@ -42,10 +43,13 @@ message User {
   map<string, string> metadata = 17;
   Device device = 18;
   bool deleted = 19;
+  string role = 20;
+  string name = 21;
+  string user_type = 22;
 }
 
 enum DeviceType {
-  user = 0;
+  USER = 0;
 }
 
 message Device {
@@ -59,39 +63,63 @@ message Device {
 }
 
 message CreateUserRequest {
-	User user = 1;
+  User user = 1;
 }
 message CreateUserReply {
-	bool ok = 1;
+  bool ok = 1;
   string id = 2;
 }
 
 message UpdateUserRequest {
-	User user = 1;
+  User user = 1;
 }
 message UpdateUserReply {
-	bool ok = 1;
+  bool ok = 1;
   string id = 2;
 }
 
 message DeleteUserRequest {
-	string id = 1;
+  string id = 1;
 }
 message DeleteUserReply {
-	bool ok = 1;
+  bool ok = 1;
 }
 
 message GetUserRequest {
-	optional string id = 1;
-	optional string name = 2;
-	optional string email = 3;
+  optional string id = 1;
+  optional string name = 2;
+  optional string email = 3;
 }
 message GetUserReply {
-	User user = 1;
+  User user = 1;
 }
 
 message ListUserRequest {}
 message ListUserReply {
-	repeated User users = 1;
-	bool ok = 2;
+  repeated User users = 1;
+  bool ok = 2;
+}
+
+message SignUpRequest {
+  string first_name = 1;
+  string last_name = 2;
+  string email = 3;
+  string password = 4;
+  string confirm_password = 5;
+  bool accept_policy = 6;
+  optional string user_type = 7;
+}
+message SignUpReply {
+  bool ok = 1;
+  string id = 2;
+}
+
+message SignInRequest {
+  string email = 1;
+  string password = 2;
+}
+message SignInReply {
+  bool ok = 1;
+  string token = 2;
+  User user = 3;
 }
