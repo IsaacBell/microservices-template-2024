@@ -2,18 +2,21 @@ package cache
 
 import (
 	"context"
+	"sync"
 
 	cache_provider "microservices-template-2024/pkg/cache/provider"
 
 	"github.com/google/wire"
 )
 
+var (
+	once sync.Once
+	cache *cache_provider.CacheClient = nil
+)
+
 func Cache(ctx context.Context) *cache_provider.CacheClient {
-	return cache_provider.NewCache(ctx)
+	once.Do(func () { cache = cache_provider.NewCache(ctx) })
+	return cache
 }
 
-func CacheProvider(ctx context.Context) *cache_provider.CacheClient {
-	return cache_provider.NewCacheProvider(ctx)
-}
-
-var ProviderSet = wire.NewSet(CacheProvider)
+var ProviderSet = wire.NewSet(Cache)
