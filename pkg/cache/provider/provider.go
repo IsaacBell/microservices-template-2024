@@ -14,7 +14,3 @@ type CacheClient struct {
 func NewCache(ctx context.Context) *CacheClient {
 	return UseRedis(ctx)
 }
-
-func NewCacheProvider(ctx context.Context) *CacheClient {
-	return NewCache(ctx)
-}
