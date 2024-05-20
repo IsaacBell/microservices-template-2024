@@ -156,11 +156,11 @@ func main() {
 	bc.Data.Redis.Addr = path
 	fmt.Println(servers.String(), data.String(), logger.Log)
 
-	// app, cleanup, err := wireApp(servers, data, logger)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// defer cleanup()
+	app, cleanup, err := wireApp(servers, data, logger)
+	if err != nil {
+		panic(err)
+	}
+	defer cleanup()
 
 	if err := server.OpenDBConn(); err != nil {
 		panic(err)
@@ -168,9 +168,9 @@ func main() {
 
 	fmt.Println("::::: Lodging API online :::::")
 	// start and wait for stop signal
-	// if err := app.Run(); err != nil {
-	// 	panic(err)
-	// }
-	// defer app.Stop()
+	if err := app.Run(); err != nil {
+		panic(err)
+	}
+	defer app.Stop()
 
 }
