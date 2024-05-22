@@ -10,13 +10,17 @@ import (
 )
 
 var (
-	once sync.Once
+	once  sync.Once
 	cache *cache_provider.CacheClient = nil
 )
 
-func Cache(ctx context.Context) *cache_provider.CacheClient {
-	once.Do(func () { cache = cache_provider.NewCache(ctx) })
+func Cache() *cache_provider.CacheClient {
+	once.Do(func() { cache = cache_provider.NewCache(context.Background()) })
 	return cache
 }
 
-var ProviderSet = wire.NewSet(Cache)
+func LFUCache(cacheKey string, capacity int64) *cache_provider.LFUCache {
+	return cache_provider.NewLFUCache(context.Background(), cacheKey, capacity)
+}
+
+var ProviderSet = wire.NewSet(Cache, LFUCache)

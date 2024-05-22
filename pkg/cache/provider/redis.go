@@ -16,10 +16,11 @@ var (
 )
 
 type RedisCache interface {
-	Get(ctx context.Context, key string) redis.StringCmd
-	Set(ctx context.Context, key string, value interface{}, exp time.Duration)
-	GetMapField(ctx context.Context, key string, mapField string) *redis.StringCmd
-	SetMap(ctx context.Context, fieldKey string, values map[string]interface{}) *redis.IntCmd
+	Get(key string) redis.StringCmd
+	Set(key string, value interface{}, exp time.Duration)
+	Del(key string) redis.StringCmd
+	GetMapField(key string, mapField string) *redis.StringCmd
+	SetMap(fieldKey string, values map[string]interface{}) *redis.IntCmd
 }
 
 func UseRedis(ctx context.Context) *CacheClient {
@@ -32,6 +33,10 @@ func UseRedis(ctx context.Context) *CacheClient {
 
 func (cache *CacheClient) UseContext(ctx context.Context) {
 	cache.ctx = ctx
+}
+
+func (cache *CacheClient) recordCacheOperation(key string) *redis.FloatCmd {
+	return cache.cache.ZIncrBy(context.Background(), key, 1, key)
 }
 
 func (cache *CacheClient) Get(key string) *redis.StringCmd {
