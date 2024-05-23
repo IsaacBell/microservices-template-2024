@@ -35,6 +35,29 @@ type Property struct {
 	ReviewStats    *ReviewStatsType       `protobuf:"bytes,22,opt,name=review_stats,json=reviewStats,proto3" json:"review_stats,omitempty"`
 }
 
+type PropertyIndex struct {
+	ID             string                 `json:"id"`
+	Title          string                 `json:"title"`
+	Description    string                 `json:"description"`
+	Address        string                 `json:"address"`
+	Area           int32                  `json:"area"`
+	Rooms          int32                  `json:"rooms"`
+	Price          int32                  `json:"price"`
+	Sold           bool                   `json:"sold"`
+	Deleted        bool                   `json:"deleted"`
+	Images         []string               `json:"images"`
+	PreviewImages  []string               `json:"preview_images"`
+	Location       *Location              `json:"location"`
+	UserID         string                 `json:"user_id"`
+	CreatedAt      *timestamppb.Timestamp `json:"created_at"`
+	UpdatedAt      *timestamppb.Timestamp `json:"updated_at"`
+	Vendor         *VendorType            `json:"vendor"`
+	Equipments     []*EquipmentType       `json:"equipments"`
+	Specifications []*SpecificationType   `json:"specifications"`
+	Reviews        []*ReviewType          `json:"reviews"`
+	ReviewStats    *ReviewStatsType       `json:"review_stats"`
+}
+
 func LocationToProtoData(location *Location) *lodgingV1.Location {
 	if location == nil {
 		return nil
@@ -96,6 +119,31 @@ func ProtoToVendorTypeData(vendor *lodgingV1.VendorType) *VendorType {
 		BoatCabins:    vendor.BoatCabins,
 		BoatBathrooms: vendor.BoatBathrooms,
 		TotalReview:   vendor.TotalReview,
+	}
+}
+
+func (p *Property) ToIndex() *PropertyIndex {
+	return &PropertyIndex{
+		ID:             p.ID,
+		Title:          p.Title,
+		Description:    p.Description,
+		Address:        p.Address,
+		Area:           p.Area,
+		Rooms:          p.Rooms,
+		Price:          p.Price,
+		Sold:           p.Sold,
+		Deleted:        p.Deleted,
+		Images:         p.Images,
+		PreviewImages:  p.PreviewImages,
+		Location:       p.Location,
+		UserID:         p.UserID,
+		CreatedAt:      p.CreatedAt,
+		UpdatedAt:      p.UpdatedAt,
+		Vendor:         p.Vendor,
+		Equipments:     p.Equipments,
+		Specifications: p.Specifications,
+		Reviews:        p.Reviews,
+		ReviewStats:    p.ReviewStats,
 	}
 }
 
