@@ -2,6 +2,7 @@ package consultants_data
 
 import (
 	"context"
+	consultantV1 "microservices-template-2024/api/v1/consultants"
 	"microservices-template-2024/internal/server"
 	consultants_biz "microservices-template-2024/pkg/consultants/biz"
 
@@ -28,6 +29,22 @@ func (r *consultantRepo) Get(ctx context.Context, id string) (*consultants_biz.C
 	}
 
 	return consultant, nil
+}
+
+func (r *consultantRepo) SaveCommunication(ctx context.Context, c *consultantV1.Comm) (*consultantV1.Comm, error) {
+	if c.ID != "" {
+		if err := server.DB.Save(&c).Error; err != nil {
+			return nil, err
+		} else {
+			return c, nil
+		}
+	}
+
+	if err := server.DB.Omit("ID").FirstOrCreate(&c).Error; err != nil {
+		return nil, err
+	}
+
+	return c, nil
 }
 
 func (r *consultantRepo) Save(ctx context.Context, c *consultants_biz.Consultant) (*consultants_biz.Consultant, error) {

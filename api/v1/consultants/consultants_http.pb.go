@@ -23,6 +23,7 @@ const OperationConsultantsCreateConsultant = "/api.v1.consultants.Consultants/Cr
 const OperationConsultantsDeleteConsultant = "/api.v1.consultants.Consultants/DeleteConsultant"
 const OperationConsultantsGetConsultant = "/api.v1.consultants.Consultants/GetConsultant"
 const OperationConsultantsListConsultants = "/api.v1.consultants.Consultants/ListConsultants"
+const OperationConsultantsSendComm = "/api.v1.consultants.Consultants/SendComm"
 const OperationConsultantsUpdateConsultant = "/api.v1.consultants.Consultants/UpdateConsultant"
 
 type ConsultantsHTTPServer interface {
@@ -30,6 +31,7 @@ type ConsultantsHTTPServer interface {
 	DeleteConsultant(context.Context, *DeleteConsultantRequest) (*DeleteConsultantReply, error)
 	GetConsultant(context.Context, *GetConsultantRequest) (*GetConsultantReply, error)
 	ListConsultants(context.Context, *ListConsultantsRequest) (*ListConsultantsReply, error)
+	SendComm(context.Context, *SendCommsRequest) (*SendCommsReply, error)
 	UpdateConsultant(context.Context, *UpdateConsultantRequest) (*UpdateConsultantReply, error)
 }
 
@@ -40,6 +42,7 @@ func RegisterConsultantsHTTPServer(s *http.Server, srv ConsultantsHTTPServer) {
 	r.DELETE("/consultants/{id}", _Consultants_DeleteConsultant0_HTTP_Handler(srv))
 	r.GET("/consultants/{id}", _Consultants_GetConsultant0_HTTP_Handler(srv))
 	r.GET("/consultants", _Consultants_ListConsultants0_HTTP_Handler(srv))
+	r.POST("/comms", _Consultants_SendComm0_HTTP_Handler(srv))
 }
 
 func _Consultants_CreateConsultant0_HTTP_Handler(srv ConsultantsHTTPServer) func(ctx http.Context) error {
@@ -152,11 +155,31 @@ func _Consultants_ListConsultants0_HTTP_Handler(srv ConsultantsHTTPServer) func(
 	}
 }
 
+func _Consultants_SendComm0_HTTP_Handler(srv ConsultantsHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in SendCommsRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationConsultantsSendComm)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.SendComm(ctx, req.(*SendCommsRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*SendCommsReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 type ConsultantsHTTPClient interface {
 	CreateConsultant(ctx context.Context, req *CreateConsultantRequest, opts ...http.CallOption) (rsp *CreateConsultantReply, err error)
 	DeleteConsultant(ctx context.Context, req *DeleteConsultantRequest, opts ...http.CallOption) (rsp *DeleteConsultantReply, err error)
 	GetConsultant(ctx context.Context, req *GetConsultantRequest, opts ...http.CallOption) (rsp *GetConsultantReply, err error)
 	ListConsultants(ctx context.Context, req *ListConsultantsRequest, opts ...http.CallOption) (rsp *ListConsultantsReply, err error)
+	SendComm(ctx context.Context, req *SendCommsRequest, opts ...http.CallOption) (rsp *SendCommsReply, err error)
 	UpdateConsultant(ctx context.Context, req *UpdateConsultantRequest, opts ...http.CallOption) (rsp *UpdateConsultantReply, err error)
 }
 
@@ -214,6 +237,19 @@ func (c *ConsultantsHTTPClientImpl) ListConsultants(ctx context.Context, in *Lis
 	opts = append(opts, http.Operation(OperationConsultantsListConsultants))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *ConsultantsHTTPClientImpl) SendComm(ctx context.Context, in *SendCommsRequest, opts ...http.CallOption) (*SendCommsReply, error) {
+	var out SendCommsReply
+	pattern := "/comms"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationConsultantsSendComm))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

@@ -6,6 +6,32 @@ info:
     title: ""
     version: 0.0.1
 paths:
+    /comms:
+        post:
+            tags:
+                - Consultants
+            operationId: Consultants_SendComm
+            parameters:
+                - name: comm.msg
+                  in: query
+                  schema:
+                    type: string
+                - name: comm.userId
+                  in: query
+                  schema:
+                    type: string
+                - name: comm.commType
+                  in: query
+                  schema:
+                    type: integer
+                    format: enum
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.consultants.SendCommsReply'
     /companies:
         get:
             tags:
@@ -1795,6 +1821,22 @@ components:
                     type: string
                 userType:
                     type: string
+        api.v1.consultants.Ack:
+            type: object
+            properties:
+                id:
+                    type: string
+                userId:
+                    type: string
+                msg:
+                    type: string
+                recipientsCount:
+                    type: integer
+                    format: int32
+                recipients:
+                    type: array
+                    items:
+                        type: string
         api.v1.consultants.Consultant:
             type: object
             properties:
@@ -1829,6 +1871,10 @@ components:
                     type: string
                 userId:
                     type: string
+                images:
+                    type: array
+                    items:
+                        type: string
         api.v1.consultants.CreateConsultantReply:
             type: object
             properties:
@@ -1862,6 +1908,13 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/api.v1.consultants.Consultant'
+        api.v1.consultants.SendCommsReply:
+            type: object
+            properties:
+                ok:
+                    type: boolean
+                ack:
+                    $ref: '#/components/schemas/api.v1.consultants.Ack'
         api.v1.consultants.UpdateConsultantReply:
             type: object
             properties:

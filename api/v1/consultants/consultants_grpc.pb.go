@@ -24,6 +24,7 @@ const (
 	Consultants_DeleteConsultant_FullMethodName = "/api.v1.consultants.Consultants/DeleteConsultant"
 	Consultants_GetConsultant_FullMethodName    = "/api.v1.consultants.Consultants/GetConsultant"
 	Consultants_ListConsultants_FullMethodName  = "/api.v1.consultants.Consultants/ListConsultants"
+	Consultants_SendComm_FullMethodName         = "/api.v1.consultants.Consultants/SendComm"
 )
 
 // ConsultantsClient is the client API for Consultants service.
@@ -35,6 +36,7 @@ type ConsultantsClient interface {
 	DeleteConsultant(ctx context.Context, in *DeleteConsultantRequest, opts ...grpc.CallOption) (*DeleteConsultantReply, error)
 	GetConsultant(ctx context.Context, in *GetConsultantRequest, opts ...grpc.CallOption) (*GetConsultantReply, error)
 	ListConsultants(ctx context.Context, in *ListConsultantsRequest, opts ...grpc.CallOption) (*ListConsultantsReply, error)
+	SendComm(ctx context.Context, in *SendCommsRequest, opts ...grpc.CallOption) (*SendCommsReply, error)
 }
 
 type consultantsClient struct {
@@ -90,6 +92,15 @@ func (c *consultantsClient) ListConsultants(ctx context.Context, in *ListConsult
 	return out, nil
 }
 
+func (c *consultantsClient) SendComm(ctx context.Context, in *SendCommsRequest, opts ...grpc.CallOption) (*SendCommsReply, error) {
+	out := new(SendCommsReply)
+	err := c.cc.Invoke(ctx, Consultants_SendComm_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ConsultantsServer is the server API for Consultants service.
 // All implementations must embed UnimplementedConsultantsServer
 // for forward compatibility
@@ -99,6 +110,7 @@ type ConsultantsServer interface {
 	DeleteConsultant(context.Context, *DeleteConsultantRequest) (*DeleteConsultantReply, error)
 	GetConsultant(context.Context, *GetConsultantRequest) (*GetConsultantReply, error)
 	ListConsultants(context.Context, *ListConsultantsRequest) (*ListConsultantsReply, error)
+	SendComm(context.Context, *SendCommsRequest) (*SendCommsReply, error)
 	mustEmbedUnimplementedConsultantsServer()
 }
 
@@ -120,6 +132,9 @@ func (UnimplementedConsultantsServer) GetConsultant(context.Context, *GetConsult
 }
 func (UnimplementedConsultantsServer) ListConsultants(context.Context, *ListConsultantsRequest) (*ListConsultantsReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListConsultants not implemented")
+}
+func (UnimplementedConsultantsServer) SendComm(context.Context, *SendCommsRequest) (*SendCommsReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendComm not implemented")
 }
 func (UnimplementedConsultantsServer) mustEmbedUnimplementedConsultantsServer() {}
 
@@ -224,6 +239,24 @@ func _Consultants_ListConsultants_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Consultants_SendComm_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendCommsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConsultantsServer).SendComm(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Consultants_SendComm_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConsultantsServer).SendComm(ctx, req.(*SendCommsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Consultants_ServiceDesc is the grpc.ServiceDesc for Consultants service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -250,6 +283,10 @@ var Consultants_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListConsultants",
 			Handler:    _Consultants_ListConsultants_Handler,
+		},
+		{
+			MethodName: "SendComm",
+			Handler:    _Consultants_SendComm_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -153,3 +153,11 @@ func (s *ConsultantService) ListConsultants(ctx context.Context, req *consultant
 		Consultants: protoConsultants,
 	}, nil
 }
+
+func (s *ConsultantService) SendComm(ctx context.Context, req *consultantV1.SendCommsRequest) (*consultantV1.SendCommsReply, error) {
+	res, err := s.action.SendComm(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}

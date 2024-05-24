@@ -15,8 +15,8 @@ import (
 type Consultant struct {
 	gorm.Model
 	ID                string                 `gorm:"primaryKey" protobuf:"bytes,9,opt,name=id,proto3" json:"id,omitempty"`
-	UserID            string                 `gorm:"primaryKey" protobuf:"bytes,10,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	User              *biz.User              `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	UserID            string                 `gorm:"index" protobuf:"bytes,10,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	User              *biz.User              `gorm:"foreignKey:UserID" protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 	Specializations   []string               `protobuf:"bytes,2,rep,name=specializations,proto3" json:"specializations,omitempty"`
 	Bio               string                 `protobuf:"bytes,3,opt,name=bio,proto3" json:"bio,omitempty"`
 	Languages         []string               `protobuf:"bytes,4,rep,name=languages,proto3" json:"languages,omitempty"`
@@ -26,6 +26,15 @@ type Consultant struct {
 	AdditionalFields  map[string]string      `protobuf:"bytes,8,rep,name=additional_fields,json=additionalFields,proto3" json:"additional_fields,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	CreatedAt         *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt         *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+}
+
+type Comm struct {
+	gorm.Model
+	Msg         string                         `protobuf:"bytes,1,opt,name=msg,proto3" json:"msg,omitempty"`
+	UserID      string                         `gorm:"index" protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	CommType    consultantV1.CommunicationType `protobuf:"varint,3,opt,name=comm_type,json=commType,proto3,enum=api.v1.consultants.CommunicationType" json:"comm_type,omitempty"`
+	Options     map[string]bool                `gorm:"type:jsonb" protobuf:"bytes,4,rep,name=options,proto3" json:"options,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
+	RecipientID string                         `protobuf:"bytes,5,opt,name=recipient_id,json=recipientId,proto3" json:"recipient_id,omitempty"`
 }
 
 func (c *Consultant) BeforeCreate(tx *gorm.DB) error {
@@ -79,6 +88,7 @@ type ConsultantRepo interface {
 	Update(context.Context, *Consultant) (*Consultant, error)
 	Delete(context.Context, string) error
 	Search(context.Context, map[string]interface{}) ([]*Consultant, error)
+	SaveCommunication(context.Context, *consultantV1.Comm) (*consultantV1.Ack, error)
 }
 
 type ConsultantAction struct {
@@ -108,6 +118,19 @@ func (uc *ConsultantAction) ListConsultants(ctx context.Context, filters map[str
 	}
 
 	return consultants, nil
+}
+
+func (uc *ConsultantAction) SendComm(ctx context.Context, req *consultantV1.SendCommsRequest) (*consultantV1.SendCommsReply, error) {
+	uc.log.WithContext(ctx).Infof("SendComm: %s", req.Comm)
+	ack, err := uc.repo.SaveCommunication(ctx, req.Comm)
+	if err != nil {
+		return nil, err
+	}
+
+	return &consultantV1.SendCommsReply{
+		Ok:  err == nil,
+		Ack: ack,
+	}, err
 }
 
 func (uc *ConsultantAction) CreateConsultant(ctx context.Context, c *Consultant) (*Consultant, error) {

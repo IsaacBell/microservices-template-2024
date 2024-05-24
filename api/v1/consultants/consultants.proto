@@ -38,6 +38,17 @@ service Consultants {
       get: "/consultants"
     };
   }
+  rpc SendComm (SendCommsRequest) returns (SendCommsReply) {
+    option (google.api.http) = {
+      post: "/comms"
+    };
+  }
+}
+
+enum CommunicationType {
+  from_client = 0;
+  from_consultant = 1;
+  from_admin = 2;
 }
 
 message Consultant {
@@ -51,6 +62,7 @@ message Consultant {
   map<string, string> additional_fields = 8;
 	string id = 9;
 	string user_id = 10;
+  repeated string images = 11;
 }
 
 message UserConsultation {
@@ -64,6 +76,33 @@ message UserConsultation {
   google.protobuf.Timestamp created_at = 8;
   google.protobuf.Timestamp updated_at = 9;
 }
+
+// communication between professional and client
+message Comm {
+  string msg = 1;
+  string user_id = 2;
+  CommunicationType comm_type = 3;
+  map<string, bool> options = 4;
+  string recipient_id = 5;
+}
+
+message Ack {
+  string id = 1;
+  string user_id = 3;
+  string msg = 4;
+  int32 recipients_count = 5;
+  repeated string recipients = 6;
+}
+
+message SendCommsRequest {
+  Comm comm = 1;
+}
+
+message SendCommsReply {
+  bool ok = 1;
+  Ack ack = 2;
+}
+
 message CreateConsultantRequest {
   Consultant consultant = 1;
 }

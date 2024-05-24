@@ -5,6 +5,7 @@ import (
 	"log"
 	"microservices-template-2024/internal/biz"
 	"microservices-template-2024/internal/conf"
+	consultants_biz "microservices-template-2024/pkg/consultants/biz"
 	"os"
 	"time"
 
@@ -15,9 +16,12 @@ import (
 var DB *gorm.DB
 
 func automigrateDBTables(*gorm.DB) {
+	DB.AutoMigrate(&consultants_biz.Consultant{})
+	DB.AutoMigrate(&consultants_biz.Comm{})
 	DB.AutoMigrate(&biz.User{})
 	DB.AutoMigrate(&biz.Transaction{})
 	DB.AutoMigrate(&Exchange{})
+	DB.AutoMigrate(&Category{})
 	DB.AutoMigrate(&Category{})
 }
 
