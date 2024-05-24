@@ -54,7 +54,7 @@ func HTTPServerFactory(name string, c *conf.Server, logger log.Logger) *http.Ser
 	return http.NewServer(opts...)
 }
 
-func NewHTTPServer(
+func NewCoreHTTPServer(
 	c *conf.Server,
 	logger log.Logger,
 	// Each available runtime service

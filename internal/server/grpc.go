@@ -62,7 +62,7 @@ func GRPCServerFactory(name string, c *conf.Server, logger log.Logger) *grpc.Ser
 	return grpc.NewServer(opts...)
 }
 
-func NewGRPCServer(
+func NewCoreGRPCServer(
 	c *conf.Server,
 	logger log.Logger,
 	// Each available runtime service
