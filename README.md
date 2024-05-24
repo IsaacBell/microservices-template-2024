@@ -532,6 +532,14 @@ func wireApp(*conf.Server, *conf.Data, log.Logger) (*kratos.App, func(), error) 
 
 (Note that `newConsultantsApp` was just defined in the previous step in our main package.)
 
+Don't forget to add any new DB tables to the autoMigration list like so:
+
+```go
+func automigrateDBTables(*gorm.DB) {
+	DB.AutoMigrate(&consultants_biz.Consultant{})
+}
+```
+
 An important final step is to configure the endpoint the service will will run on. This can be configured in `configs/config.yaml` by adding something like the following:
 
 ```yaml
