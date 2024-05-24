@@ -35,16 +35,7 @@ func StartPrometheus(srv *http.Server) {
 	srv.Handle("/metrics", promHttp.Handler())
 }
 
-func NewHTTPServer(
-	c *conf.Server,
-	logger log.Logger,
-	// Each available runtime service
-	greeter *service.GreeterService,
-	user *service.UsersService,
-	trans *service.TransactionsService,
-	lias *service.LiabilitiesService,
-	log *service.LogService,
-) *http.Server {
+func HTTPServerFactory(name string, c *conf.Server, logger log.Logger) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),
@@ -60,7 +51,20 @@ func NewHTTPServer(
 		opts = append(opts, http.Timeout(c.Http.Timeout.AsDuration()))
 	}
 
-	srv := http.NewServer(opts...)
+	return http.NewServer(opts...)
+}
+
+func NewHTTPServer(
+	c *conf.Server,
+	logger log.Logger,
+	// Each available runtime service
+	greeter *service.GreeterService,
+	user *service.UsersService,
+	trans *service.TransactionsService,
+	lias *service.LiabilitiesService,
+	log *service.LogService,
+) *http.Server {
+	srv := HTTPServerFactory("core", c, logger)
 	helloworld.RegisterGreeterHTTPServer(srv, greeter)
 	v1.RegisterUsersHTTPServer(srv, user)
 	v1.RegisterTransactionsHTTPServer(srv, trans)

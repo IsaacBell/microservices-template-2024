@@ -24,16 +24,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-func NewGRPCServer(
-	c *conf.Server,
-	logger log.Logger,
-	// Each available runtime service
-	greeter *service.GreeterService,
-	user *service.UsersService,
-	trans *service.TransactionsService,
-	lias *service.LiabilitiesService,
-	log *service.LogService,
-) *grpc.Server {
+func GRPCServerFactory(name string, c *conf.Server, logger log.Logger) *grpc.Server {
 	exporter, err := stdouttrace.New(stdouttrace.WithWriter(ioutil.Discard))
 	if err != nil {
 		fmt.Println("creating stdout exporter: %v", err)
@@ -48,7 +39,7 @@ func NewGRPCServer(
 	)
 
 	counter := prometheus.NewCounterVec(
-		prometheus.CounterOpts{Name: "kratos_counter"}, []string{"kind", "operation", "code", "reason"})
+		prometheus.CounterOpts{Name: name + "_counter"}, []string{"kind", "operation", "code", "reason"})
 
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
@@ -68,7 +59,20 @@ func NewGRPCServer(
 		opts = append(opts, grpc.Timeout(c.Grpc.Timeout.AsDuration()))
 	}
 
-	srv := grpc.NewServer(opts...)
+	return grpc.NewServer(opts...)
+}
+
+func NewGRPCServer(
+	c *conf.Server,
+	logger log.Logger,
+	// Each available runtime service
+	greeter *service.GreeterService,
+	user *service.UsersService,
+	trans *service.TransactionsService,
+	lias *service.LiabilitiesService,
+	log *service.LogService,
+) *grpc.Server {
+	srv := GRPCServerFactory("core", c, logger)
 	helloworld.RegisterGreeterServer(srv, greeter)
 	v1.RegisterUsersServer(srv, user)
 	v1.RegisterTransactionsServer(srv, trans)
