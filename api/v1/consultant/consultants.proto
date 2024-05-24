@@ -1,0 +1,113 @@
+syntax = "proto3";
+
+package api.v1.consultant;
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+import "v1/users.proto";
+
+option go_package = "microservices-template-2024/api/v1/consultant;consultant";
+option java_multiple_files = true;
+option java_package = "api.v1.consultant";
+
+service Consultants {
+  rpc CreateConsultant (CreateConsultantRequest) returns (CreateConsultantReply) {
+    option (google.api.http) = {
+      post: "/consultants"
+      body: "*"
+    };
+  }
+  rpc UpdateConsultant (UpdateConsultantRequest) returns (UpdateConsultantReply) {
+    option (google.api.http) = {
+      put: "/consultants/{consultant.id}"
+      body: "*"
+    };
+  }
+  rpc DeleteConsultant (DeleteConsultantRequest) returns (DeleteConsultantReply) {
+    option (google.api.http) = {
+      delete: "/consultants/{id}"
+    };
+  }
+  rpc GetConsultant (GetConsultantRequest) returns (GetConsultantReply) {
+    option (google.api.http) = {
+      get: "/consultants/{id}"
+    };
+  }
+  rpc ListConsultants (ListConsultantsRequest) returns (ListConsultantsReply) {
+    option (google.api.http) = {
+      get: "/consultants"
+    };
+  }
+}
+
+message Consultant {
+  api.v1.User user = 1;
+  repeated string specializations = 2;
+  string bio = 3;
+  repeated string languages = 4;
+  int32 years_of_experience = 5;
+  repeated string certifications = 6;
+  repeated string education = 7;
+  map<string, string> additional_fields = 8;
+	string id = 9;
+	string user_id = 10;
+}
+
+message UserConsultation {
+  string id = 1;
+  string user_id = 2;
+  string consultant_id = 3;
+  google.protobuf.Timestamp started_at = 4;
+  google.protobuf.Timestamp ended_at = 5;
+  string status = 6;
+  map<string, string> additional_fields = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}
+message CreateConsultantRequest {
+  Consultant consultant = 1;
+}
+
+message CreateConsultantReply {
+  Consultant consultant = 1;
+	bool ok = 2;
+}
+
+message UpdateConsultantRequest {
+  Consultant consultant = 1;
+}
+
+message UpdateConsultantReply {
+  Consultant consultant = 1;
+	bool ok = 2;
+}
+
+message DeleteConsultantRequest {
+  string id = 1;
+}
+
+message DeleteConsultantReply {
+  bool ok = 1;
+}
+
+message GetConsultantRequest {
+  string id = 1;
+}
+
+message GetConsultantReply {
+  Consultant consultant = 1;
+	bool ok = 2;
+}
+
+message ListConsultantsRequest {
+  int32 page = 1;
+  int32 per_page = 2;
+  repeated string specializations = 3;
+  repeated string languages = 4;
+	string user_id = 5;
+}
+
+message ListConsultantsReply {
+	bool ok = 1;
+  repeated Consultant consultants = 2;
+}

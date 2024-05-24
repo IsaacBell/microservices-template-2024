@@ -36,6 +36,121 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.v1.GetCompanyReply'
+    /consultants:
+        get:
+            tags:
+                - Consultants
+            operationId: Consultants_ListConsultants
+            parameters:
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: perPage
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: specializations
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        type: string
+                - name: languages
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        type: string
+                - name: userId
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.consultant.ListConsultantsReply'
+        post:
+            tags:
+                - Consultants
+            operationId: Consultants_CreateConsultant
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.v1.consultant.CreateConsultantRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.consultant.CreateConsultantReply'
+    /consultants/{consultant.id}:
+        put:
+            tags:
+                - Consultants
+            operationId: Consultants_UpdateConsultant
+            parameters:
+                - name: consultant.id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.v1.consultant.UpdateConsultantRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.consultant.UpdateConsultantReply'
+    /consultants/{id}:
+        get:
+            tags:
+                - Consultants
+            operationId: Consultants_GetConsultant
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.consultant.GetConsultantReply'
+        delete:
+            tags:
+                - Consultants
+            operationId: Consultants_DeleteConsultant
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.v1.consultant.DeleteConsultantReply'
     /helloworld/{name}:
         get:
             tags:
@@ -1680,6 +1795,85 @@ components:
                     type: string
                 userType:
                     type: string
+        api.v1.consultant.Consultant:
+            type: object
+            properties:
+                user:
+                    $ref: '#/components/schemas/api.v1.User'
+                specializations:
+                    type: array
+                    items:
+                        type: string
+                bio:
+                    type: string
+                languages:
+                    type: array
+                    items:
+                        type: string
+                yearsOfExperience:
+                    type: integer
+                    format: int32
+                certifications:
+                    type: array
+                    items:
+                        type: string
+                education:
+                    type: array
+                    items:
+                        type: string
+                additionalFields:
+                    type: object
+                    additionalProperties:
+                        type: string
+                id:
+                    type: string
+                userId:
+                    type: string
+        api.v1.consultant.CreateConsultantReply:
+            type: object
+            properties:
+                consultant:
+                    $ref: '#/components/schemas/api.v1.consultant.Consultant'
+                ok:
+                    type: boolean
+        api.v1.consultant.CreateConsultantRequest:
+            type: object
+            properties:
+                consultant:
+                    $ref: '#/components/schemas/api.v1.consultant.Consultant'
+        api.v1.consultant.DeleteConsultantReply:
+            type: object
+            properties:
+                ok:
+                    type: boolean
+        api.v1.consultant.GetConsultantReply:
+            type: object
+            properties:
+                consultant:
+                    $ref: '#/components/schemas/api.v1.consultant.Consultant'
+                ok:
+                    type: boolean
+        api.v1.consultant.ListConsultantsReply:
+            type: object
+            properties:
+                ok:
+                    type: boolean
+                consultants:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.v1.consultant.Consultant'
+        api.v1.consultant.UpdateConsultantReply:
+            type: object
+            properties:
+                consultant:
+                    $ref: '#/components/schemas/api.v1.consultant.Consultant'
+                ok:
+                    type: boolean
+        api.v1.consultant.UpdateConsultantRequest:
+            type: object
+            properties:
+                consultant:
+                    $ref: '#/components/schemas/api.v1.consultant.Consultant'
         api.v1.lodging.CreateLodgingReply:
             type: object
             properties:
@@ -1895,6 +2089,7 @@ components:
             description: The response message containing the greetings
 tags:
     - name: Companies
+    - name: Consultants
     - name: Finance
     - name: Greeter
       description: The greeting service definition.

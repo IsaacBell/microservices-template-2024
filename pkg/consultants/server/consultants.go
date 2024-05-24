@@ -1,12 +1,12 @@
-package lodging_server
+package consultants_server
 
 import (
 	"fmt"
 	"io/ioutil"
-	lodgingV1 "microservices-template-2024/api/v1/lodging"
+	consultantV1 "microservices-template-2024/api/v1/consultant"
 	"microservices-template-2024/internal/conf"
 	"microservices-template-2024/internal/server"
-	lodgingService "microservices-template-2024/pkg/lodging/service"
+	consultantsService "microservices-template-2024/pkg/consultants/service"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
@@ -25,10 +25,10 @@ import (
 	kmetrics "github.com/go-kratos/prometheus/metrics"
 )
 
-func NewLodgingGrpcServer(
+func NewConsultantsGrpcServer(
 	c *conf.Server,
 	logger log.Logger,
-	property *lodgingService.PropertyService,
+	consultant *consultantsService.ConsultantService,
 ) *grpc.Server {
 	exporter, err := stdouttrace.New(stdouttrace.WithWriter(ioutil.Discard))
 	if err != nil {
@@ -65,15 +65,15 @@ func NewLodgingGrpcServer(
 	}
 
 	srv := grpc.NewServer(opts...)
-	lodgingV1.RegisterLodgingServer(srv, property)
+	consultantV1.RegisterConsultantsServer(srv, consultant)
 
 	return srv
 }
 
-func NewLodgingHTTPServer(
+func NewConsultantsHTTPServer(
 	c *conf.Server,
 	logger log.Logger,
-	property *lodgingService.PropertyService,
+	consultant *consultantsService.ConsultantService,
 ) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(
@@ -91,7 +91,7 @@ func NewLodgingHTTPServer(
 	}
 
 	srv := http.NewServer(opts...)
-	lodgingV1.RegisterLodgingHTTPServer(srv, property)
+	consultantV1.RegisterConsultantsHTTPServer(srv, consultant)
 
 	server.StartPrometheus(srv)
 	return srv
