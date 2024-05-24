@@ -3,7 +3,7 @@ package consultants_service
 import (
 	"context"
 
-	consultantV1 "microservices-template-2024/api/v1/consultant"
+	consultantV1 "microservices-template-2024/api/v1/consultants"
 	consultants_biz "microservices-template-2024/pkg/consultants/biz"
 )
 

@@ -1,7 +1,7 @@
 package consultants_server
 
 import (
-	consultantV1 "microservices-template-2024/api/v1/consultant"
+	consultantV1 "microservices-template-2024/api/v1/consultants"
 	"microservices-template-2024/internal/conf"
 	"microservices-template-2024/internal/server"
 	consultantsService "microservices-template-2024/pkg/consultants/service"

@@ -1,14 +1,14 @@
 syntax = "proto3";
 
-package api.v1.consultant;
+package api.v1.consultants;
 
 import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
 import "v1/users.proto";
 
-option go_package = "microservices-template-2024/api/v1/consultant;consultant";
+option go_package = "microservices-template-2024/api/v1/consultants;consultant";
 option java_multiple_files = true;
-option java_package = "api.v1.consultant";
+option java_package = "api.v1.consultants";
 
 service Consultants {
   rpc CreateConsultant (CreateConsultantRequest) returns (CreateConsultantReply) {

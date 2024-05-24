@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-http v2.7.3
 // - protoc             v5.26.1
-// source: v1/consultant/consultants.proto
+// source: v1/consultants/consultants.proto
 
 package consultant
 
@@ -19,11 +19,11 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
-const OperationConsultantsCreateConsultant = "/api.v1.consultant.Consultants/CreateConsultant"
-const OperationConsultantsDeleteConsultant = "/api.v1.consultant.Consultants/DeleteConsultant"
-const OperationConsultantsGetConsultant = "/api.v1.consultant.Consultants/GetConsultant"
-const OperationConsultantsListConsultants = "/api.v1.consultant.Consultants/ListConsultants"
-const OperationConsultantsUpdateConsultant = "/api.v1.consultant.Consultants/UpdateConsultant"
+const OperationConsultantsCreateConsultant = "/api.v1.consultants.Consultants/CreateConsultant"
+const OperationConsultantsDeleteConsultant = "/api.v1.consultants.Consultants/DeleteConsultant"
+const OperationConsultantsGetConsultant = "/api.v1.consultants.Consultants/GetConsultant"
+const OperationConsultantsListConsultants = "/api.v1.consultants.Consultants/ListConsultants"
+const OperationConsultantsUpdateConsultant = "/api.v1.consultants.Consultants/UpdateConsultant"
 
 type ConsultantsHTTPServer interface {
 	CreateConsultant(context.Context, *CreateConsultantRequest) (*CreateConsultantReply, error)

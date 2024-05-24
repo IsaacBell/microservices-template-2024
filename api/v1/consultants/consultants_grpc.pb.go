@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v5.26.1
-// source: v1/consultant/consultants.proto
+// source: v1/consultants/consultants.proto
 
 package consultant
 
@@ -19,11 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Consultants_CreateConsultant_FullMethodName = "/api.v1.consultant.Consultants/CreateConsultant"
-	Consultants_UpdateConsultant_FullMethodName = "/api.v1.consultant.Consultants/UpdateConsultant"
-	Consultants_DeleteConsultant_FullMethodName = "/api.v1.consultant.Consultants/DeleteConsultant"
-	Consultants_GetConsultant_FullMethodName    = "/api.v1.consultant.Consultants/GetConsultant"
-	Consultants_ListConsultants_FullMethodName  = "/api.v1.consultant.Consultants/ListConsultants"
+	Consultants_CreateConsultant_FullMethodName = "/api.v1.consultants.Consultants/CreateConsultant"
+	Consultants_UpdateConsultant_FullMethodName = "/api.v1.consultants.Consultants/UpdateConsultant"
+	Consultants_DeleteConsultant_FullMethodName = "/api.v1.consultants.Consultants/DeleteConsultant"
+	Consultants_GetConsultant_FullMethodName    = "/api.v1.consultants.Consultants/GetConsultant"
+	Consultants_ListConsultants_FullMethodName  = "/api.v1.consultants.Consultants/ListConsultants"
 )
 
 // ConsultantsClient is the client API for Consultants service.
@@ -228,7 +228,7 @@ func _Consultants_ListConsultants_Handler(srv interface{}, ctx context.Context, 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Consultants_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "api.v1.consultant.Consultants",
+	ServiceName: "api.v1.consultants.Consultants",
 	HandlerType: (*ConsultantsServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -253,5 +253,5 @@ var Consultants_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "v1/consultant/consultants.proto",
+	Metadata: "v1/consultants/consultants.proto",
 }

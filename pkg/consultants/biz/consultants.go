@@ -3,7 +3,7 @@ package consultants_biz
 import (
 	"context"
 	"fmt"
-	consultantV1 "microservices-template-2024/api/v1/consultant"
+	consultantV1 "microservices-template-2024/api/v1/consultants"
 	"microservices-template-2024/internal/biz"
 
 	"github.com/go-kratos/kratos/v2/log"
