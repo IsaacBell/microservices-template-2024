@@ -72,6 +72,8 @@ func RunApp(
 	wireAppFunc func(*conf.Server, *conf.Data, log.Logger) (*kratos.App, func(), error),
 	afterStartCb func(),
 ) {
+	var servers *conf.Server
+
 	id, _ := os.Hostname()
 
 	flag.Parse()
@@ -96,39 +98,41 @@ func RunApp(
 		panic(err)
 	}
 
-	httpAddr, err := c.Value(name + ".http.addr").String()
-	if err != nil {
-		panic(err)
-	}
-	httpTimeout, err := c.Value(name + ".http.timeout").String()
-	if err != nil {
-		panic(err)
-	}
-	grpcAddr, err := c.Value(name + ".grpc.addr").String()
-	if err != nil {
-		panic(err)
-	}
-	grpcTimeout, err := c.Value(name + ".grpc.timeout").String()
-	if err != nil {
-		panic(err)
+	if name != "core" {
+		httpAddr, err := c.Value(name + ".http.addr").String()
+		if err != nil {
+			panic(err)
+		}
+		httpTimeout, err := c.Value(name + ".http.timeout").String()
+		if err != nil {
+			panic(err)
+		}
+		grpcAddr, err := c.Value(name + ".grpc.addr").String()
+		if err != nil {
+			panic(err)
+		}
+		grpcTimeout, err := c.Value(name + ".grpc.timeout").String()
+		if err != nil {
+			panic(err)
+		}
+
+		servers = &conf.Server{
+			Grpc: &conf.Server_GRPC{
+				Network: "",
+				Addr:    grpcAddr,
+				Timeout: &durationpb.Duration{Seconds: int64(grpcTimeout[0])},
+			},
+			Http: &conf.Server_HTTP{
+				Network: "",
+				Addr:    httpAddr,
+				Timeout: &durationpb.Duration{Seconds: int64(httpTimeout[0])},
+			},
+		}
 	}
 
 	var bc conf.Bootstrap
 	if err := c.Scan(&bc); err != nil {
 		panic(err)
-	}
-
-	servers := &conf.Server{
-		Grpc: &conf.Server_GRPC{
-			Network: "",
-			Addr:    grpcAddr,
-			Timeout: &durationpb.Duration{Seconds: int64(grpcTimeout[0])},
-		},
-		Http: &conf.Server_HTTP{
-			Network: "",
-			Addr:    httpAddr,
-			Timeout: &durationpb.Duration{Seconds: int64(httpTimeout[0])},
-		},
 	}
 
 	db := &conf.Data_Database{
@@ -141,10 +145,12 @@ func RunApp(
 		Redis:    bc.Data.Redis,
 	}
 
+	// Set redis to our url
 	pass := os.Getenv("UPSTASH_REDIS_PASS")
 	url := os.Getenv("UPSTASH_REDIS_URL")
 	path := "rediss://default:" + pass + "@" + url
 	bc.Data.Redis.Addr = path
+
 	fmt.Printf("%s %s %v\n", servers.String(), data.String(), logger.Log)
 
 	app, cleanup, err := wireAppFunc(servers, data, logger)
@@ -161,10 +167,8 @@ func RunApp(
 	defer fmt.Printf("::::: %s Service shutting down :::::\n", name)
 
 	kratos.AfterStart(func(context.Context) error {
-		stream.ProduceKafkaMessage("main", name+"Finance Server started")
-		defer stream.ProduceKafkaMessage("main", name+"Finance Server stopped")
 		stream.ProduceKafkaMessage(name, name+" server started")
-		defer stream.ProduceKafkaMessage(name, name+" server stopped")
+		stream.ProduceKafkaMessage(name, name+" server started")
 
 		if afterStartCb != nil {
 			afterStartCb()
@@ -177,5 +181,9 @@ func RunApp(
 	if err := app.Run(); err != nil {
 		panic(err)
 	}
+
+	defer stream.ProduceKafkaMessage(name, name+" server stopped")
+	defer stream.ProduceKafkaMessage(name, name+" server stopped")
+
 	defer app.Stop()
 }

@@ -1,25 +1,14 @@
 package main
 
 import (
-	"context"
-	"flag"
-	"fmt"
 	"os"
-	"time"
 
-	"microservices-template-2024/internal/conf"
 	"microservices-template-2024/internal/server"
-	cache "microservices-template-2024/pkg/cache"
-	stream "microservices-template-2024/pkg/stream"
 
 	"github.com/go-kratos/kratos/v2"
-	"github.com/go-kratos/kratos/v2/config"
-	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	"github.com/joho/godotenv"
 
 	_ "go.uber.org/automaxprocs"
 )
@@ -27,7 +16,7 @@ import (
 // go build -ldflags "-X main.Version=x.y.z"
 var (
 	// Name is the name of the compiled software.
-	Name string = "Core Service"
+	Name string = "core"
 	// Version is the version of the compiled software.
 	Version string
 	// flagconf is the config flag.
@@ -35,108 +24,17 @@ var (
 
 	id, _ = os.Hostname()
 
-	KafkaTopics = []string{"default", "critical", "main"}
+	KafkaTopics = []string{"core", "default", "critical", "main"}
 )
 
 func init() {
-	file := conf.ConfigDir() + "config.yaml"
-	flag.StringVar(&flagconf, "conf", file, "config path, eg: -conf config.yaml")
-
-	cwd, err := os.Getwd()
-	if err != nil {
-		fmt.Println("Error getting current working directory: %v", err)
-	}
-
-	err = godotenv.Load()
-	if err != nil {
-		fmt.Println("Current working directory: %s", cwd)
-		fmt.Println("err loading .env: %v", err)
-
-		err = godotenv.Load("../../.env")
-		if err != nil {
-			log.Fatalf("err loading .env: %v", err)
-		}
-	}
-
-	streamKafkaMessages()
+	server.InitEnv(Name, flagconf, KafkaTopics)
 }
 
 func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
-	return kratos.New(
-		kratos.ID(id),
-		kratos.Name(Name),
-		kratos.Version(Version),
-		kratos.Metadata(map[string]string{}),
-		kratos.Logger(logger),
-		kratos.Server(
-			gs,
-			hs,
-		),
-	)
-}
-
-func streamKafkaMessages() {
-	for _, topic := range KafkaTopics {
-		stream.StartKafkaConsumer(topic, "core", func(msg string) {
-			log.Infof("Kafka: [", topic, "] ", msg)
-		})
-	}
+	return server.NewApp(Name, id, Version, logger, gs, hs)
 }
 
 func main() {
-	flag.Parse()
-	logger := log.With(log.NewStdLogger(os.Stdout),
-		"ts", log.DefaultTimestamp,
-		"caller", log.DefaultCaller,
-		"service.id", id,
-		"service.name", Name,
-		"service.version", Version,
-		"trace.id", tracing.TraceID(),
-		"span.id", tracing.SpanID(),
-	)
-	c := config.New(
-		config.WithSource(
-			file.NewSource(flagconf),
-		),
-	)
-	defer c.Close()
-
-	if err := c.Load(); err != nil {
-		panic(err)
-	}
-
-	var bc conf.Bootstrap
-	if err := c.Scan(&bc); err != nil {
-		panic(err)
-	}
-
-	bc.Data.Database = &conf.Data_Database{
-		Driver: "postgresql",
-		Source: server.DbConnString(),
-	}
-
-	pass := os.Getenv("UPSTASH_REDIS_PASS")
-	url := os.Getenv("UPSTASH_REDIS_URL")
-	path := "rediss://default:" + pass + "@" + url
-	bc.Data.Redis.Addr = path
-
-	app, cleanup, err := wireApp(bc.Server, bc.Data, logger)
-	if err != nil {
-		panic(err)
-	}
-	defer cleanup()
-
-	if err := server.OpenDBConn(); err != nil {
-		panic(err)
-	}
-
-	fmt.Println("::::: Core Service online :::::")
-	ctx := context.Background()
-	ca := cache.Cache(ctx)
-	ca.Set("coreServiceStartedAt", time.Now().String(), time.Hour*2)
-
-	// start and wait for stop signal
-	if err := app.Run(); err != nil {
-		panic(err)
-	}
+	server.RunApp(Name, Version, flagconf, wireApp, nil)
 }
