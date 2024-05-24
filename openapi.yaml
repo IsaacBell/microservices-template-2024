@@ -74,7 +74,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.v1.consultant.ListConsultantsReply'
+                                $ref: '#/components/schemas/api.v1.consultants.ListConsultantsReply'
         post:
             tags:
                 - Consultants
@@ -83,7 +83,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/api.v1.consultant.CreateConsultantRequest'
+                            $ref: '#/components/schemas/api.v1.consultants.CreateConsultantRequest'
                 required: true
             responses:
                 "200":
@@ -91,7 +91,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.v1.consultant.CreateConsultantReply'
+                                $ref: '#/components/schemas/api.v1.consultants.CreateConsultantReply'
     /consultants/{consultant.id}:
         put:
             tags:
@@ -107,7 +107,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/api.v1.consultant.UpdateConsultantRequest'
+                            $ref: '#/components/schemas/api.v1.consultants.UpdateConsultantRequest'
                 required: true
             responses:
                 "200":
@@ -115,7 +115,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.v1.consultant.UpdateConsultantReply'
+                                $ref: '#/components/schemas/api.v1.consultants.UpdateConsultantReply'
     /consultants/{id}:
         get:
             tags:
@@ -133,7 +133,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.v1.consultant.GetConsultantReply'
+                                $ref: '#/components/schemas/api.v1.consultants.GetConsultantReply'
         delete:
             tags:
                 - Consultants
@@ -150,7 +150,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.v1.consultant.DeleteConsultantReply'
+                                $ref: '#/components/schemas/api.v1.consultants.DeleteConsultantReply'
     /helloworld/{name}:
         get:
             tags:
@@ -1795,7 +1795,7 @@ components:
                     type: string
                 userType:
                     type: string
-        api.v1.consultant.Consultant:
+        api.v1.consultants.Consultant:
             type: object
             properties:
                 user:
@@ -1829,31 +1829,31 @@ components:
                     type: string
                 userId:
                     type: string
-        api.v1.consultant.CreateConsultantReply:
+        api.v1.consultants.CreateConsultantReply:
             type: object
             properties:
                 consultant:
-                    $ref: '#/components/schemas/api.v1.consultant.Consultant'
+                    $ref: '#/components/schemas/api.v1.consultants.Consultant'
                 ok:
                     type: boolean
-        api.v1.consultant.CreateConsultantRequest:
+        api.v1.consultants.CreateConsultantRequest:
             type: object
             properties:
                 consultant:
-                    $ref: '#/components/schemas/api.v1.consultant.Consultant'
-        api.v1.consultant.DeleteConsultantReply:
+                    $ref: '#/components/schemas/api.v1.consultants.Consultant'
+        api.v1.consultants.DeleteConsultantReply:
             type: object
             properties:
                 ok:
                     type: boolean
-        api.v1.consultant.GetConsultantReply:
+        api.v1.consultants.GetConsultantReply:
             type: object
             properties:
                 consultant:
-                    $ref: '#/components/schemas/api.v1.consultant.Consultant'
+                    $ref: '#/components/schemas/api.v1.consultants.Consultant'
                 ok:
                     type: boolean
-        api.v1.consultant.ListConsultantsReply:
+        api.v1.consultants.ListConsultantsReply:
             type: object
             properties:
                 ok:
@@ -1861,19 +1861,19 @@ components:
                 consultants:
                     type: array
                     items:
-                        $ref: '#/components/schemas/api.v1.consultant.Consultant'
-        api.v1.consultant.UpdateConsultantReply:
+                        $ref: '#/components/schemas/api.v1.consultants.Consultant'
+        api.v1.consultants.UpdateConsultantReply:
             type: object
             properties:
                 consultant:
-                    $ref: '#/components/schemas/api.v1.consultant.Consultant'
+                    $ref: '#/components/schemas/api.v1.consultants.Consultant'
                 ok:
                     type: boolean
-        api.v1.consultant.UpdateConsultantRequest:
+        api.v1.consultants.UpdateConsultantRequest:
             type: object
             properties:
                 consultant:
-                    $ref: '#/components/schemas/api.v1.consultant.Consultant'
+                    $ref: '#/components/schemas/api.v1.consultants.Consultant'
         api.v1.lodging.CreateLodgingReply:
             type: object
             properties:
