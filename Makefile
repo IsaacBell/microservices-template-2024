@@ -69,19 +69,18 @@ wire:
 # build
 build:
 	mkdir -p bin/ && go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/ ./...
+	make proto
 	make wire
 	
 
 .PHONY: generate
-# generate
 generate:
 	go generate ./...
 
 .PHONY: proto
-# generate all
 proto:
-	make wire;
-	make generate;
+	make config;
+	make api;
 
 .PHONY: all
 all: 
