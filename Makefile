@@ -2,6 +2,10 @@ GOHOSTOS:=$(shell go env GOHOSTOS)
 GOPATH:=$(shell go env GOPATH)
 VERSION=$(shell git describe --tags --always)
 
+ROOT_DIR := app
+DIRS := $(wildcard $(ROOT_DIR)/*)
+APPS := $(wildcard $(ROOT_DIR)/apps/*)
+
 ifeq ($(GOHOSTOS), windows)
 	#the `find.exe` is different from `find` in bash/shell.
 	#to see https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/find.
@@ -14,6 +18,12 @@ else
 	INTERNAL_PROTO_FILES=$(shell find internal -name *.proto)
 	API_PROTO_FILES=$(shell find api -type f -name "*.proto")
 endif
+
+# Define a dynamic target for each app
+.PHONY: $(APPS)
+$(APPS):
+	@echo "Running $@"
+	./bin/$@ &
 
 .PHONY: init
 # init env
@@ -45,13 +55,22 @@ api:
 	       --openapi_out=fq_schema_naming=true,default_response=false:. \
 	       $(API_PROTO_FILES)
 
+.PHONY: wire
+wire:
+	make config && make api
+	@for dir in $(DIRS); do \
+		if [ -d $$dir ]; then \
+			echo "Running wire in $$dir"; \
+			(cd $$dir && wire); \
+		fi \
+	done
+
 .PHONY: build
 # build
 build:
 	mkdir -p bin/ && go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/ ./...
-	cd app/finance && wire
-	cd app/b2b && wire
-	cd app/lodging && wire
+	make wire
+	
 
 .PHONY: generate
 # generate
@@ -61,28 +80,20 @@ generate:
 .PHONY: proto
 # generate all
 proto:
-	make api;
-	make config;
+	make wire;
 	make generate;
 
-.PHONY: all lodging fin b2b execute
-all: fin execute
-	wait
-
-.PHONY: lodging
-fin:
-	./bin/lodging &
-
-.PHONY: fin
-fin:
-	./bin/finance &
-
-.PHONY: b2b
-fin:
-	./bin/b2b &
+.PHONY: all
+all: 
+	@for dir in $(DIRS); do \
+		app_name=$$(basename $$dir); \
+		echo "Running $$app_name"; \
+		./bin/$$app_name & \
+	done
+	./bin/microservices-template-2024 &
 
 .PHONY: execute
-execute:
+execute: $(APPS)
 	./bin/microservices-template-2024 &
 
 .PHONY: compile
@@ -92,9 +103,8 @@ compile:
 
 .PHONY: run
 run:
-	make all;
 	make build;
-	make execute;
+	make all;
 
 # show help
 help:
