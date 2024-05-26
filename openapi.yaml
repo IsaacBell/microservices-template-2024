@@ -25,6 +25,14 @@ paths:
                   schema:
                     type: integer
                     format: enum
+                - name: comm.recipientId
+                  in: query
+                  schema:
+                    type: string
+                - name: comm.from
+                  in: query
+                  schema:
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -1837,6 +1845,8 @@ components:
                     type: array
                     items:
                         type: string
+                from:
+                    type: string
         api.v1.consultants.Consultant:
             type: object
             properties:

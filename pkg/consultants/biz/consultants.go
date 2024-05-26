@@ -3,7 +3,7 @@ package consultants_biz
 import (
 	"context"
 	"fmt"
-	consultantV1 "microservices-template-2024/api/v1/consultants"
+	consultantsV1 "microservices-template-2024/api/v1/consultants"
 	"microservices-template-2024/internal/biz"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -28,13 +28,14 @@ type Consultant struct {
 	UpdatedAt         *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 }
 
-type Comm struct {
-	gorm.Model
-	Msg         string                         `protobuf:"bytes,1,opt,name=msg,proto3" json:"msg,omitempty"`
-	UserID      string                         `gorm:"index" protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	CommType    consultantV1.CommunicationType `protobuf:"varint,3,opt,name=comm_type,json=commType,proto3,enum=api.v1.consultants.CommunicationType" json:"comm_type,omitempty"`
-	Options     map[string]bool                `gorm:"type:jsonb" protobuf:"bytes,4,rep,name=options,proto3" json:"options,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
-	RecipientID string                         `protobuf:"bytes,5,opt,name=recipient_id,json=recipientId,proto3" json:"recipient_id,omitempty"`
+type Communication struct {
+	// gorm.Model
+	Msg         string                          `protobuf:"bytes,1,opt,name=msg,proto3" json:"msg,omitempty"`
+	UserID      string                          `gorm:"index" protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	CommType    consultantsV1.CommunicationType `protobuf:"varint,3,opt,name=comm_type,json=commType,proto3,enum=api.v1.consultants.CommunicationType" json:"comm_type,omitempty"`
+	Options     map[string]bool                 `gorm:"type:jsonb" protobuf:"bytes,4,rep,name=options,proto3" json:"options,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
+	RecipientID string                          `protobuf:"bytes,5,opt,name=recipient_id,json=recipientId,proto3" json:"recipient_id,omitempty"`
+	From        string                          `protobuf:"bytes,6,opt,name=from,json=from,proto3" json:"from,omitempty"`
 }
 
 func (c *Consultant) BeforeCreate(tx *gorm.DB) error {
@@ -44,12 +45,12 @@ func (c *Consultant) BeforeCreate(tx *gorm.DB) error {
 	return nil
 }
 
-func ConsultantToProtoData(consultant *Consultant) *consultantV1.Consultant {
+func ConsultantToProtoData(consultant *Consultant) *consultantsV1.Consultant {
 	if consultant == nil {
 		return nil
 	}
 
-	return &consultantV1.Consultant{
+	return &consultantsV1.Consultant{
 		User:              biz.UserToProtoData(consultant.User),
 		Specializations:   consultant.Specializations,
 		Bio:               consultant.Bio,
@@ -63,8 +64,8 @@ func ConsultantToProtoData(consultant *Consultant) *consultantV1.Consultant {
 	}
 }
 
-func ProtoToConsultantData(input *consultantV1.Consultant) *Consultant {
-	consultant := &Consultant{
+func ProtoToConsultantData(input *consultantsV1.Consultant) *Consultant {
+	return &Consultant{
 		ID:                input.Id,
 		UserID:            input.UserId,
 		User:              biz.ProtoToUserData(input.User),
@@ -78,8 +79,28 @@ func ProtoToConsultantData(input *consultantV1.Consultant) *Consultant {
 		// CreatedAt:         input.CreatedAt,
 		// UpdatedAt:         input.UpdatedAt,
 	}
+}
 
-	return consultant
+func CommunicationToProtoData(c *Communication) *consultantsV1.Communication {
+	return &consultantsV1.Communication{
+		Msg:         c.Msg,
+		UserId:      c.UserID,
+		RecipientId: c.RecipientID,
+		CommType:    c.CommType,
+		Options:     c.Options,
+		From:        c.From,
+	}
+}
+
+func ProtoToCommunicationData(c *consultantsV1.Communication) *Communication {
+	return &Communication{
+		Msg:         c.Msg,
+		UserID:      c.UserId,
+		RecipientID: c.RecipientId,
+		CommType:    c.CommType,
+		Options:     c.Options,
+		From:        c.From,
+	}
 }
 
 type ConsultantRepo interface {
@@ -88,7 +109,7 @@ type ConsultantRepo interface {
 	Update(context.Context, *Consultant) (*Consultant, error)
 	Delete(context.Context, string) error
 	Search(context.Context, map[string]interface{}) ([]*Consultant, error)
-	SaveCommunication(context.Context, *consultantV1.Comm) (*consultantV1.Ack, error)
+	SaveCommunication(context.Context, *Communication) (*Communication, error)
 }
 
 type ConsultantAction struct {
@@ -120,17 +141,14 @@ func (uc *ConsultantAction) ListConsultants(ctx context.Context, filters map[str
 	return consultants, nil
 }
 
-func (uc *ConsultantAction) SendComm(ctx context.Context, req *consultantV1.SendCommsRequest) (*consultantV1.SendCommsReply, error) {
-	uc.log.WithContext(ctx).Infof("SendComm: %s", req.Comm)
-	ack, err := uc.repo.SaveCommunication(ctx, req.Comm)
+func (uc *ConsultantAction) SendComm(ctx context.Context, c *Communication) (*Communication, error) {
+	uc.log.WithContext(ctx).Infof("SendComm: [type]%s [user]%s", c.CommType, c.UserID)
+	comm, err := uc.repo.SaveCommunication(ctx, c)
 	if err != nil {
 		return nil, err
 	}
 
-	return &consultantV1.SendCommsReply{
-		Ok:  err == nil,
-		Ack: ack,
-	}, err
+	return comm, err
 }
 
 func (uc *ConsultantAction) CreateConsultant(ctx context.Context, c *Consultant) (*Consultant, error) {

@@ -1,7 +1,7 @@
 package consultants_server
 
 import (
-	consultantV1 "microservices-template-2024/api/v1/consultants"
+	consultantsV1 "microservices-template-2024/api/v1/consultants"
 	"microservices-template-2024/internal/conf"
 	"microservices-template-2024/internal/server"
 	consultantsService "microservices-template-2024/pkg/consultants/service"
@@ -17,7 +17,7 @@ func NewConsultantsGrpcServer(
 	consultant *consultantsService.ConsultantService,
 ) *grpc.Server {
 	srv := server.GRPCServerFactory("consultants", c, logger)
-	consultantV1.RegisterConsultantsServer(srv, consultant)
+	consultantsV1.RegisterConsultantsServer(srv, consultant)
 
 	return srv
 }
@@ -28,7 +28,7 @@ func NewConsultantsHTTPServer(
 	consultant *consultantsService.ConsultantService,
 ) *http.Server {
 	srv := server.HTTPServerFactory("consultants", c, logger)
-	consultantV1.RegisterConsultantsHTTPServer(srv, consultant)
+	consultantsV1.RegisterConsultantsHTTPServer(srv, consultant)
 
 	server.StartPrometheus(srv)
 	return srv

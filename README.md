@@ -353,12 +353,12 @@ package consultants_service
 import (
 	"context"
 
-	consultantV1 "microservices-template-2024/api/v1/consultant"
+	consultantsV1 "microservices-template-2024/api/v1/consultant"
 	consultants_biz "microservices-template-2024/pkg/consultants/biz"
 )
 
 type ConsultantService struct {
-	consultantV1.UnimplementedConsultantsServer
+	consultantsV1.UnimplementedConsultantsServer
 
 	action *consultants_biz.ConsultantAction
 }
@@ -367,24 +367,24 @@ func NewConsultantService(action *consultants_biz.ConsultantAction) *ConsultantS
 	return &ConsultantService{action: action}
 }
 
-func (s *ConsultantService) GetConsultant(ctx context.Context, req *consultantV1.GetConsultantRequest) (*consultantV1.GetConsultantReply, error) {
+func (s *ConsultantService) GetConsultant(ctx context.Context, req *consultantsV1.GetConsultantRequest) (*consultantsV1.GetConsultantReply, error) {
 	consultant, err := s.action.GetConsultant(ctx, req.Id)
 	if err != nil {
 		return nil, err
 	}
-	return &consultantV1.GetConsultantReply{
+	return &consultantsV1.GetConsultantReply{
 		Ok:         err == nil,
 		Consultant: consultants_biz.ConsultantToProtoData(consultant),
 	}, nil
 }
 
-func (s *ConsultantService) CreateConsultant(ctx context.Context, req *consultantV1.CreateConsultantRequest) (*consultantV1.CreateConsultantReply, error) {
+func (s *ConsultantService) CreateConsultant(ctx context.Context, req *consultantsV1.CreateConsultantRequest) (*consultantsV1.CreateConsultantReply, error) {
 	consultant := consultants_biz.ProtoToConsultantData(req.Consultant)
 	createdConsultant, err := s.action.CreateConsultant(ctx, consultant)
 	if err != nil {
 		return nil, err
 	}
-	return &consultantV1.CreateConsultantReply{
+	return &consultantsV1.CreateConsultantReply{
 		Ok:         err == nil,
 		Consultant: consultants_biz.ConsultantToProtoData(createdConsultant),
 	}, nil
@@ -401,7 +401,7 @@ Create gRPC and HTTP servers for the consulting service:
 package consultants_server
 
 import (
-	consultantV1 "microservices-template-2024/api/v1/consultant"
+	consultantsV1 "microservices-template-2024/api/v1/consultant"
 	"microservices-template-2024/internal/conf"
 	"microservices-template-2024/internal/server"
 	consultantsService "microservices-template-2024/pkg/consultants/service"
@@ -417,7 +417,7 @@ func NewConsultantsGrpcServer(
 	consultant *consultantsService.ConsultantService,
 ) *grpc.Server {
 	srv := server.GRPCServerFactory("consultants", c, logger)
-	consultantV1.RegisterConsultantsServer(srv, consultant)
+	consultantsV1.RegisterConsultantsServer(srv, consultant)
 
 	return srv
 }
@@ -428,7 +428,7 @@ func NewConsultantsHTTPServer(
 	consultant *consultantsService.ConsultantService,
 ) *http.Server {
 	srv := server.HTTPServerFactory("consultants", c, logger)
-	consultantV1.RegisterConsultantsHTTPServer(srv, consultant)
+	consultantsV1.RegisterConsultantsHTTPServer(srv, consultant)
 
 	server.StartPrometheus(srv)
 	return srv

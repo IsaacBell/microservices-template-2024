@@ -45,12 +45,6 @@ service Consultants {
   }
 }
 
-enum CommunicationType {
-  from_client = 0;
-  from_consultant = 1;
-  from_admin = 2;
-}
-
 message Consultant {
   api.v1.User user = 1;
   repeated string specializations = 2;
@@ -77,13 +71,21 @@ message UserConsultation {
   google.protobuf.Timestamp updated_at = 9;
 }
 
+enum CommunicationType {
+  from_client = 0;
+  from_consultant = 1;
+  from_admin = 2;
+  batch_from_consultant = 3;
+}
+
 // communication between professional and client
-message Comm {
+message Communication {
   string msg = 1;
   string user_id = 2;
   CommunicationType comm_type = 3;
   map<string, bool> options = 4;
   string recipient_id = 5;
+  string from = 6;
 }
 
 message Ack {
@@ -92,10 +94,12 @@ message Ack {
   string msg = 4;
   int32 recipients_count = 5;
   repeated string recipients = 6;
+  string from = 7;
+  
 }
 
 message SendCommsRequest {
-  Comm comm = 1;
+  Communication comm = 1;
 }
 
 message SendCommsReply {
