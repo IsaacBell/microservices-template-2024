@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	consultantsV1 "microservices-template-2024/api/v1/consultants"
+	communicationsV1 "microservices-template-2024/api/v1/communications"
 	consultants_biz "microservices-template-2024/pkg/consultants/biz"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -78,7 +78,7 @@ func TestSendComm(t *testing.T) {
 	logger := log.NewStdLogger(nil)
 	action := consultants_biz.NewConsultantAction(repo, logger)
 
-	comm := &consultants_biz.Communication{UserID: "1", CommType: consultants_biz.CommunicationType(consultantsV1.CommunicationType_from_client.String())}
+	comm := &consultants_biz.Communication{UserID: "1", CommType: consultants_biz.CommunicationType(communicationsV1.CommunicationType_from_client.String())}
 	repo.On("SaveCommunication", mock.Anything, comm).Return(comm, nil)
 
 	result, err := action.SendComm(context.Background(), comm)
@@ -151,7 +151,7 @@ func TestSendCommError(t *testing.T) {
 	logger := log.NewStdLogger(nil)
 	action := consultants_biz.NewConsultantAction(repo, logger)
 
-	comm := &consultants_biz.Communication{UserID: "1", CommType: consultants_biz.CommunicationType(consultantsV1.CommunicationType_from_consultant.String())}
+	comm := &consultants_biz.Communication{UserID: "1", CommType: consultants_biz.CommunicationType(communicationsV1.CommunicationType_from_consultant.String())}
 	repo.On("SaveCommunication", mock.Anything, comm).Return(nil, errors.New("error sending communication"))
 
 	_, err := action.SendComm(context.Background(), comm)

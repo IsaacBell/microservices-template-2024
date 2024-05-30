@@ -19,12 +19,12 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
-const OperationConsultantsCreateConsultant = "/api.v1.consultants.Consultants/CreateConsultant"
-const OperationConsultantsDeleteConsultant = "/api.v1.consultants.Consultants/DeleteConsultant"
-const OperationConsultantsGetConsultant = "/api.v1.consultants.Consultants/GetConsultant"
-const OperationConsultantsListConsultants = "/api.v1.consultants.Consultants/ListConsultants"
-const OperationConsultantsSendComm = "/api.v1.consultants.Consultants/SendComm"
-const OperationConsultantsUpdateConsultant = "/api.v1.consultants.Consultants/UpdateConsultant"
+const OperationConsultantsCreateConsultant = "/Consultants.Consultants/CreateConsultant"
+const OperationConsultantsDeleteConsultant = "/Consultants.Consultants/DeleteConsultant"
+const OperationConsultantsGetConsultant = "/Consultants.Consultants/GetConsultant"
+const OperationConsultantsListConsultants = "/Consultants.Consultants/ListConsultants"
+const OperationConsultantsSendComm = "/Consultants.Consultants/SendComm"
+const OperationConsultantsUpdateConsultant = "/Consultants.Consultants/UpdateConsultant"
 
 type ConsultantsHTTPServer interface {
 	CreateConsultant(context.Context, *CreateConsultantRequest) (*CreateConsultantReply, error)

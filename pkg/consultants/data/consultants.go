@@ -2,6 +2,7 @@ package consultants_data
 
 import (
 	"context"
+	"fmt"
 	"microservices-template-2024/internal/server"
 	consultants_biz "microservices-template-2024/pkg/consultants/biz"
 	"microservices-template-2024/pkg/notifications"
@@ -23,6 +24,7 @@ func NewConsultantRepo(data *Data, logger log.Logger) consultants_biz.Consultant
 
 func (r *consultantRepo) Get(ctx context.Context, id string) (*consultants_biz.Consultant, error) {
 	var consultant *consultants_biz.Consultant
+	fmt.Println("here")
 	err := server.DB.First(&consultant, id).Error
 	if err != nil {
 		return nil, err
