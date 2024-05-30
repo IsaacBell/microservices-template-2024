@@ -39,7 +39,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.v1.consultants.SendCommsReply'
+                                $ref: '#/components/schemas/Consultants.SendCommsReply'
     /companies:
         get:
             tags:
@@ -108,7 +108,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.v1.consultants.ListConsultantsReply'
+                                $ref: '#/components/schemas/Consultants.ListConsultantsReply'
         post:
             tags:
                 - Consultants
@@ -117,7 +117,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/api.v1.consultants.CreateConsultantRequest'
+                            $ref: '#/components/schemas/Consultants.CreateConsultantRequest'
                 required: true
             responses:
                 "200":
@@ -125,7 +125,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.v1.consultants.CreateConsultantReply'
+                                $ref: '#/components/schemas/Consultants.CreateConsultantReply'
     /consultants/{consultant.id}:
         put:
             tags:
@@ -141,7 +141,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/api.v1.consultants.UpdateConsultantRequest'
+                            $ref: '#/components/schemas/Consultants.UpdateConsultantRequest'
                 required: true
             responses:
                 "200":
@@ -149,7 +149,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.v1.consultants.UpdateConsultantReply'
+                                $ref: '#/components/schemas/Consultants.UpdateConsultantReply'
     /consultants/{id}:
         get:
             tags:
@@ -167,7 +167,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.v1.consultants.GetConsultantReply'
+                                $ref: '#/components/schemas/Consultants.GetConsultantReply'
         delete:
             tags:
                 - Consultants
@@ -184,7 +184,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.v1.consultants.DeleteConsultantReply'
+                                $ref: '#/components/schemas/Consultants.DeleteConsultantReply'
     /helloworld/{name}:
         get:
             tags:
@@ -1043,6 +1043,114 @@ paths:
                                 $ref: '#/components/schemas/api.v1.GetUserReply'
 components:
     schemas:
+        Consultants.Consultant:
+            type: object
+            properties:
+                user:
+                    $ref: '#/components/schemas/api.v1.User'
+                specializations:
+                    type: array
+                    items:
+                        type: string
+                bio:
+                    type: string
+                languages:
+                    type: array
+                    items:
+                        type: string
+                yearsOfExperience:
+                    type: integer
+                    format: int32
+                certifications:
+                    type: array
+                    items:
+                        type: string
+                education:
+                    type: array
+                    items:
+                        type: string
+                additionalFields:
+                    type: object
+                    additionalProperties:
+                        type: string
+                id:
+                    type: string
+                userId:
+                    type: string
+                images:
+                    type: array
+                    items:
+                        type: string
+        Consultants.CreateConsultantReply:
+            type: object
+            properties:
+                consultant:
+                    $ref: '#/components/schemas/Consultants.Consultant'
+                ok:
+                    type: boolean
+        Consultants.CreateConsultantRequest:
+            type: object
+            properties:
+                consultant:
+                    $ref: '#/components/schemas/Consultants.Consultant'
+        Consultants.DeleteConsultantReply:
+            type: object
+            properties:
+                ok:
+                    type: boolean
+        Consultants.GetConsultantReply:
+            type: object
+            properties:
+                consultant:
+                    $ref: '#/components/schemas/Consultants.Consultant'
+                ok:
+                    type: boolean
+        Consultants.ListConsultantsReply:
+            type: object
+            properties:
+                ok:
+                    type: boolean
+                consultants:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Consultants.Consultant'
+        Consultants.SendCommsReply:
+            type: object
+            properties:
+                ok:
+                    type: boolean
+                ack:
+                    $ref: '#/components/schemas/api.v1.Ack'
+        Consultants.UpdateConsultantReply:
+            type: object
+            properties:
+                consultant:
+                    $ref: '#/components/schemas/Consultants.Consultant'
+                ok:
+                    type: boolean
+        Consultants.UpdateConsultantRequest:
+            type: object
+            properties:
+                consultant:
+                    $ref: '#/components/schemas/Consultants.Consultant'
+        api.v1.Ack:
+            type: object
+            properties:
+                id:
+                    type: string
+                userId:
+                    type: string
+                msg:
+                    type: string
+                recipientsCount:
+                    type: integer
+                    format: int32
+                recipients:
+                    type: array
+                    items:
+                        type: string
+                from:
+                    type: string
         api.v1.Apr:
             type: object
             properties:
@@ -1829,114 +1937,6 @@ components:
                     type: string
                 userType:
                     type: string
-        api.v1.consultants.Ack:
-            type: object
-            properties:
-                id:
-                    type: string
-                userId:
-                    type: string
-                msg:
-                    type: string
-                recipientsCount:
-                    type: integer
-                    format: int32
-                recipients:
-                    type: array
-                    items:
-                        type: string
-                from:
-                    type: string
-        api.v1.consultants.Consultant:
-            type: object
-            properties:
-                user:
-                    $ref: '#/components/schemas/api.v1.User'
-                specializations:
-                    type: array
-                    items:
-                        type: string
-                bio:
-                    type: string
-                languages:
-                    type: array
-                    items:
-                        type: string
-                yearsOfExperience:
-                    type: integer
-                    format: int32
-                certifications:
-                    type: array
-                    items:
-                        type: string
-                education:
-                    type: array
-                    items:
-                        type: string
-                additionalFields:
-                    type: object
-                    additionalProperties:
-                        type: string
-                id:
-                    type: string
-                userId:
-                    type: string
-                images:
-                    type: array
-                    items:
-                        type: string
-        api.v1.consultants.CreateConsultantReply:
-            type: object
-            properties:
-                consultant:
-                    $ref: '#/components/schemas/api.v1.consultants.Consultant'
-                ok:
-                    type: boolean
-        api.v1.consultants.CreateConsultantRequest:
-            type: object
-            properties:
-                consultant:
-                    $ref: '#/components/schemas/api.v1.consultants.Consultant'
-        api.v1.consultants.DeleteConsultantReply:
-            type: object
-            properties:
-                ok:
-                    type: boolean
-        api.v1.consultants.GetConsultantReply:
-            type: object
-            properties:
-                consultant:
-                    $ref: '#/components/schemas/api.v1.consultants.Consultant'
-                ok:
-                    type: boolean
-        api.v1.consultants.ListConsultantsReply:
-            type: object
-            properties:
-                ok:
-                    type: boolean
-                consultants:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/api.v1.consultants.Consultant'
-        api.v1.consultants.SendCommsReply:
-            type: object
-            properties:
-                ok:
-                    type: boolean
-                ack:
-                    $ref: '#/components/schemas/api.v1.consultants.Ack'
-        api.v1.consultants.UpdateConsultantReply:
-            type: object
-            properties:
-                consultant:
-                    $ref: '#/components/schemas/api.v1.consultants.Consultant'
-                ok:
-                    type: boolean
-        api.v1.consultants.UpdateConsultantRequest:
-            type: object
-            properties:
-                consultant:
-                    $ref: '#/components/schemas/api.v1.consultants.Consultant'
         api.v1.lodging.CreateLodgingReply:
             type: object
             properties:

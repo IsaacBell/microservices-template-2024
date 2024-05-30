@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	consultantsV1 "microservices-template-2024/api/v1/consultants"
-	"microservices-template-2024/internal/biz"
+	biz "microservices-template-2024/internal/biz"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"
@@ -68,28 +68,6 @@ func ProtoToConsultantData(input *consultantsV1.Consultant) *Consultant {
 		AdditionalFields:  input.AdditionalFields,
 		// CreatedAt:         input.CreatedAt,
 		// UpdatedAt:         input.UpdatedAt,
-	}
-}
-
-func CommunicationToProtoData(c *Communication) *consultantsV1.Communication {
-	return &consultantsV1.Communication{
-		Msg:         c.Msg,
-		UserId:      c.UserID,
-		RecipientId: c.RecipientID,
-		CommType:    c.CommType.ToProto(),
-		Options:     c.Options,
-		From:        c.From,
-	}
-}
-
-func ProtoToCommunicationData(c *consultantsV1.Communication) *Communication {
-	return &Communication{
-		Msg:         c.Msg,
-		UserID:      c.UserId,
-		RecipientID: c.RecipientId,
-		CommType:    CommunicationTypeFromProto(c.CommType),
-		Options:     c.Options,
-		From:        c.From,
 	}
 }
 

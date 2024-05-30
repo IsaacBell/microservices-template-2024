@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 
+	communicationsV1 "microservices-template-2024/api/v1/communications"
 	consultantsV1 "microservices-template-2024/api/v1/consultants"
 	consultants_biz "microservices-template-2024/pkg/consultants/biz"
 
@@ -139,7 +140,7 @@ func (s *ConsultantService) SendComm(ctx context.Context, req *consultantsV1.Sen
 	}
 	return &consultantsV1.SendCommsReply{
 		Ok: err == nil,
-		Ack: &consultantsV1.Ack{
+		Ack: &communicationsV1.Ack{
 			Id:              strconv.FormatUint(uint64(0), 10),
 			UserId:          res.UserID,
 			Msg:             res.Msg,

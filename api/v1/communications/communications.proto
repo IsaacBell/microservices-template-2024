@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package api.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+option go_package = "microservices-template-2024/api/v1/communications;v1";
+option java_multiple_files = true;
+option java_package = "api.v1";
+
+service Communications {
+	rpc CreateCommunications (CreateCommunicationsRequest) returns (CreateCommunicationsReply);
+	rpc UpdateCommunications (UpdateCommunicationsRequest) returns (UpdateCommunicationsReply);
+	rpc DeleteCommunications (DeleteCommunicationsRequest) returns (DeleteCommunicationsReply);
+	rpc GetCommunications (GetCommunicationsRequest) returns (GetCommunicationsReply);
+	rpc ListCommunications (ListCommunicationsRequest) returns (ListCommunicationsReply);
+}
+
+enum CommunicationType {
+  unknown = 0;
+  from_client = 1;
+  from_admin = 2;
+  from_system = 3;
+  from_consultant = 4;
+  batch_from_consultant = 5;
+
+}
+
+// communication between professional and client
+message Communication {
+  string msg = 1;
+  string user_id = 2;
+  CommunicationType comm_type = 3;
+  map<string, bool> options = 4;
+  string recipient_id = 5;
+  string from = 6;
+}
+
+message Ack {
+  string id = 1;
+  string user_id = 3;
+  string msg = 4;
+  int32 recipients_count = 5;
+  repeated string recipients = 6;
+  string from = 7;
+}
+
+message ContactList {
+	// todo - "send last active at" time
+	repeated string ids = 1;
+	string user_id = 2;
+}
+
+message CreateCommunicationsRequest {}
+message CreateCommunicationsReply {}
+
+message UpdateCommunicationsRequest {}
+message UpdateCommunicationsReply {}
+
+message DeleteCommunicationsRequest {}
+message DeleteCommunicationsReply {}
+
+message GetCommunicationsRequest {}
+message GetCommunicationsReply {}
+
+message ListCommunicationsRequest {}
+message ListCommunicationsReply {}

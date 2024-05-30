@@ -7,6 +7,7 @@ import (
 	consultants_biz "microservices-template-2024/pkg/consultants/biz"
 	notifications_biz "microservices-template-2024/pkg/notifications/biz"
 	notifications_clients "microservices-template-2024/pkg/notifications/clients"
+	"microservices-template-2024/pkg/stream"
 	"microservices-template-2024/pkg/users"
 	"os"
 
@@ -53,6 +54,7 @@ func setMetadata(notif *Notification) {
 func Notify(notif *Notification) error {
 	setClient()
 	setMetadata(notif)
+	stream.ProduceKafkaMessage("notifications", notif.Data.Msg)
 
 	err := client.SendNotification(notif.Data, notif.Metadata)
 	if err != nil {

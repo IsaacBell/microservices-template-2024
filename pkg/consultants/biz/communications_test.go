@@ -3,7 +3,7 @@ package consultants_biz_test
 import (
 	"testing"
 
-	consultantsV1 "microservices-template-2024/api/v1/consultants"
+	communicationsV1 "microservices-template-2024/api/v1/communications"
 	consultants_biz "microservices-template-2024/pkg/consultants/biz"
 )
 
@@ -30,13 +30,13 @@ func TestCommunicationTypeString(t *testing.T) {
 func TestCommunicationTypeToProto(t *testing.T) {
 	testCases := []struct {
 		commType consultants_biz.CommunicationType
-		expected consultantsV1.CommunicationType
+		expected communicationsV1.CommunicationType
 	}{
-		{consultants_biz.COMM_TYPE_Unknown, consultantsV1.CommunicationType_unknown},
-		{consultants_biz.COMM_TYPE_FromClient, consultantsV1.CommunicationType_from_client},
-		{consultants_biz.COMM_TYPE_FromAdmin, consultantsV1.CommunicationType_from_admin},
-		{consultants_biz.COMM_TYPE_FromSystem, consultantsV1.CommunicationType_from_system},
-		{consultants_biz.CommunicationType("invalid"), consultantsV1.CommunicationType_unknown},
+		{consultants_biz.COMM_TYPE_Unknown, communicationsV1.CommunicationType_unknown},
+		{consultants_biz.COMM_TYPE_FromClient, communicationsV1.CommunicationType_from_client},
+		{consultants_biz.COMM_TYPE_FromAdmin, communicationsV1.CommunicationType_from_admin},
+		{consultants_biz.COMM_TYPE_FromSystem, communicationsV1.CommunicationType_from_system},
+		{consultants_biz.CommunicationType("invalid"), communicationsV1.CommunicationType_unknown},
 	}
 
 	for _, tc := range testCases {
@@ -76,13 +76,13 @@ func TestFromString(t *testing.T) {
 
 func TestCommunicationTypeFromProto(t *testing.T) {
 	testCases := []struct {
-		input    consultantsV1.CommunicationType
+		input    communicationsV1.CommunicationType
 		expected consultants_biz.CommunicationType
 	}{
-		{consultantsV1.CommunicationType_unknown, consultants_biz.COMM_TYPE_Unknown},
-		{consultantsV1.CommunicationType_from_client, consultants_biz.COMM_TYPE_FromClient},
-		{consultantsV1.CommunicationType_from_admin, consultants_biz.COMM_TYPE_FromAdmin},
-		{consultantsV1.CommunicationType_from_system, consultants_biz.COMM_TYPE_FromSystem},
+		{communicationsV1.CommunicationType_unknown, consultants_biz.COMM_TYPE_Unknown},
+		{communicationsV1.CommunicationType_from_client, consultants_biz.COMM_TYPE_FromClient},
+		{communicationsV1.CommunicationType_from_admin, consultants_biz.COMM_TYPE_FromAdmin},
+		{communicationsV1.CommunicationType_from_system, consultants_biz.COMM_TYPE_FromSystem},
 	}
 
 	for _, tc := range testCases {

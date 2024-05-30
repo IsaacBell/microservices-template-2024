@@ -1,14 +1,15 @@
 syntax = "proto3";
 
-package api.v1.consultants;
+package Consultants;
 
-import "google/protobuf/timestamp.proto";
-import "google/api/annotations.proto";
 import "v1/users.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "v1/communications/communications.proto";
 
 option go_package = "microservices-template-2024/api/v1/consultants;consultant";
 option java_multiple_files = true;
-option java_package = "api.v1.consultants";
+option java_package = "Consultants";
 
 service Consultants {
   rpc CreateConsultant (CreateConsultantRequest) returns (CreateConsultantReply) {
@@ -71,43 +72,13 @@ message UserConsultation {
   google.protobuf.Timestamp updated_at = 9;
 }
 
-enum CommunicationType {
-  unknown = 0;
-  from_client = 1;
-  from_admin = 2;
-  from_system = 3;
-  from_consultant = 4;
-  batch_from_consultant = 5;
-
-}
-
-// communication between professional and client
-message Communication {
-  string msg = 1;
-  string user_id = 2;
-  CommunicationType comm_type = 3;
-  map<string, bool> options = 4;
-  string recipient_id = 5;
-  string from = 6;
-}
-
-message Ack {
-  string id = 1;
-  string user_id = 3;
-  string msg = 4;
-  int32 recipients_count = 5;
-  repeated string recipients = 6;
-  string from = 7;
-  
-}
-
 message SendCommsRequest {
-  Communication comm = 1;
+  api.v1.Communication comm = 1;
 }
 
 message SendCommsReply {
   bool ok = 1;
-  Ack ack = 2;
+  api.v1.Ack ack = 2;
 }
 
 message CreateConsultantRequest {

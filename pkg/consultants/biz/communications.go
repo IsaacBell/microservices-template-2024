@@ -3,7 +3,7 @@ package consultants_biz
 import (
 	"errors"
 	"fmt"
-	consultantsV1 "microservices-template-2024/api/v1/consultants"
+	communicationsV1 "microservices-template-2024/api/v1/communications"
 
 	"gorm.io/gorm"
 )
@@ -43,16 +43,16 @@ func (ct CommunicationType) String() string {
 	return string(ct)
 }
 
-func (ct CommunicationType) ToProto() consultantsV1.CommunicationType {
+func (ct CommunicationType) ToProto() communicationsV1.CommunicationType {
 	switch ct {
 	case COMM_TYPE_FromClient:
-		return consultantsV1.CommunicationType_from_client
+		return communicationsV1.CommunicationType_from_client
 	case COMM_TYPE_FromAdmin:
-		return consultantsV1.CommunicationType_from_admin
+		return communicationsV1.CommunicationType_from_admin
 	case COMM_TYPE_FromSystem:
-		return consultantsV1.CommunicationType_from_system
+		return communicationsV1.CommunicationType_from_system
 	default:
-		return consultantsV1.CommunicationType_unknown
+		return communicationsV1.CommunicationType_unknown
 	}
 }
 
@@ -63,7 +63,29 @@ func FromString(str string) (CommunicationType, error) {
 	return COMM_TYPE_Unknown, errors.New("unknown communication type: " + str)
 }
 
-func CommunicationTypeFromProto(ct consultantsV1.CommunicationType) CommunicationType {
+func CommunicationTypeFromProto(ct communicationsV1.CommunicationType) CommunicationType {
 	fmt.Println("Proto message type: ", ct.String())
 	return CommunicationType(ct.String())
+}
+
+func CommunicationToProtoData(c *Communication) *communicationsV1.Communication {
+	return &communicationsV1.Communication{
+		Msg:         c.Msg,
+		UserId:      c.UserID,
+		RecipientId: c.RecipientID,
+		CommType:    c.CommType.ToProto(),
+		Options:     c.Options,
+		From:        c.From,
+	}
+}
+
+func ProtoToCommunicationData(c *communicationsV1.Communication) *Communication {
+	return &Communication{
+		Msg:         c.Msg,
+		UserID:      c.UserId,
+		RecipientID: c.RecipientId,
+		CommType:    CommunicationTypeFromProto(c.CommType),
+		Options:     c.Options,
+		From:        c.From,
+	}
 }
