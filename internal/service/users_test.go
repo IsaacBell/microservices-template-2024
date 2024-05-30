@@ -8,7 +8,6 @@ import (
 	v1 "microservices-template-2024/api/v1"
 	"microservices-template-2024/internal/biz"
 	"microservices-template-2024/internal/service"
-	"microservices-template-2024/test"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -69,9 +68,8 @@ func (u *userActionMock) SetMock(mock *mockUserAction) {
 }
 
 func TestUsersService_CreateUser(t *testing.T) {
-	mockAction := &userActionMock{}
-	uc := biz.NewUserAction(*mockAction.repo, test.Logger())
-	svc := service.NewUsersService(uc)
+	mockAction := &mockUserAction{}
+	svc := service.NewUsersService(&mockAction.UserAction)
 
 	user := &biz.User{
 		Email:    "test@example.com",
@@ -89,9 +87,7 @@ func TestUsersService_CreateUser(t *testing.T) {
 
 func TestUsersService_UpdateUser(t *testing.T) {
 	mockAction := &mockUserAction{}
-	action := &userActionMock{}
-	action.SetMock(mockAction)
-	svc := service.NewUsersService(&action.action)
+	svc := service.NewUsersService(&mockAction.UserAction)
 
 	user := &biz.User{
 		ID:       "1",
@@ -110,9 +106,7 @@ func TestUsersService_UpdateUser(t *testing.T) {
 
 func TestUsersService_DeleteUser(t *testing.T) {
 	mockAction := &mockUserAction{}
-	action := &userActionMock{}
-	action.SetMock(mockAction)
-	svc := service.NewUsersService(&action.action)
+	svc := service.NewUsersService(&mockAction.UserAction)
 
 	userID := "1"
 	mockAction.On("Delete", mock.Anything, userID).Return(nil)
@@ -126,9 +120,7 @@ func TestUsersService_DeleteUser(t *testing.T) {
 
 func TestUsersService_GetUser(t *testing.T) {
 	mockAction := &mockUserAction{}
-	action := &userActionMock{}
-	action.SetMock(mockAction)
-	svc := service.NewUsersService(&action.action)
+	svc := service.NewUsersService(&mockAction.UserAction)
 
 	user := &biz.User{
 		ID:       "1",
@@ -169,9 +161,7 @@ func TestUsersService_GetUser(t *testing.T) {
 
 func TestUsersService_ListUser(t *testing.T) {
 	mockAction := &mockUserAction{}
-	action := &userActionMock{}
-	action.SetMock(mockAction)
-	svc := service.NewUsersService(&action.action)
+	svc := service.NewUsersService(&mockAction.UserAction)
 
 	users := []*biz.User{
 		{ID: "1", Email: "user1@example.com", Username: "user1"},

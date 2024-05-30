@@ -49,7 +49,7 @@ func (s *UsersService) DeleteUser(ctx context.Context, req *v1.DeleteUserRequest
 	go func() {
 		err := cache.Cache(ctx).Del(req.Id).Err()
 		if err != nil {
-			fmt.Printf("Failed to delete cache entry for user %d: %v \n", req.Id, err)
+			fmt.Printf("Failed to delete cache entry for user %s: %v \n", req.Id, err)
 		}
 	}()
 

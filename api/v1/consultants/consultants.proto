@@ -72,10 +72,13 @@ message UserConsultation {
 }
 
 enum CommunicationType {
-  from_client = 0;
-  from_consultant = 1;
+  unknown = 0;
+  from_client = 1;
   from_admin = 2;
-  batch_from_consultant = 3;
+  from_system = 3;
+  from_consultant = 4;
+  batch_from_consultant = 5;
+
 }
 
 // communication between professional and client

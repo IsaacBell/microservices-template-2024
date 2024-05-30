@@ -2,8 +2,6 @@ package notifications_biz
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type Recipient struct {
@@ -16,7 +14,6 @@ type Recipient struct {
 }
 
 type NotificationData struct {
-	gorm.Model
 	From      string
 	CommType  string
 	Msg       string
@@ -26,7 +23,6 @@ type NotificationData struct {
 }
 
 type NotificationMetadata struct {
-	gorm.Model
 	Priority      string
 	IsWarning     bool
 	IsError       bool
@@ -34,4 +30,60 @@ type NotificationMetadata struct {
 	WillExpire    bool
 	ExpiresAt     time.Time
 	SentAt        time.Time
+}
+
+func DefaultNotifMetadata() *NotificationMetadata {
+	return &NotificationMetadata{
+		Priority:      "default",
+		WillExpire:    false,
+		IsWarning:     false,
+		IsError:       false,
+		IsSystemAlert: false,
+		SentAt:        time.Now(),
+	}
+}
+
+func WarningNotifMetadata() *NotificationMetadata {
+	return &NotificationMetadata{
+		Priority:      "medium",
+		WillExpire:    false,
+		IsWarning:     true,
+		IsError:       false,
+		IsSystemAlert: false,
+		SentAt:        time.Now(),
+	}
+}
+
+func ErrorNotifMetadata() *NotificationMetadata {
+	return &NotificationMetadata{
+		Priority:      "medium",
+		WillExpire:    false,
+		IsWarning:     false,
+		IsError:       true,
+		IsSystemAlert: false,
+		SentAt:        time.Now(),
+	}
+}
+
+func SystemNotifMetadata() *NotificationMetadata {
+	return &NotificationMetadata{
+		Priority:      "default",
+		WillExpire:    false,
+		IsWarning:     false,
+		IsError:       false,
+		IsSystemAlert: true,
+		SentAt:        time.Now(),
+	}
+}
+
+func NotifMetadataWithExpiry(expiry time.Time) *NotificationMetadata {
+	return &NotificationMetadata{
+		Priority:      "default",
+		WillExpire:    true,
+		IsWarning:     false,
+		IsError:       false,
+		IsSystemAlert: false,
+		SentAt:        time.Now(),
+		ExpiresAt:     expiry,
+	}
 }

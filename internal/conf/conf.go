@@ -56,6 +56,10 @@ func readCsvFile(filePath string) [][]string {
 	return records
 }
 
+func UsersServiceAddr() string {
+	return os.Getenv("CORE_SERVICE_ADDRESS")
+}
+
 // Redis Caching
 
 func RedisConn(ctx context.Context) *redis.Client {

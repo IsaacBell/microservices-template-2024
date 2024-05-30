@@ -2,14 +2,9 @@ package consultants_data
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"microservices-template-2024/internal/biz"
 	"microservices-template-2024/internal/server"
-	"microservices-template-2024/pkg/cache"
 	consultants_biz "microservices-template-2024/pkg/consultants/biz"
 	"microservices-template-2024/pkg/notifications"
-	notifications_biz "microservices-template-2024/pkg/notifications/biz"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -36,57 +31,8 @@ func (r *consultantRepo) Get(ctx context.Context, id string) (*consultants_biz.C
 	return consultant, nil
 }
 
-func notifyCommunicationSent(ctx context.Context, comm *consultants_biz.Communication) error {
-	var recip *biz.User
-	cacheKey := "user:" + comm.RecipientID
-	if cached, err := cache.Cache(ctx).Get(cacheKey).Result(); err == nil {
-		if err := json.Unmarshal([]byte(cached), &recip); err != nil {
-			fmt.Println("cache miss: ", err)
-			
-			err = server.DB.First(&recip, comm.RecipientID).Error
-			if err != nil {
-				fmt.Println("error retrieving user from DB: ", err)
-				
-				return err
-			}
-
-			cache.CacheRecord("user", cacheKey, comm.RecipientID, recip)
-		}
-	}
-
-	notif := notifications.Notification{
-		UserId: comm.RecipientID,
-		Data: &notifications_biz.NotificationData{
-			CommType: comm.CommType.String(),
-			Msg:      comm.Msg,
-			Options:  comm.Options,
-			From:     comm.From,
-			Recipient: &notifications_biz.Recipient{
-				Id:        comm.RecipientID,
-				SenderId:  comm.UserID,
-				Email:     recip.Email,
-				Phone:     recip.PhoneNumber,
-				FirstName: recip.FirstName,
-				LastName:  recip.LastName,
-			},
-		},
-		Metadata: &notifications_biz.NotificationMetadata{
-			Priority:   "default",
-			WillExpire: false,
-		},
-	}
-
-	err := notifications.Notify(&notif)
-	if err != nil {
-		fmt.Println("error sending notification: ", err)
-		return err
-	}
-
-	return nil
-}
-
 func (r *consultantRepo) SaveCommunication(ctx context.Context, comm *consultants_biz.Communication) (*consultants_biz.Communication, error) {
-	go notifyCommunicationSent(ctx, comm)
+	go notifications.NotifyCommunicationSent(comm.From, comm.UserID, comm.RecipientID, comm.Msg)
 	return comm, nil
 }
 

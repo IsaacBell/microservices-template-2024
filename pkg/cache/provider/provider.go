@@ -7,10 +7,11 @@ import (
 )
 
 type CacheClient struct {
+	RedisCache
 	ctx   context.Context
 	cache *redis.Client
 }
 
-func NewCache(ctx context.Context) *CacheClient {
+func NewCache(ctx context.Context) RedisCache {
 	return UseRedis(ctx)
 }

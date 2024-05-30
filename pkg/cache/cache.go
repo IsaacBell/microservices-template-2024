@@ -15,10 +15,10 @@ import (
 
 var (
 	once  sync.Once
-	cache *cache_provider.CacheClient = nil
+	cache cache_provider.RedisCache
 )
 
-func Cache(ctx context.Context) *cache_provider.CacheClient {
+func Cache(ctx context.Context) cache_provider.RedisCache {
 	once.Do(func() { cache = cache_provider.NewCache(ctx) })
 	return cache
 }

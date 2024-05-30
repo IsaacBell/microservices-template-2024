@@ -12,17 +12,20 @@ import (
 
 var (
 	onceCacheClient sync.Once
-	cacheInstance   *CacheClient
+	cacheInstance   RedisCache
 )
 
 type RedisCache interface {
-	Get(ctx context.Context, key string) redis.StringCmd
-	Set(ctx context.Context, key string, value interface{}, exp time.Duration)
-	GetMapField(ctx context.Context, key string, mapField string) *redis.StringCmd
-	SetMap(ctx context.Context, fieldKey string, values map[string]interface{}) *redis.IntCmd
+	UseContext(context.Context)
+	CurrentContext() context.Context
+	Get(key string) *redis.StringCmd
+	Set(key string, value interface{}, exp time.Duration) *redis.StatusCmd
+	Del(key string) *redis.IntCmd
+	GetMapField(key string, mapField string) *redis.StringCmd
+	SetMap(fieldKey string, values map[string]interface{}) *redis.IntCmd
 }
 
-func UseRedis(ctx context.Context) *CacheClient {
+func UseRedis(ctx context.Context) RedisCache {
 	onceCacheClient.Do(func() {
 		cache := conf.RedisConn(ctx)
 		cacheInstance = &CacheClient{ctx: ctx, cache: cache}
@@ -30,8 +33,16 @@ func UseRedis(ctx context.Context) *CacheClient {
 	return cacheInstance
 }
 
+func ChangeRedisClientTo(r RedisCache) {
+	cacheInstance = r
+}
+
 func (cache *CacheClient) UseContext(ctx context.Context) {
 	cache.ctx = ctx
+}
+
+func (cache *CacheClient) CurrentContext() context.Context {
+	return cache.ctx
 }
 
 func (cache *CacheClient) Get(key string) *redis.StringCmd {

@@ -121,7 +121,7 @@ func NewUserAction(repo UserRepo, logger log.Logger) *UserAction {
 }
 
 func (uc *UserAction) CreateUser(ctx context.Context, u *User) (*User, error) {
-	uc.log.WithContext(ctx).Infof("CreateUser: %s", u.Email)
+	// uc.log.WithContext(ctx).Infof("CreateUser: %s", u.Email)
 	res, err := uc.repo.Save(ctx, u)
 	if err != nil {
 		fmt.Println("error creating user: ", err)

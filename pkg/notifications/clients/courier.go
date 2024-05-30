@@ -20,10 +20,6 @@ type CourierClient struct {
 	client *courier.Client
 }
 
-func NewNotificationsClient() *CourierClient {
-	return &CourierClient{client: connect()}
-}
-
 func connect() *courier.Client {
 	onceConnClient.Do(func() {
 		courierClient = courier.CreateClient(os.Getenv("COURIER_AUTH_TOKEN"), nil)
@@ -31,7 +27,14 @@ func connect() *courier.Client {
 	return courierClient
 }
 
-func (c *CourierClient) SendNotification(data *notifications_biz.NotificationData) error {
+func NewCourierClient() *CourierClient {
+	return &CourierClient{client: connect()}
+}
+
+func (c *CourierClient) SendNotification(
+	data *notifications_biz.NotificationData,
+	metadata *notifications_biz.NotificationMetadata,
+) error {
 	requestID, err := courierClient.SendMessage(
 		context.Background(),
 		courier.SendMessageRequestBody{
@@ -67,6 +70,9 @@ func (c *CourierClient) SendNotification(data *notifications_biz.NotificationDat
 					"from": data.From,
 					"msg":  data.Msg,
 				},
+
+				// "metadata": metadata,
+
 				// "routing": map[string]interface{}{
 				// 	"method": "single",
 				// 	"channels": []string{"sms", "email", "inbox"},

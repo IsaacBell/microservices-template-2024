@@ -28,16 +28,6 @@ type Consultant struct {
 	UpdatedAt         *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 }
 
-type Communication struct {
-	// gorm.Model
-	Msg         string                          `protobuf:"bytes,1,opt,name=msg,proto3" json:"msg,omitempty"`
-	UserID      string                          `gorm:"index" protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	CommType    consultantsV1.CommunicationType `protobuf:"varint,3,opt,name=comm_type,json=commType,proto3,enum=api.v1.consultants.CommunicationType" json:"comm_type,omitempty"`
-	Options     map[string]bool                 `gorm:"type:jsonb" protobuf:"bytes,4,rep,name=options,proto3" json:"options,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
-	RecipientID string                          `protobuf:"bytes,5,opt,name=recipient_id,json=recipientId,proto3" json:"recipient_id,omitempty"`
-	From        string                          `protobuf:"bytes,6,opt,name=from,json=from,proto3" json:"from,omitempty"`
-}
-
 func (c *Consultant) BeforeCreate(tx *gorm.DB) error {
 	if c.ID == "" {
 		c.ID = uuid.New().String()
@@ -86,7 +76,7 @@ func CommunicationToProtoData(c *Communication) *consultantsV1.Communication {
 		Msg:         c.Msg,
 		UserId:      c.UserID,
 		RecipientId: c.RecipientID,
-		CommType:    c.CommType,
+		CommType:    c.CommType.ToProto(),
 		Options:     c.Options,
 		From:        c.From,
 	}
@@ -97,7 +87,7 @@ func ProtoToCommunicationData(c *consultantsV1.Communication) *Communication {
 		Msg:         c.Msg,
 		UserID:      c.UserId,
 		RecipientID: c.RecipientId,
-		CommType:    c.CommType,
+		CommType:    CommunicationTypeFromProto(c.CommType),
 		Options:     c.Options,
 		From:        c.From,
 	}
