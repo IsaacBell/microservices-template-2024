@@ -71,7 +71,7 @@ func UserToProtoData(user *User) *v1.User {
 }
 
 func ProtoToUserData(input *v1.User) *User {
-	user := &User{}
+	var user *User
 	user.ID = input.Id
 	user.Username = input.Username
 	user.Email = input.Email
@@ -83,16 +83,6 @@ func ProtoToUserData(input *v1.User) *User {
 	// user.Roles = input.Roles
 	user.EmailVerified = input.EmailVerified
 	user.PhoneVerified = input.PhoneVerified
-
-	// if input.CreatedAt != nil {
-	// 	user.CreatedAt = input.CreatedAt
-	// }
-	// if input.UpdatedAt != nil {
-	// 	user.UpdatedAt = input.UpdatedAt
-	// }
-	// if input.LastLoginAt != nil {
-	// 	user.LastLoginAt = input.LastLoginAt
-	// }
 
 	user.Timezone = input.Timezone
 	user.Locale = input.Locale
@@ -131,7 +121,7 @@ func (uc *UserAction) CreateUser(ctx context.Context, u *User) (*User, error) {
 }
 
 func (uc *UserAction) UpdateUser(ctx context.Context, u *User) (*User, error) {
-	uc.log.WithContext(ctx).Infof("UpdateUser: %s", u.Email)
+	// uc.log.WithContext(ctx).Infof("UpdateUser: %s", u.Email)
 	res, err := uc.repo.Update(ctx, u)
 	if err != nil {
 		fmt.Println("error updating user: ", err)
@@ -141,21 +131,21 @@ func (uc *UserAction) UpdateUser(ctx context.Context, u *User) (*User, error) {
 }
 
 func (uc *UserAction) FindUserById(ctx context.Context, id string) (*User, error) {
-	uc.log.WithContext(ctx).Infof("FindUser: %s", id)
+	// uc.log.WithContext(ctx).Infof("FindUser: %s", id)
 	return uc.repo.FindByID(ctx, id)
 }
 
 func (uc *UserAction) FindUserByEmail(ctx context.Context, email string) (*User, error) {
-	uc.log.WithContext(ctx).Infof("FindUser: %s", email)
+	// uc.log.WithContext(ctx).Infof("FindUser: %s", email)
 	return uc.repo.FindByEmail(ctx, email)
 }
 
 func (uc *UserAction) Delete(ctx context.Context, id string) error {
-	uc.log.WithContext(ctx).Infof("Delete User: %s", id)
+	// uc.log.WithContext(ctx).Infof("Delete User: %s", id)
 	return uc.repo.Delete(ctx, id)
 }
 
 func (uc *UserAction) ListAll(ctx context.Context) ([]*User, error) {
-	uc.log.WithContext(ctx).Infof("List Users")
+	// uc.log.WithContext(ctx).Infof("List Users")
 	return uc.repo.ListAll(ctx)
 }

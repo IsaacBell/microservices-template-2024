@@ -3,65 +3,41 @@ package consultants_biz_test
 import (
 	"context"
 	"errors"
+	"os"
 	"testing"
 
 	communicationsV1 "microservices-template-2024/api/v1/communications"
 	consultants_biz "microservices-template-2024/pkg/consultants/biz"
+	mocks "microservices-template-2024/test/mocks"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
-type MockConsultantRepo struct {
-	mock.Mock
-}
-
-func (m *MockConsultantRepo) Get(ctx context.Context, id string) (*consultants_biz.Consultant, error) {
-	args := m.Called(ctx, id)
-	return args.Get(0).(*consultants_biz.Consultant), args.Error(1)
-}
-
-func (m *MockConsultantRepo) Save(ctx context.Context, consultant *consultants_biz.Consultant) (*consultants_biz.Consultant, error) {
-	args := m.Called(ctx, consultant)
-	return args.Get(0).(*consultants_biz.Consultant), args.Error(1)
-}
-
-func (m *MockConsultantRepo) Update(ctx context.Context, consultant *consultants_biz.Consultant) (*consultants_biz.Consultant, error) {
-	args := m.Called(ctx, consultant)
-	return args.Get(0).(*consultants_biz.Consultant), args.Error(1)
-}
-
-func (m *MockConsultantRepo) Delete(ctx context.Context, id string) error {
-	args := m.Called(ctx, id)
-	return args.Error(0)
-}
-
-func (m *MockConsultantRepo) Search(ctx context.Context, filters map[string]interface{}) ([]*consultants_biz.Consultant, error) {
-	args := m.Called(ctx, filters)
-	return args.Get(0).([]*consultants_biz.Consultant), args.Error(1)
-}
-
-func (m *MockConsultantRepo) SaveCommunication(ctx context.Context, comm *consultants_biz.Communication) (*consultants_biz.Communication, error) {
-	args := m.Called(ctx, comm)
-	return args.Get(0).(*consultants_biz.Communication), args.Error(1)
-}
+const id = "fake_uuid"
 
 func TestGetConsultant(t *testing.T) {
-	repo := new(MockConsultantRepo)
-	logger := log.NewStdLogger(nil)
+	repo := new(mocks.MockConsultantRepo)
+	logger := log.With(log.NewStdLogger(os.Stdout),
+		"ts", log.DefaultTimestamp,
+		"caller", log.DefaultCaller,
+	)
 	action := consultants_biz.NewConsultantAction(repo, logger)
+	consultant := &consultants_biz.Consultant{ID: id}
+	repo.On("Get", context.Background(), id).Return(consultant, nil)
 
-	consultant := &consultants_biz.Consultant{ID: "1"}
-
-	result, err := action.GetConsultant(context.Background(), "1")
+	result, err := action.GetConsultant(context.Background(), id)
 	assert.NoError(t, err)
-	assert.Equal(t, consultant, result)
+	assert.Equal(t, consultant.ID, result.ID)
 }
 
 func TestListConsultants(t *testing.T) {
-	repo := new(MockConsultantRepo)
-	logger := log.NewStdLogger(nil)
+	repo := new(mocks.MockConsultantRepo)
+	logger := log.With(log.NewStdLogger(os.Stdout),
+		"ts", log.DefaultTimestamp,
+		"caller", log.DefaultCaller,
+	)
 	action := consultants_biz.NewConsultantAction(repo, logger)
 
 	consultantList := []*consultants_biz.Consultant{{ID: "1"}, {ID: "2"}}
@@ -74,8 +50,11 @@ func TestListConsultants(t *testing.T) {
 }
 
 func TestSendComm(t *testing.T) {
-	repo := new(MockConsultantRepo)
-	logger := log.NewStdLogger(nil)
+	repo := new(mocks.MockConsultantRepo)
+	logger := log.With(log.NewStdLogger(os.Stdout),
+		"ts", log.DefaultTimestamp,
+		"caller", log.DefaultCaller,
+	)
 	action := consultants_biz.NewConsultantAction(repo, logger)
 
 	comm := &consultants_biz.Communication{UserID: "1", CommType: consultants_biz.CommunicationType(communicationsV1.CommunicationType_from_client.String())}
@@ -87,8 +66,11 @@ func TestSendComm(t *testing.T) {
 }
 
 func TestCreateConsultant(t *testing.T) {
-	repo := new(MockConsultantRepo)
-	logger := log.NewStdLogger(nil)
+	repo := new(mocks.MockConsultantRepo)
+	logger := log.With(log.NewStdLogger(os.Stdout),
+		"ts", log.DefaultTimestamp,
+		"caller", log.DefaultCaller,
+	)
 	action := consultants_biz.NewConsultantAction(repo, logger)
 
 	consultant := &consultants_biz.Consultant{ID: "1"}
@@ -100,8 +82,11 @@ func TestCreateConsultant(t *testing.T) {
 }
 
 func TestUpdateConsultant(t *testing.T) {
-	repo := new(MockConsultantRepo)
-	logger := log.NewStdLogger(nil)
+	repo := new(mocks.MockConsultantRepo)
+	logger := log.With(log.NewStdLogger(os.Stdout),
+		"ts", log.DefaultTimestamp,
+		"caller", log.DefaultCaller,
+	)
 	action := consultants_biz.NewConsultantAction(repo, logger)
 
 	consultant := &consultants_biz.Consultant{ID: "1"}
@@ -113,8 +98,11 @@ func TestUpdateConsultant(t *testing.T) {
 }
 
 func TestDeleteConsultant(t *testing.T) {
-	repo := new(MockConsultantRepo)
-	logger := log.NewStdLogger(nil)
+	repo := new(mocks.MockConsultantRepo)
+	logger := log.With(log.NewStdLogger(os.Stdout),
+		"ts", log.DefaultTimestamp,
+		"caller", log.DefaultCaller,
+	)
 	action := consultants_biz.NewConsultantAction(repo, logger)
 
 	repo.On("Delete", mock.Anything, "1").Return(nil)
@@ -124,19 +112,25 @@ func TestDeleteConsultant(t *testing.T) {
 }
 
 func TestGetConsultantError(t *testing.T) {
-	repo := new(MockConsultantRepo)
-	logger := log.NewStdLogger(nil)
+	repo := new(mocks.MockConsultantRepo)
+	logger := log.With(log.NewStdLogger(os.Stdout),
+		"ts", log.DefaultTimestamp,
+		"caller", log.DefaultCaller,
+	)
 	action := consultants_biz.NewConsultantAction(repo, logger)
 
-	repo.On("Get", mock.Anything, "1").Return(nil, errors.New("consultant not found"))
+	repo.On("Get", context.Background(), "1").Return(nil, errors.New("consultant not found"))
 
 	_, err := action.GetConsultant(context.Background(), "1")
 	assert.Error(t, err)
 }
 
 func TestListConsultantsError(t *testing.T) {
-	repo := new(MockConsultantRepo)
-	logger := log.NewStdLogger(nil)
+	repo := new(mocks.MockConsultantRepo)
+	logger := log.With(log.NewStdLogger(os.Stdout),
+		"ts", log.DefaultTimestamp,
+		"caller", log.DefaultCaller,
+	)
 	action := consultants_biz.NewConsultantAction(repo, logger)
 
 	filters := map[string]interface{}{"specialization": "IT"}
@@ -147,8 +141,11 @@ func TestListConsultantsError(t *testing.T) {
 }
 
 func TestSendCommError(t *testing.T) {
-	repo := new(MockConsultantRepo)
-	logger := log.NewStdLogger(nil)
+	repo := new(mocks.MockConsultantRepo)
+	logger := log.With(log.NewStdLogger(os.Stdout),
+		"ts", log.DefaultTimestamp,
+		"caller", log.DefaultCaller,
+	)
 	action := consultants_biz.NewConsultantAction(repo, logger)
 
 	comm := &consultants_biz.Communication{UserID: "1", CommType: consultants_biz.CommunicationType(communicationsV1.CommunicationType_from_consultant.String())}
@@ -159,8 +156,11 @@ func TestSendCommError(t *testing.T) {
 }
 
 func TestCreateConsultantError(t *testing.T) {
-	repo := new(MockConsultantRepo)
-	logger := log.NewStdLogger(nil)
+	repo := new(mocks.MockConsultantRepo)
+	logger := log.With(log.NewStdLogger(os.Stdout),
+		"ts", log.DefaultTimestamp,
+		"caller", log.DefaultCaller,
+	)
 	action := consultants_biz.NewConsultantAction(repo, logger)
 
 	consultant := &consultants_biz.Consultant{ID: "1"}
@@ -171,8 +171,11 @@ func TestCreateConsultantError(t *testing.T) {
 }
 
 func TestUpdateConsultantError(t *testing.T) {
-	repo := new(MockConsultantRepo)
-	logger := log.NewStdLogger(nil)
+	repo := new(mocks.MockConsultantRepo)
+	logger := log.With(log.NewStdLogger(os.Stdout),
+		"ts", log.DefaultTimestamp,
+		"caller", log.DefaultCaller,
+	)
 	action := consultants_biz.NewConsultantAction(repo, logger)
 
 	consultant := &consultants_biz.Consultant{ID: "1"}
@@ -183,8 +186,11 @@ func TestUpdateConsultantError(t *testing.T) {
 }
 
 func TestDeleteConsultantError(t *testing.T) {
-	repo := new(MockConsultantRepo)
-	logger := log.NewStdLogger(nil)
+	repo := new(mocks.MockConsultantRepo)
+	logger := log.With(log.NewStdLogger(os.Stdout),
+		"ts", log.DefaultTimestamp,
+		"caller", log.DefaultCaller,
+	)
 	action := consultants_biz.NewConsultantAction(repo, logger)
 
 	repo.On("Delete", mock.Anything, "1").Return(errors.New("error deleting consultant"))

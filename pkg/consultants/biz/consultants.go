@@ -3,6 +3,7 @@ package consultants_biz
 import (
 	"context"
 	"fmt"
+	v1 "microservices-template-2024/api/v1"
 	consultantsV1 "microservices-template-2024/api/v1/consultants"
 	biz "microservices-template-2024/internal/biz"
 
@@ -40,8 +41,13 @@ func ConsultantToProtoData(consultant *Consultant) *consultantsV1.Consultant {
 		return nil
 	}
 
+	var u *v1.User
+	if consultant.User != nil {
+		u = biz.UserToProtoData(consultant.User)
+	}
+
 	return &consultantsV1.Consultant{
-		User:              biz.UserToProtoData(consultant.User),
+		User:              u,
 		Specializations:   consultant.Specializations,
 		Bio:               consultant.Bio,
 		Languages:         consultant.Languages,
@@ -55,10 +61,15 @@ func ConsultantToProtoData(consultant *Consultant) *consultantsV1.Consultant {
 }
 
 func ProtoToConsultantData(input *consultantsV1.Consultant) *Consultant {
+	var u *biz.User
+	if input.User != nil {
+		u = biz.ProtoToUserData(input.User)
+	}
+
 	return &Consultant{
 		ID:                input.Id,
 		UserID:            input.UserId,
-		User:              biz.ProtoToUserData(input.User),
+		User:              u,
 		Specializations:   input.Specializations,
 		Bio:               input.Bio,
 		Languages:         input.Languages,
@@ -71,6 +82,16 @@ func ProtoToConsultantData(input *consultantsV1.Consultant) *Consultant {
 	}
 }
 
+type Action interface {
+	SetRepo(ConsultantRepo)
+	CreateConsultant(ctx context.Context, c *Consultant) (*Consultant, error)
+	DeleteConsultant(ctx context.Context, id string) error
+	GetConsultant(ctx context.Context, id string) (*Consultant, error)
+	ListConsultants(ctx context.Context, filters map[string]interface{}) ([]*Consultant, error)
+	SendComm(ctx context.Context, c *Communication) (*Communication, error)
+	UpdateConsultant(ctx context.Context, c *Consultant) (*Consultant, error)
+}
+
 type ConsultantRepo interface {
 	Get(context.Context, string) (*Consultant, error)
 	Save(context.Context, *Consultant) (*Consultant, error)
@@ -81,6 +102,7 @@ type ConsultantRepo interface {
 }
 
 type ConsultantAction struct {
+	Action
 	repo ConsultantRepo
 	log  *log.Helper
 }
@@ -89,8 +111,14 @@ func NewConsultantAction(repo ConsultantRepo, logger log.Logger) *ConsultantActi
 	return &ConsultantAction{repo: repo, log: log.NewHelper(logger)}
 }
 
+func (uc *ConsultantAction) SetRepo(r ConsultantRepo) {
+	uc.repo = r
+}
+
 func (uc *ConsultantAction) GetConsultant(ctx context.Context, id string) (*Consultant, error) {
-	uc.log.WithContext(ctx).Infof("GetConsultant: %s", id)
+	// if uc != nil && uc.log != nil {
+	// 	uc.log.WithContext(ctx).Infof("GetConsultant: "+id)
+	// }
 	consultant, err := uc.repo.Get(ctx, id)
 	if err != nil {
 		return nil, err
@@ -100,7 +128,7 @@ func (uc *ConsultantAction) GetConsultant(ctx context.Context, id string) (*Cons
 }
 
 func (uc *ConsultantAction) ListConsultants(ctx context.Context, filters map[string]interface{}) ([]*Consultant, error) {
-	uc.log.WithContext(ctx).Infof("ListConsultants: %s", filters)
+	// uc.log.WithContext(ctx).Infof("ListConsultants: %s", filters)
 	consultants, err := uc.repo.Search(ctx, filters)
 	if err != nil {
 		return nil, err
@@ -110,7 +138,7 @@ func (uc *ConsultantAction) ListConsultants(ctx context.Context, filters map[str
 }
 
 func (uc *ConsultantAction) SendComm(ctx context.Context, c *Communication) (*Communication, error) {
-	uc.log.WithContext(ctx).Infof("SendComm: [type]%s [user]%s", c.CommType, c.UserID)
+	// uc.log.WithContext(ctx).Infof("SendComm: [type]%s [user]%s", c.CommType, c.UserID)
 	comm, err := uc.repo.SaveCommunication(ctx, c)
 	if err != nil {
 		return nil, err
@@ -120,7 +148,7 @@ func (uc *ConsultantAction) SendComm(ctx context.Context, c *Communication) (*Co
 }
 
 func (uc *ConsultantAction) CreateConsultant(ctx context.Context, c *Consultant) (*Consultant, error) {
-	uc.log.WithContext(ctx).Infof("CreateConsultant: %s", c.ID)
+	// uc.log.WithContext(ctx).Infof("CreateConsultant: %s", c.ID)
 	res, err := uc.repo.Save(ctx, c)
 	if err != nil {
 		fmt.Println("error creating consultant: ", err)
@@ -130,7 +158,7 @@ func (uc *ConsultantAction) CreateConsultant(ctx context.Context, c *Consultant)
 }
 
 func (uc *ConsultantAction) UpdateConsultant(ctx context.Context, c *Consultant) (*Consultant, error) {
-	uc.log.WithContext(ctx).Infof("UpdateConsultant: %s", c.ID)
+	// uc.log.WithContext(ctx).Infof("UpdateConsultant: %s", c.ID)
 	res, err := uc.repo.Update(ctx, c)
 	if err != nil {
 		fmt.Println("error updating consultant: ", err)
@@ -140,6 +168,6 @@ func (uc *ConsultantAction) UpdateConsultant(ctx context.Context, c *Consultant)
 }
 
 func (uc *ConsultantAction) DeleteConsultant(ctx context.Context, id string) error {
-	uc.log.WithContext(ctx).Infof("Delete Consultant: %s", id)
+	// uc.log.WithContext(ctx).Infof("Delete Consultant: %s", id)
 	return uc.repo.Delete(ctx, id)
 }

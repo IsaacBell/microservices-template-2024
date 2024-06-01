@@ -146,6 +146,16 @@ func DbConnString() string {
 	return dsn
 }
 
+func SetupDbTables(db *gorm.DB) {
+	automigrateDBTables(db)
+	if err := SeedCategories(db); err != nil {
+		log.Fatalln("Error seeding category data: ", err)
+	}
+	if err := SeedExchanges(db); err != nil {
+		log.Fatalln("Error seeding exchange data: ", err)
+	}
+}
+
 func OpenDBConn() error {
 	dsn := DbConnString()
 
@@ -160,13 +170,7 @@ func OpenDBConn() error {
 
 	fmt.Println(now)
 
-	automigrateDBTables(DB)
-	if err := SeedCategories(DB); err != nil {
-		log.Fatalln("Error seeding category data: ", err)
-	}
-	if err := SeedExchanges(DB); err != nil {
-		log.Fatalln("Error seeding exchange data: ", err)
-	}
+	SetupDbTables(DB)
 
 	return nil
 }
