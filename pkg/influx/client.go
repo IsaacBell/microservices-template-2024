@@ -30,7 +30,6 @@ func InfluxClientV3() (*influxdb3.Client, func(*influxdb3.Client)) {
 	url := os.Getenv("INFLUXDB_URL")
 	token := os.Getenv("INFLUXDB_TOKEN")
 	fmt.Printf("INFLUXDB_URL: %s\n", url)
-	fmt.Printf("INFLUXDB_TOKEN: %s\n", token)
 
 	client, err := influxdb3.New(influxdb3.ClientConfig{
 		Host:         url,
@@ -56,10 +55,10 @@ func InfluxClientV3() (*influxdb3.Client, func(*influxdb3.Client)) {
 func LogRuntime(processName string, elapsed time.Duration) {
 	client, closeClient := InfluxClientV3()
 	defer closeClient(client)
-	point := influxdb3.NewPointWithMeasurement("system").
-			SetTag("process_name", processName).
-			SetField("benchmark[ms]", elapsed.Milliseconds()).
-			SetField("benchmark[ns]", elapsed.Nanoseconds())
+	point := influxdb3.NewPointWithMeasurement("benchmarks").
+		SetTag("process_name", processName).
+		SetField("benchmark[ms]", elapsed.Milliseconds()).
+		SetField("benchmark[ns]", elapsed.Nanoseconds())
 
 	if err := client.WritePoints(context.Background(), []*influxdb3.Point{point}); err != nil {
 		fmt.Println("error: ", err)
@@ -74,18 +73,26 @@ func LogSystemMetrics(data map[string]map[string]interface{}) error {
 		Database: dbName,
 	}
 
-	points := make([]*influxdb3.Point, 0)
-	
-	for key := range data {
-		point := influxdb3.NewPointWithMeasurement("system").
-			SetTag(key, data[key]["label"].(string))
-		for key, val := range data[key] {
-			point.SetField(key, val)
-			points = append(points, point)
+	for timestamp := range data {
+		point := influxdb3.NewPointWithMeasurement("benchmarks")
+
+		// Parse the timestamp string into a time.Time object
+		t, err := time.Parse(time.RFC3339, timestamp)
+		if err != nil {
+			fmt.Println("error parsing timestamp:", err)
+			continue
+		}
+
+		// Set the timestamp as the point's timestamp
+		point.SetTimestamp(t)
+
+		// Set the fields
+		for fieldKey, fieldValue := range data[timestamp] {
+			point.SetField(fieldKey, fieldValue)
 		}
 
 		if err := client.WritePointsWithOptions(context.Background(), &options, point); err != nil {
-			fmt.Println("error: ", err)
+			fmt.Println("error writing point:", err)
 			return err
 		}
 	}
@@ -134,9 +141,6 @@ func TestInfluxV3() {
 	// iterator, err := client.QueryWithOptions(context.Background(), &queryOptions, query)
 
 	if err != nil {
-		if err.Error() == "runtime error: invalid memory address or nil pointer dereference" {
-			panic(errors.New("Did you set your .env vars? - " + err.Error()))
-		}
 		panic(err)
 	}
 

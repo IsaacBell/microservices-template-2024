@@ -182,8 +182,8 @@ func RunApp(
 	fmt.Printf("::::: %s Service booting :::::\n", name)
 	defer fmt.Printf("::::: %s Service shutting down :::::\n", name)
 
+	go util.RecordSystemMetrics()
 	kratos.AfterStart(func(context.Context) error {
-		go util.RecordSystemMetrics()
 
 		stream.ProduceKafkaMessage(name, name+" server started")
 		stream.ProduceKafkaMessage(name, name+" server started")
