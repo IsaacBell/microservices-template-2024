@@ -19,6 +19,10 @@ func NewCompanyService(action *leads_biz.CompanyAction) *CompanyService {
 }
 
 func (s *CompanyService) GetCompany(ctx context.Context, req *leadsV1.GetCompanyRequest) (*leadsV1.GetCompanyReply, error) {
+	if req.Id == "" {
+		return &leadsV1.GetCompanyReply{Ok: false, Id: ""}, errors.New("id not supplied")
+	}
+
 	company, err := s.action.GetCompany(ctx, req.Id)
 	if err != nil {
 		return nil, err

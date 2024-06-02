@@ -2,6 +2,7 @@ package finance_service
 
 import (
 	"context"
+	"errors"
 
 	v1 "microservices-template-2024/api/v1"
 	biz "microservices-template-2024/pkg/finance/biz"
@@ -18,6 +19,9 @@ func NewFinanceService(action *biz.StockQuoteAction) *FinanceService {
 }
 
 func (s *FinanceService) GetStockQuote(ctx context.Context, req *v1.GetStockQuoteRequest) (*v1.GetStockQuoteReply, error) {
+	if req.Symbol == "" {
+		return &v1.GetStockQuoteReply{Quote: nil, Symbol: ""}, errors.New("id not supplied")
+	}
 	quote, err := s.action.GetStockQuote(ctx, req.Symbol)
 	if err != nil {
 		return nil, err
@@ -39,6 +43,10 @@ func (s *FinanceService) GetSenateLobbying(ctx context.Context, req *v1.GetSenat
 }
 
 func (s *FinanceService) WatchTrades(req *v1.SyncTradesRequest, stream v1.Finance_WatchTradesServer) error {
+	if req.Symbol == "" {
+		return nil
+	}
+
 	ctx := stream.Context()
 	err := s.action.WatchTrades(req.Symbol, stream)
 	if err != nil {

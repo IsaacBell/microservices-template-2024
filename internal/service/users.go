@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	v1 "microservices-template-2024/api/v1"
@@ -21,6 +22,10 @@ func NewUsersService(action *biz.UserAction) *UsersService {
 }
 
 func (s *UsersService) CreateUser(ctx context.Context, req *v1.CreateUserRequest) (*v1.CreateUserReply, error) {
+	if req.User == nil {
+		return &v1.CreateUserReply{Ok: false, Id: ""}, errors.New("user data not supplied")
+	}
+
 	user := biz.ProtoToUserData(req.User)
 	fmt.Println(user.Email)
 	res, err := s.action.CreateUser(ctx, user)
@@ -34,6 +39,10 @@ func (s *UsersService) CreateUser(ctx context.Context, req *v1.CreateUserRequest
 }
 
 func (s *UsersService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest) (*v1.UpdateUserReply, error) {
+	if req.User == nil {
+		return &v1.UpdateUserReply{Ok: false, Id: ""}, errors.New("user data not supplied")
+	}
+
 	user := biz.ProtoToUserData(req.User)
 	res, err := s.action.UpdateUser(ctx, user)
 	cache.Cache(ctx).Set("user:"+req.User.Id, user, 0)
@@ -41,6 +50,10 @@ func (s *UsersService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest
 }
 
 func (s *UsersService) DeleteUser(ctx context.Context, req *v1.DeleteUserRequest) (*v1.DeleteUserReply, error) {
+	if req.Id == "" {
+		return &v1.DeleteUserReply{Ok: false}, errors.New("id not supplied")
+	}
+
 	err := s.action.Delete(ctx, req.Id)
 	if err != nil {
 		return &v1.DeleteUserReply{Ok: false}, err
@@ -57,6 +70,10 @@ func (s *UsersService) DeleteUser(ctx context.Context, req *v1.DeleteUserRequest
 }
 
 func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.GetUserReply, error) {
+	if *req.Id == "" && *req.Email == "" && *req.Name == "" {
+		return &v1.GetUserReply{User: nil}, errors.New("user data not supplied")
+	}
+
 	var u *biz.User
 	var err error
 

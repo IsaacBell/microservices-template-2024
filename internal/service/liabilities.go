@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 
 	v1 "microservices-template-2024/api/v1"
 	"microservices-template-2024/internal/biz"
@@ -18,6 +19,10 @@ func NewLiabilitiesService(action *biz.LiabilityAction) *LiabilitiesService {
 }
 
 func (s *LiabilitiesService) GetLiability(ctx context.Context, req *v1.GetLiabilityRequest) (*v1.GetLiabilityReply, error) {
+	if req.Id == "" {
+		return &v1.GetLiabilityReply{Ok: false, Id: ""}, errors.New("id not supplied")
+	}
+
 	var lia *biz.Liability
 	lia, err := s.action.FindLiabilityByID(ctx, req.Id)
 
@@ -25,6 +30,10 @@ func (s *LiabilitiesService) GetLiability(ctx context.Context, req *v1.GetLiabil
 }
 
 func (s *LiabilitiesService) GetLiabilities(ctx context.Context, req *v1.GetLiabilitiesRequest) (*v1.GetLiabilitiesReply, error) {
+	if req.Owner == "" {
+		return &v1.GetLiabilitiesReply{Ok: false}, errors.New("id not supplied")
+	}
+
 	var lia []*biz.Liability
 	var err error
 	lia, err = s.action.GetLiabilities(ctx, req)

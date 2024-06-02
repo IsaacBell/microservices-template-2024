@@ -71,6 +71,10 @@ func UserToProtoData(user *User) *v1.User {
 }
 
 func ProtoToUserData(input *v1.User) *User {
+	if input == nil {
+		return nil
+	}
+
 	var user *User
 	user.ID = input.Id
 	user.Username = input.Username

@@ -3,6 +3,7 @@ package consultants_service
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -58,6 +59,10 @@ func (s *ConsultantService) GetConsultant(ctx context.Context, req *consultantsV
 }
 
 func (s *ConsultantService) CreateConsultant(ctx context.Context, req *consultantsV1.CreateConsultantRequest) (*consultantsV1.CreateConsultantReply, error) {
+	if req.Consultant == nil {
+		return &consultantsV1.CreateConsultantReply{Consultant: nil}, errors.New("id not supplied")
+	}
+
 	consultant := consultants_biz.ProtoToConsultantData(req.Consultant)
 	createdConsultant, err := s.action.CreateConsultant(ctx, consultant)
 	if err != nil {
@@ -73,6 +78,9 @@ func (s *ConsultantService) CreateConsultant(ctx context.Context, req *consultan
 }
 
 func (s *ConsultantService) UpdateConsultant(ctx context.Context, req *consultantsV1.UpdateConsultantRequest) (*consultantsV1.UpdateConsultantReply, error) {
+	if req.Consultant == nil {
+		return &consultantsV1.UpdateConsultantReply{Consultant: nil}, errors.New("id not supplied")
+	}
 	consultant := consultants_biz.ProtoToConsultantData(req.Consultant)
 	updatedConsultant, err := s.action.UpdateConsultant(ctx, consultant)
 	if err != nil {
@@ -88,6 +96,9 @@ func (s *ConsultantService) UpdateConsultant(ctx context.Context, req *consultan
 }
 
 func (s *ConsultantService) DeleteConsultant(ctx context.Context, req *consultantsV1.DeleteConsultantRequest) (*consultantsV1.DeleteConsultantReply, error) {
+	if req.Id == "" {
+		return &consultantsV1.DeleteConsultantReply{Ok: false}, errors.New("id not supplied")
+	}
 	err := s.action.DeleteConsultant(ctx, req.Id)
 	if err != nil {
 		return nil, err
@@ -146,6 +157,10 @@ func (s *ConsultantService) SendComm(
 	ctx context.Context,
 	req *consultantsV1.SendCommsRequest,
 ) (*consultantsV1.SendCommsReply, error) {
+	if req.Comm.UserId == "" {
+		return &consultantsV1.SendCommsReply{Ok: false, Ack: nil}, errors.New("user id not supplied")
+	}
+
 	res, err := s.action.SendComm(ctx, consultants_biz.ProtoToCommunicationData(req.Comm))
 	if err != nil {
 		return nil, err

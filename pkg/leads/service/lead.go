@@ -2,6 +2,7 @@ package leads_service
 
 import (
 	"context"
+	"errors"
 
 	v1 "microservices-template-2024/api/v1"
 	leadsV1 "microservices-template-2024/api/v1/b2b"
@@ -19,6 +20,10 @@ func NewLeadService(action *leads_biz.LeadAction) *LeadService {
 }
 
 func (s *LeadService) GetLead(ctx context.Context, req *leadsV1.GetLeadRequest) (*leadsV1.GetLeadReply, error) {
+	if req.Id == "" {
+		return &leadsV1.GetLeadReply{Ok: false, Id: ""}, errors.New("id not supplied")
+	}
+
 	lead, err := s.action.GetLead(ctx, req.Id)
 	if err != nil {
 		return nil, err

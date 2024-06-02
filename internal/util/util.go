@@ -3,6 +3,7 @@ package util
 import (
 	"fmt"
 	"microservices-template-2024/pkg/influx"
+	"os"
 	"runtime"
 	"strconv"
 	"time"
@@ -41,6 +42,9 @@ func Benchmark(processName string) func() {
 }
 
 func RecordSystemMetrics() {
+	fmt.Println("recording system metrics...")
+	os.Stdout.Sync()
+
 	for {
 		metrics := make(map[string]map[string]interface{})
 		timestamp := time.Now().Local().String()

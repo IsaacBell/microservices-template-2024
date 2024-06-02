@@ -3,6 +3,7 @@ package lodging_service
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -103,6 +104,10 @@ func NewPropertyService(propertyAction *lodging_biz.PropertyAction) *PropertySer
 }
 
 func (s *PropertyService) CreateLodging(ctx context.Context, req *lodgingV1.CreateLodgingRequest) (*lodgingV1.CreateLodgingReply, error) {
+	if req.Property == nil {
+		return &lodgingV1.CreateLodgingReply{Property: nil}, errors.New("data not supplied")
+	}
+
 	property := lodging_biz.ProtoToPropertyData(req.Property)
 
 	// Check if the user exists, if not, create a new user
@@ -131,6 +136,10 @@ func (s *PropertyService) CreateLodging(ctx context.Context, req *lodgingV1.Crea
 }
 
 func (s *PropertyService) UpdateLodging(ctx context.Context, req *lodgingV1.UpdateLodgingRequest) (*lodgingV1.UpdateLodgingReply, error) {
+	if req.Property == nil {
+		return &lodgingV1.UpdateLodgingReply{Property: nil}, errors.New("data not supplied")
+	}
+
 	property := lodging_biz.ProtoToPropertyData(req.Property)
 	updatedProperty, err := s.propertyAction.UpdateProperty(ctx, property)
 	if err != nil {
@@ -138,7 +147,7 @@ func (s *PropertyService) UpdateLodging(ctx context.Context, req *lodgingV1.Upda
 	}
 
 	cache.Cache(ctx).Set("property:"+updatedProperty.ID, updatedProperty, time.Hour*24)
-	stream.ProduceKafkaMessage("channel/lodging", "Update Property: "+updatedProperty.ID + ":" + updatedProperty.Address)
+	stream.ProduceKafkaMessage("channel/lodging", "Update Property: "+updatedProperty.ID+":"+updatedProperty.Address)
 
 	return &lodgingV1.UpdateLodgingReply{
 		Property: lodging_biz.PropertyToProtoData(updatedProperty),
@@ -146,6 +155,10 @@ func (s *PropertyService) UpdateLodging(ctx context.Context, req *lodgingV1.Upda
 }
 
 func (s *PropertyService) DeleteLodging(ctx context.Context, req *lodgingV1.DeleteLodgingRequest) (*lodgingV1.DeleteLodgingReply, error) {
+	if req.Id == "" {
+		return &lodgingV1.DeleteLodgingReply{Success: false}, errors.New("id not supplied")
+	}
+
 	err := s.propertyAction.DeleteProperty(ctx, req.Id)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
@@ -165,7 +178,11 @@ func (s *PropertyService) DeleteLodging(ctx context.Context, req *lodgingV1.Dele
 }
 
 func (s *PropertyService) GetLodging(ctx context.Context, req *lodgingV1.GetLodgingRequest) (*lodgingV1.GetLodgingReply, error) {
-	cacheKey := "property:"+req.Id
+	if req.Id == "" {
+		return &lodgingV1.GetLodgingReply{Property: nil}, errors.New("id not supplied")
+	}
+
+	cacheKey := "property:" + req.Id
 	if cached, err := cache.Cache(ctx).Get(cacheKey).Result(); err == nil {
 		// Cache hit, deserialize the cached data
 		var property lodgingV1.Property
@@ -243,7 +260,10 @@ func (s *PropertyService) SearchLodging(ctx context.Context, req *lodgingV1.Sear
 }
 
 func (s *PropertyService) RealtorStats(ctx context.Context, req *lodgingV1.RealtorStatsRequest) (*lodgingV1.RealtorStatsReply, error) {
-	cacheKey := "realtor_stats:"+req.UserId
+	if req.UserId == "" {
+		return &lodgingV1.RealtorStatsReply{Stats: map[string]int64{}}, errors.New("user id not supplied")
+	}
+	cacheKey := "realtor_stats:" + req.UserId
 	if cached, err := cache.Cache(ctx).Get(cacheKey).Result(); err == nil {
 		// Cache hit, deserialize the cached data
 		var stats map[string]int64
