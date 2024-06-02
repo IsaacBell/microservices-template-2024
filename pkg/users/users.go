@@ -7,8 +7,9 @@ import (
 	"fmt"
 	v1 "microservices-template-2024/api/v1"
 	"microservices-template-2024/internal/biz"
-	"microservices-template-2024/pkg/cache"
+	cache "microservices-template-2024/pkg/cache"
 	"os"
+	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -32,6 +33,10 @@ func grpcConn() (v1.UsersClient, grpcCloseConn, error) {
 
 func UserCacheKey(id string) string {
 	return "user:" + id
+}
+
+func CacheExpiry() time.Duration {
+	return time.Hour * 6
 }
 
 func UserFromCache(uid string) *biz.User {

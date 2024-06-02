@@ -38,7 +38,7 @@ type User struct {
 	Deleted bool `protobuf:"bytes,19,name=deleted,proto3" json:"locale,omitempty"`
 }
 
-func (u User) BeforeCreate(tx *gorm.DB) error {
+func (u *User) BeforeCreate(tx *gorm.DB) error {
 	u.ID = uuid.New().String()
 	return nil
 }
@@ -75,7 +75,7 @@ func ProtoToUserData(input *v1.User) *User {
 		return nil
 	}
 
-	var user *User
+	user := &User{}
 	user.ID = input.Id
 	user.Username = input.Username
 	user.Email = input.Email

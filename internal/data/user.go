@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"errors"
 	"microservices-template-2024/internal/biz"
 	"microservices-template-2024/internal/server"
 	"microservices-template-2024/internal/util"
@@ -24,19 +25,25 @@ func NewUserRepo(data *Data, logger log.Logger) biz.UserRepo {
 func (r *userRepo) Save(ctx context.Context, u *biz.User) (*biz.User, error) {
 	defer util.Benchmark("userRepo.Save()")()
 
-	// if err := server.DB.Where(biz.User{Email: u.Email}).FirstOrCreate(&u).Error; err != nil {
+	if u == nil {
+		return nil, errors.New("data not supplied")
+	}
+
+	u.Deleted = false
 	if u.ID != "" {
 		if err := server.DB.Save(&u).Error; err != nil {
 			return nil, err
 		} else {
 			return u, nil
 		}
-	}
-
-	u.Deleted = false
-
-	if err := server.DB.Omit("ID").FirstOrCreate(&u).Error; err != nil {
-		return nil, err
+	} else {
+		err := u.BeforeCreate(server.DB)
+		if err != nil {
+			return nil, err
+		}
+		if err := server.DB.Create(&u).Error; err != nil {
+			return nil, err
+		}
 	}
 
 	return u, nil
