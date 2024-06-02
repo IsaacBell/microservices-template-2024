@@ -35,7 +35,9 @@ type User struct {
 	Timezone string `protobuf:"bytes,15,opt,name=timezone,proto3" json:"timezone,omitempty"`
 	Locale   string `protobuf:"bytes,16,opt,name=locale,proto3" json:"locale,omitempty"`
 	// Metadata map[string]string `protobuf:"bytes,17,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	Deleted bool `protobuf:"bytes,19,name=deleted,proto3" json:"locale,omitempty"`
+	Deleted   bool   `protobuf:"bytes,19,name=deleted,proto3" json:"deleted,omitempty"`
+	Title     string `protobuf:"bytes,23,name=title,proto3" json:"title,proto3" json:"title,omitempty"`
+	CompanyId string `protobuf:"bytes,24,name=company_id,proto3" json:"company_id,proto3" json:"company_id,omitempty"`
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) error {
@@ -50,6 +52,7 @@ func UserToProtoData(user *User) *v1.User {
 
 	return &v1.User{
 		Id:           user.ID,
+		CompanyId:    user.CompanyId,
 		Username:     user.Username,
 		Email:        user.Email,
 		PasswordHash: user.PasswordHash,
@@ -67,6 +70,7 @@ func UserToProtoData(user *User) *v1.User {
 		Locale:   user.Locale,
 		// Metadata: user.Metadata,
 		Deleted: user.Deleted,
+		Title:   user.Title,
 	}
 }
 
@@ -77,6 +81,7 @@ func ProtoToUserData(input *v1.User) *User {
 
 	user := &User{}
 	user.ID = input.Id
+	user.CompanyId = input.CompanyId
 	user.Username = input.Username
 	user.Email = input.Email
 	user.PasswordHash = input.PasswordHash
@@ -92,6 +97,7 @@ func ProtoToUserData(input *v1.User) *User {
 	user.Locale = input.Locale
 	// user.Metadata = input.Metadata
 	user.Deleted = input.Deleted
+	user.Title = input.Title
 
 	return user
 }

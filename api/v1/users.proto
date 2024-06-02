@@ -46,6 +46,8 @@ message User {
   string role = 20;
   string name = 21;
   string user_type = 22;
+  string title = 23;
+  string company_id = 24;
 }
 
 enum DeviceType {
