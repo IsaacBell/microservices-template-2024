@@ -7,8 +7,10 @@ import (
 
 	v1 "microservices-template-2024/api/v1"
 	"microservices-template-2024/internal/biz"
+	"microservices-template-2024/internal/util"
 	cache "microservices-template-2024/pkg/cache"
 	stream "microservices-template-2024/pkg/stream"
+	"microservices-template-2024/pkg/users"
 )
 
 type UsersService struct {
@@ -22,6 +24,7 @@ func NewUsersService(action *biz.UserAction) *UsersService {
 }
 
 func (s *UsersService) CreateUser(ctx context.Context, req *v1.CreateUserRequest) (*v1.CreateUserReply, error) {
+	defer util.Benchmark("UsersService.CreateUser()")()
 	if req.User == nil {
 		return &v1.CreateUserReply{Ok: false, Id: ""}, errors.New("user data not supplied")
 	}
@@ -39,6 +42,7 @@ func (s *UsersService) CreateUser(ctx context.Context, req *v1.CreateUserRequest
 }
 
 func (s *UsersService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest) (*v1.UpdateUserReply, error) {
+	defer util.Benchmark("UsersService.UpdateUser()")()
 	if req.User == nil {
 		return &v1.UpdateUserReply{Ok: false, Id: ""}, errors.New("user data not supplied")
 	}
@@ -50,6 +54,7 @@ func (s *UsersService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest
 }
 
 func (s *UsersService) DeleteUser(ctx context.Context, req *v1.DeleteUserRequest) (*v1.DeleteUserReply, error) {
+	defer util.Benchmark("UsersService.DeleteUser()")()
 	if req.Id == "" {
 		return &v1.DeleteUserReply{Ok: false}, errors.New("id not supplied")
 	}
@@ -70,6 +75,7 @@ func (s *UsersService) DeleteUser(ctx context.Context, req *v1.DeleteUserRequest
 }
 
 func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.GetUserReply, error) {
+	defer util.Benchmark("UsersService.GetUser()")()
 	if *req.Id == "" && *req.Email == "" && *req.Name == "" {
 		return &v1.GetUserReply{User: nil}, errors.New("user data not supplied")
 	}
@@ -87,11 +93,7 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 		return nil, err
 	}
 
-	if req.Id != nil {
-		cache.Cache(ctx).Set("user+id:"+*req.Id, u, 0)
-	} else {
-		cache.Cache(ctx).Set("user+email:"+*req.Email, u, 0)
-	}
+	cache.CacheRecord("user", users.UserCacheKey(*req.Id), u.ID, u)
 
 	return &v1.GetUserReply{User: biz.UserToProtoData(u)}, nil
 }
