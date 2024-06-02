@@ -15,12 +15,9 @@ import (
 
 // go build -ldflags "-X main.Version=x.y.z"
 var (
-	// Name is the name of the compiled software.
-	Name string = "core"
-	// Version is the version of the compiled software.
-	Version string
-	// flagconf is the config flag.
-	flagconf string
+	Name string = "core" // name of the compiled software.
+	Version string 
+	flagconf string // config flag.
 
 	id, _ = os.Hostname()
 
@@ -28,7 +25,7 @@ var (
 )
 
 func init() {
-	server.InitEnv(Name, flagconf, KafkaTopics)
+	server.InitEnv(Name, &flagconf, KafkaTopics)
 }
 
 func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {

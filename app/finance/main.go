@@ -27,7 +27,7 @@ var (
 )
 
 func init() {
-	server.InitEnv(Name, flagconf, KafkaTopics)
+	server.InitEnv(Name, &flagconf, KafkaTopics)
 }
 
 func newFinanceApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {

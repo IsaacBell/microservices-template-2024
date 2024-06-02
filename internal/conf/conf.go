@@ -12,12 +12,18 @@ import (
 )
 
 func ConfigDir() string {
-	_, err := os.Stat("./configs")
-	if os.IsNotExist(err) {
-		return "../../configs/"
+	fmt.Println("retrieving config directory...")
+	dirs := []string{"configs", "../../configs", "../../../configs"}
+
+	for _, dir := range dirs {
+		info, err := os.Stat(dir)
+		if err == nil && info.IsDir() {
+			return dir + "/"
+		}
 	}
 
-	return "./configs/"
+	// If none of the directories exist, use the current directory
+	return "./"
 }
 
 // CSV copied from Plaid API

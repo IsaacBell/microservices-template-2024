@@ -5,6 +5,8 @@ import (
 	"flag"
 	"fmt"
 	"microservices-template-2024/internal/conf"
+	"microservices-template-2024/internal/util"
+	"microservices-template-2024/pkg/influx"
 	"microservices-template-2024/pkg/stream"
 	"os"
 
@@ -19,6 +21,10 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
+var (
+	flagconf string // config flag
+)
+
 func InitKafkaConsumer(serviceName string, topics []string) {
 	for _, topic := range topics {
 		stream.StartKafkaConsumer(topic, serviceName, func(msg string) {
@@ -28,19 +34,24 @@ func InitKafkaConsumer(serviceName string, topics []string) {
 	}
 }
 
-func InitEnv(serviceName, flagconf string, topics []string) {
+func StartInfluxDb() {
+	influx.TestInfluxV3()
+}
+
+func InitEnv(serviceName string, flagconf *string, topics []string) {
 	file := conf.ConfigDir() + "config.yaml"
-	flag.StringVar(&flagconf, "conf", file, "config path, eg: -conf config.yaml")
+	flag.StringVar(flagconf, "conf", file, "config path, eg: -conf config.yaml")
+	flag.Parse()
 
 	cwd, err := os.Getwd()
 	if err != nil {
-		fmt.Println("Error getting current working directory: %v", err)
+		fmt.Println("Error getting current working directory: ", err)
 	}
 
 	err = godotenv.Load()
 	if err != nil {
-		fmt.Println("Current working directory: %s", cwd)
-		fmt.Println("err loading .env: %v", err)
+		fmt.Println("Current working directory: ", cwd)
+		fmt.Println("err loading .env: ", err)
 
 		err = godotenv.Load("../../.env")
 		if err != nil {
@@ -49,6 +60,7 @@ func InitEnv(serviceName, flagconf string, topics []string) {
 	}
 
 	InitKafkaConsumer(serviceName, topics)
+	StartInfluxDb()
 }
 
 func NewApp(name, id, ver string, logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
@@ -76,7 +88,6 @@ func RunApp(
 
 	id, _ := os.Hostname()
 
-	flag.Parse()
 	fmt.Printf("flag: %v\n", flagconf)
 	logger := log.With(log.NewStdLogger(os.Stdout),
 		"ts", log.DefaultTimestamp,
@@ -98,36 +109,41 @@ func RunApp(
 		panic(err)
 	}
 
-	if name != "core" {
-		httpAddr, err := c.Value(name + ".http.addr").String()
-		if err != nil {
-			panic(err)
-		}
-		httpTimeout, err := c.Value(name + ".http.timeout").String()
-		if err != nil {
-			panic(err)
-		}
-		grpcAddr, err := c.Value(name + ".grpc.addr").String()
-		if err != nil {
-			panic(err)
-		}
-		grpcTimeout, err := c.Value(name + ".grpc.timeout").String()
-		if err != nil {
-			panic(err)
-		}
+	var configPath string
+	if name == "core" {
+		configPath = "server"
+	} else {
+		configPath = name
+	}
 
-		servers = &conf.Server{
-			Grpc: &conf.Server_GRPC{
-				Network: "",
-				Addr:    grpcAddr,
-				Timeout: &durationpb.Duration{Seconds: int64(grpcTimeout[0])},
-			},
-			Http: &conf.Server_HTTP{
-				Network: "",
-				Addr:    httpAddr,
-				Timeout: &durationpb.Duration{Seconds: int64(httpTimeout[0])},
-			},
-		}
+	httpAddr, err := c.Value(configPath + ".http.addr").String()
+	if err != nil {
+		panic(err)
+	}
+	httpTimeout, err := c.Value(configPath + ".http.timeout").String()
+	if err != nil {
+		panic(err)
+	}
+	grpcAddr, err := c.Value(configPath + ".grpc.addr").String()
+	if err != nil {
+		panic(err)
+	}
+	grpcTimeout, err := c.Value(configPath + ".grpc.timeout").String()
+	if err != nil {
+		panic(err)
+	}
+
+	servers = &conf.Server{
+		Grpc: &conf.Server_GRPC{
+			Network: "",
+			Addr:    grpcAddr,
+			Timeout: &durationpb.Duration{Seconds: int64(grpcTimeout[0])},
+		},
+		Http: &conf.Server_HTTP{
+			Network: "",
+			Addr:    httpAddr,
+			Timeout: &durationpb.Duration{Seconds: int64(httpTimeout[0])},
+		},
 	}
 
 	var bc conf.Bootstrap
@@ -167,6 +183,8 @@ func RunApp(
 	defer fmt.Printf("::::: %s Service shutting down :::::\n", name)
 
 	kratos.AfterStart(func(context.Context) error {
+		go util.RecordSystemMetrics()
+
 		stream.ProduceKafkaMessage(name, name+" server started")
 		stream.ProduceKafkaMessage(name, name+" server started")
 

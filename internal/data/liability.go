@@ -6,6 +6,7 @@ import (
 	v1 "microservices-template-2024/api/v1"
 	"microservices-template-2024/internal/biz"
 	"microservices-template-2024/internal/server"
+	"microservices-template-2024/internal/util"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -23,6 +24,7 @@ func NewLiabilityRepo(data *Data, logger log.Logger) biz.LiabilityRepo {
 }
 
 func (r *liabilityRepo) Save(ctx context.Context, l *biz.Liability) (*biz.Liability, error) {
+	defer util.Benchmark("liabilityRepo.Save()")()
 	if l.ID != "" {
 		if err := server.DB.Save(&l).Error; err != nil {
 			return nil, err
@@ -34,7 +36,7 @@ func (r *liabilityRepo) Save(ctx context.Context, l *biz.Liability) (*biz.Liabil
 	if err := l.BeforeCreate(server.DB); err != nil {
 		return nil, err
 	}
-	
+
 	if err := server.DB.FirstOrCreate(&l).Error; err != nil {
 		return nil, err
 	}
@@ -44,6 +46,7 @@ func (r *liabilityRepo) Save(ctx context.Context, l *biz.Liability) (*biz.Liabil
 }
 
 func (r *liabilityRepo) Update(ctx context.Context, u *biz.Liability) (*biz.Liability, error) {
+	defer util.Benchmark("liabilityRepo.Update()")()
 	if err := server.DB.Save(&u).Error; err != nil {
 		return nil, err
 	}
@@ -51,6 +54,7 @@ func (r *liabilityRepo) Update(ctx context.Context, u *biz.Liability) (*biz.Liab
 }
 
 func (r *liabilityRepo) FindByID(ctx context.Context, id string) (*biz.Liability, error) {
+	defer util.Benchmark("liabilityRepo.FindByID()")()
 	var l *biz.Liability
 	if err := server.DB.First(&l, "id = ?", id).Error; err != nil {
 		return nil, err
@@ -59,6 +63,7 @@ func (r *liabilityRepo) FindByID(ctx context.Context, id string) (*biz.Liability
 }
 
 func (r *liabilityRepo) GetLiabilities(ctx context.Context, req *v1.GetLiabilitiesRequest) ([]*biz.Liability, error) {
+	defer util.Benchmark("liabilityRepo.GetLiabilities()")()
 	var liabilities []*biz.Liability
 
 	query := server.DB.Limit(300)
@@ -77,6 +82,7 @@ func (r *liabilityRepo) GetLiabilities(ctx context.Context, req *v1.GetLiabiliti
 }
 
 func (r *liabilityRepo) ListAll(context.Context) ([]*biz.Liability, error) {
+	defer util.Benchmark("liabilityRepo.ListAll()")()
 	var liabilities []*biz.Liability
 
 	if err := server.DB.Last(&liabilities).Limit(100).Error; err != nil {

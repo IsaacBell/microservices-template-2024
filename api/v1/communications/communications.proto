@@ -27,7 +27,7 @@ enum CommunicationType {
 
 }
 
-// communication between professional and client
+// communication between users, or e.g. a professional and client
 message Communication {
   string msg = 1;
   string user_id = 2;

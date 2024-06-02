@@ -3,10 +3,12 @@ package data
 import (
 	"context"
 	"fmt"
+	"time"
+
 	v1 "microservices-template-2024/api/v1"
 	"microservices-template-2024/internal/biz"
 	"microservices-template-2024/internal/server"
-	"time"
+	"microservices-template-2024/internal/util"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"
@@ -25,6 +27,8 @@ func NewTransactionRepo(data *Data, logger log.Logger) biz.TransactionRepo {
 }
 
 func (r *transactionRepo) Save(ctx context.Context, t *biz.Transaction) (*biz.Transaction, error) {
+	defer util.Benchmark("transactionRepo.Save()")()
+
 	if t.ID != "" {
 		if err := server.DB.Save(&t).Error; err != nil {
 			return nil, err
@@ -46,6 +50,7 @@ func (r *transactionRepo) Save(ctx context.Context, t *biz.Transaction) (*biz.Tr
 }
 
 func (r *transactionRepo) Update(ctx context.Context, u *biz.Transaction) (*biz.Transaction, error) {
+	defer util.Benchmark("transactionRepo.Update()")()
 	if err := server.DB.Save(&u).Error; err != nil {
 		return nil, err
 	}
@@ -53,6 +58,7 @@ func (r *transactionRepo) Update(ctx context.Context, u *biz.Transaction) (*biz.
 }
 
 func (r *transactionRepo) FindByID(ctx context.Context, id string) (*biz.Transaction, error) {
+	defer util.Benchmark("transactionRepo.FindByID()")()
 	var u *biz.Transaction
 	if err := server.DB.First(&u, "id = ?", id).Error; err != nil {
 		return nil, err
@@ -97,7 +103,7 @@ func (r *transactionRepo) SyncTransactions(ctx context.Context, owner string, st
 			}
 
 			// Loop time
-			time.Sleep(400 * time.Millisecond)
+			time.Sleep(150 * time.Millisecond)
 		}
 	}
 
@@ -105,6 +111,7 @@ func (r *transactionRepo) SyncTransactions(ctx context.Context, owner string, st
 }
 
 func (r *transactionRepo) ListAll(context.Context) ([]*biz.Transaction, error) {
+	defer util.Benchmark("transactionRepo.ListAll()")()
 	var transactions []*biz.Transaction
 
 	if err := server.DB.Last(&transactions).Limit(100).Error; err != nil {
