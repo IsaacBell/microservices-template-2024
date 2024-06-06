@@ -2,17 +2,20 @@ package users
 
 import (
 	"context"
+	v1 "core/api/v1"
+	"core/internal/auth"
+	"core/internal/biz"
+	"core/internal/util"
+	cache "core/pkg/cache"
 	"encoding/json"
 	"errors"
 	"fmt"
-	v1 "microservices-template-2024/api/v1"
-	"microservices-template-2024/internal/biz"
-	cache "microservices-template-2024/pkg/cache"
 	"os"
 	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 )
 
 /* public-facing user functions
@@ -57,7 +60,10 @@ func Get(uid string, raiseErrIfNotFound bool) (*v1.User, error) {
 		return nil, err
 	}
 	defer closeConn()
-	resp, err := client.GetUser(context.Background(), &v1.GetUserRequest{Id: &uid})
+	ctx := context.WithValue(context.Background(), util.ContextKeyMethod, "GET")
+	fmt.Printf("ctx: %v\n", ctx)
+
+	resp, err := client.GetUser(ctx, &v1.GetUserRequest{Id: &uid})
 	if err != nil {
 		fmt.Printf("failed to get user: %v", err)
 		if raiseErrIfNotFound {
@@ -71,24 +77,40 @@ func Get(uid string, raiseErrIfNotFound bool) (*v1.User, error) {
 	return resp.User, nil
 }
 
-func Create(u *v1.User, raiseErrOnFail bool) (string, error) {
+func AuthorizeUser(u *v1.User) (context.Context, string, error) {
+	dataModel := biz.ProtoToUserData(u)
+	ctx, token, err := auth.Encode(context.Background(), dataModel)
+	if err != nil {
+		return nil, "", fmt.Errorf("failed to generate JWT token: %v", err)
+	}
+	fmt.Printf("\n\n--->token: %v\n\n", token)
+
+	ctx = metadata.NewOutgoingContext(ctx, metadata.Pairs("authorization", "Bearer "+token))
+	ctx = context.WithValue(ctx, util.ContextKeyMethod, "POST")
+	return ctx, token, nil
+}
+
+func Create(u *v1.User, raiseErrOnFail bool) (string, string, error) {
 	client, closeConn, err := grpcConn()
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	defer closeConn()
-	resp, err := client.CreateUser(context.Background(), &v1.CreateUserRequest{User: u})
+
+	ctx, token, err := AuthorizeUser(u)
+
+	resp, err := client.CreateUser(ctx, &v1.CreateUserRequest{User: u})
 	if err != nil {
 		fmt.Printf("failed to create user: %v", err)
 		if raiseErrOnFail {
-			return "", err
+			return "", "", err
 		}
 	}
 	if raiseErrOnFail && resp.Id == "" {
-		return "", errors.New("Failed to create user")
+		return "", "", errors.New("Failed to create user")
 	}
 
-	return resp.Id, nil
+	return resp.Id, token, nil
 }
 
 func Update(u *v1.User, raiseErrOnFail bool) (*v1.User, error) {
@@ -97,7 +119,8 @@ func Update(u *v1.User, raiseErrOnFail bool) (*v1.User, error) {
 		return nil, err
 	}
 	defer closeConn()
-	resp, err := client.UpdateUser(context.Background(), &v1.UpdateUserRequest{User: u})
+	ctx := context.WithValue(context.Background(), util.ContextKeyMethod, "PUT")
+	resp, err := client.UpdateUser(ctx, &v1.UpdateUserRequest{User: u})
 	if err != nil {
 		fmt.Printf("failed to update user: %v", err)
 		if raiseErrOnFail {
@@ -117,7 +140,8 @@ func Delete(uid string, raiseErrOnFail bool) (bool, error) {
 		return false, err
 	}
 	defer closeConn()
-	resp, err := client.DeleteUser(context.Background(), &v1.DeleteUserRequest{Id: uid})
+	ctx := context.WithValue(context.Background(), util.ContextKeyMethod, "DELETE")
+	resp, err := client.DeleteUser(ctx, &v1.DeleteUserRequest{Id: uid})
 	if err != nil {
 		fmt.Printf("failed to delete user: %v", err)
 		if raiseErrOnFail {
@@ -134,7 +158,8 @@ func List() ([]*v1.User, error) {
 		return nil, err
 	}
 	defer closeConn()
-	resp, err := client.ListUser(context.Background(), &v1.ListUserRequest{})
+	ctx := context.WithValue(context.Background(), util.ContextKeyMethod, "GET")
+	resp, err := client.ListUser(ctx, &v1.ListUserRequest{})
 	if err != nil {
 		fmt.Printf("failed to list users: %v", err)
 		return nil, err
@@ -149,7 +174,8 @@ func SignUp(req *v1.SignUpRequest) (string, error) {
 		return "", err
 	}
 	defer closeConn()
-	resp, err := client.SignUp(context.Background(), req)
+	ctx := context.WithValue(context.Background(), util.ContextKeyMethod, "GET")
+	resp, err := client.SignUp(ctx, req)
 	if err != nil {
 		fmt.Printf("failed to sign up: %v", err)
 		return "", err
@@ -164,7 +190,8 @@ func SignIn(email, pass string) (*v1.User, error) {
 		return nil, err
 	}
 	defer closeConn()
-	resp, err := client.SignIn(context.Background(), &v1.SignInRequest{Email: email, Password: pass})
+	ctx := context.WithValue(context.Background(), util.ContextKeyMethod, "GET")
+	resp, err := client.SignIn(ctx, &v1.SignInRequest{Email: email, Password: pass})
 	if !resp.Ok || err != nil {
 		fmt.Printf("failed to sign in: %v", err)
 		return nil, err

@@ -2,12 +2,12 @@ package server
 
 import (
 	"context"
+	"core/internal/conf"
+	"core/internal/util"
+	"core/pkg/influx"
+	"core/pkg/stream"
 	"flag"
 	"fmt"
-	"microservices-template-2024/internal/conf"
-	"microservices-template-2024/internal/util"
-	"microservices-template-2024/pkg/influx"
-	"microservices-template-2024/pkg/stream"
 	"os"
 
 	"github.com/go-kratos/kratos/v2"
@@ -179,13 +179,12 @@ func RunApp(
 		panic(err)
 	}
 
-	fmt.Printf("::::: %s Service booting :::::\n", name)
+	fmt.Printf("::::: %s service booting :::::\n", name)
 	defer fmt.Printf("::::: %s Service shutting down :::::\n", name)
 
 	go util.RecordSystemMetrics()
 	kratos.AfterStart(func(context.Context) error {
 
-		stream.ProduceKafkaMessage(name, name+" server started")
 		stream.ProduceKafkaMessage(name, name+" server started")
 
 		if afterStartCb != nil {
@@ -194,14 +193,15 @@ func RunApp(
 
 		return nil
 	})
+	kratos.AfterStop(func(context.Context) error {
+		stream.ProduceKafkaMessage(name, name+" server stopped")
+		return nil
+	})
 
 	// start and wait for stop signal
 	if err := app.Run(); err != nil {
 		panic(err)
 	}
-
-	defer stream.ProduceKafkaMessage(name, name+" server stopped")
-	defer stream.ProduceKafkaMessage(name, name+" server stopped")
 
 	defer app.Stop()
 }

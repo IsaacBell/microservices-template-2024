@@ -1941,6 +1941,8 @@ components:
                     type: string
                 companyId:
                     type: string
+                sessionToken:
+                    type: string
         api.v1.lodging.CreateLodgingReply:
             type: object
             properties:

@@ -4,12 +4,15 @@ import (
 	"context"
 	"fmt"
 	v1 "microservices-template-2024/api/v1"
+	"time"
 
 	// v1 "microservices-template-2024/api/helloworld/v1"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+
+	moesifModels "github.com/moesif/moesifapi-go/models"
 )
 
 // var (
@@ -35,13 +38,16 @@ type User struct {
 	Timezone string `protobuf:"bytes,15,opt,name=timezone,proto3" json:"timezone,omitempty"`
 	Locale   string `protobuf:"bytes,16,opt,name=locale,proto3" json:"locale,omitempty"`
 	// Metadata map[string]string `protobuf:"bytes,17,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	Deleted   bool   `protobuf:"bytes,19,name=deleted,proto3" json:"deleted,omitempty"`
-	Title     string `protobuf:"bytes,23,name=title,proto3" json:"title,proto3" json:"title,omitempty"`
-	CompanyId string `protobuf:"bytes,24,name=company_id,proto3" json:"company_id,proto3" json:"company_id,omitempty"`
+	Deleted      bool   `protobuf:"bytes,19,name=deleted,proto3" json:"deleted,omitempty"`
+	Title        string `protobuf:"bytes,23,name=title,proto3" json:"title,proto3" json:"title,omitempty"`
+	CompanyId    string `protobuf:"bytes,24,name=company_id,proto3" json:"company_id,proto3" json:"company_id,omitempty"`
+	SessionToken string `protobuf:"bytes,25,name=session_token,proto3" json:"session_token,proto3" json:"session_token,omitempty"`
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) error {
-	u.ID = uuid.New().String()
+	if u.ID == "" {
+		u.ID = uuid.New().String()
+	}
 	return nil
 }
 
@@ -53,6 +59,7 @@ func UserToProtoData(user *User) *v1.User {
 	return &v1.User{
 		Id:           user.ID,
 		CompanyId:    user.CompanyId,
+		SessionToken: user.SessionToken,
 		Username:     user.Username,
 		Email:        user.Email,
 		PasswordHash: user.PasswordHash,
@@ -82,6 +89,7 @@ func ProtoToUserData(input *v1.User) *User {
 	user := &User{}
 	user.ID = input.Id
 	user.CompanyId = input.CompanyId
+	user.SessionToken = input.SessionToken
 	user.Username = input.Username
 	user.Email = input.Email
 	user.PasswordHash = input.PasswordHash
@@ -100,6 +108,26 @@ func ProtoToUserData(input *v1.User) *User {
 	user.Title = input.Title
 
 	return user
+}
+
+func UserToMoesifData(u *User) *moesifModels.UserModel {
+	userLastModifiedTime := time.Now().Local()
+	return &moesifModels.UserModel{
+		UserId:       u.ID,
+		ModifiedTime: &userLastModifiedTime,
+		SessionToken: &u.SessionToken,
+		Metadata: map[string]interface{}{
+			"email":      u.Email,
+			"first_name": u.FirstName,
+			"last_name":  u.LastName,
+			"title":      u.Title,
+			"sales_info": map[string]interface{}{
+				"stage":          "Customer",
+				"lifetime_value": 0,
+				"account_owner":  u.Email,
+			},
+		},
+	}
 }
 
 type UserRepo interface {

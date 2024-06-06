@@ -1,10 +1,12 @@
 package server
 
 import (
-	helloworld "microservices-template-2024/api/helloworld/v1"
-	v1 "microservices-template-2024/api/v1"
-	"microservices-template-2024/internal/conf"
-	"microservices-template-2024/internal/service"
+	helloworld "core/api/helloworld/v1"
+	v1 "core/api/v1"
+	"core/internal/auth"
+	"core/internal/conf"
+	"core/internal/service"
+	analyticsengine "core/pkg/analyticsEngine"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
@@ -36,9 +38,13 @@ func StartPrometheus(srv *http.Server) {
 }
 
 func HTTPServerFactory(name string, c *conf.Server, logger log.Logger) *http.Server {
+	authCtx := auth.NewAuthCtx()
+	
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),
+			auth.JwtMiddleware(authCtx), // must come before analytics
+			analyticsengine.MoesifMiddleware(authCtx),
 		),
 	}
 	if c.Http.Network != "" {

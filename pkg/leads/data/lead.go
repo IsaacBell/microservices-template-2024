@@ -43,7 +43,7 @@ func (r *leadRepo) Save(ctx context.Context, u *leads_biz.Lead) (*leads_biz.Lead
 		}
 	}
 
-	if err := server.DB.Omit("ID").FirstOrCreate(&u).Error; err != nil {
+	if err := server.DB.FirstOrCreate(&u).Error; err != nil {
 		return nil, err
 	}
 

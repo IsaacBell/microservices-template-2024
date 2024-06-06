@@ -24,21 +24,24 @@ func NewUsersService(action *biz.UserAction) *UsersService {
 }
 
 func (s *UsersService) CreateUser(ctx context.Context, req *v1.CreateUserRequest) (*v1.CreateUserReply, error) {
+	// defer analyticsengine.LogEvent().LogAnalytics("/user", "POST", )()
 	defer util.Benchmark("UsersService.CreateUser()")()
 	if req.User == nil {
 		return &v1.CreateUserReply{Ok: false, Id: ""}, errors.New("user data not supplied")
 	}
 
 	user := biz.ProtoToUserData(req.User)
-	fmt.Println(user.Email)
+	fmt.Println("++++New user: ", user.Email)
 	res, err := s.action.CreateUser(ctx, user)
 
-	fmt.Println("CreateUser response: ", res)
+	fmt.Println("++++CreateUser response: ", res)
 	stream.ProduceKafkaMessage("main", "New User: "+user.Email)
 
 	cache.Cache(ctx).Set("user:"+req.User.Id, user, 0)
 
-	return &v1.CreateUserReply{Ok: err == nil, Id: res.ID}, err
+	reply := &v1.CreateUserReply{Ok: err == nil, Id: res.ID}
+
+	return reply, err
 }
 
 func (s *UsersService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest) (*v1.UpdateUserReply, error) {

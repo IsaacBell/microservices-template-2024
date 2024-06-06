@@ -309,7 +309,7 @@ func (r *consultantRepo) Save(ctx context.Context, c *consultants_biz.Consultant
 		}
 	}
 
-	if err := server.DB.Omit("ID").FirstOrCreate(&c).Error; err != nil {
+	if err := server.DB.FirstOrCreate(&c).Error; err != nil {
 		return nil, err
 	}
 

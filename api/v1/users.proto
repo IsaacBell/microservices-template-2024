@@ -48,6 +48,7 @@ message User {
   string user_type = 22;
   string title = 23;
   string company_id = 24;
+  string session_token = 25;
 }
 
 enum DeviceType {

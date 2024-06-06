@@ -62,6 +62,10 @@ func readCsvFile(filePath string) [][]string {
 	return records
 }
 
+func CoreServiceAddr() string {
+	return os.Getenv("CORE_SERVICE_ADDRESS")
+}
+
 func UsersServiceAddr() string {
 	return os.Getenv("CORE_SERVICE_ADDRESS")
 }

@@ -1,14 +1,13 @@
 package notifications
 
 import (
-	v1 "microservices-template-2024/api/v1"
-	"microservices-template-2024/internal/biz"
-	"microservices-template-2024/pkg/cache"
-	consultants_biz "microservices-template-2024/pkg/consultants/biz"
-	notifications_biz "microservices-template-2024/pkg/notifications/biz"
-	notifications_clients "microservices-template-2024/pkg/notifications/clients"
-	"microservices-template-2024/pkg/stream"
-	"microservices-template-2024/pkg/users"
+	"core/internal/biz"
+	"core/pkg/cache"
+	consultants_biz "core/pkg/consultants/biz"
+	notifications_biz "core/pkg/notifications/biz"
+	notifications_clients "core/pkg/notifications/clients"
+	"core/pkg/stream"
+	"core/pkg/users"
 	"os"
 
 	"github.com/google/wire"
@@ -16,6 +15,7 @@ import (
 )
 
 var (
+	testMode    bool
 	client      *notifications_clients.CourierClient
 	ProviderSet = wire.NewSet(Notify, NotifyCommunicationSent, NotifyError, SendSystemAlert)
 )
@@ -28,13 +28,29 @@ type Notification struct {
 }
 
 func setClient() {
-	if client == nil {
+	if client == nil && testMode {
+		client = notifications_clients.NewCourierTestClient()
+	}
+	if client == nil && !testMode {
 		client = notifications_clients.NewCourierClient()
 	}
 }
 
 func ChangeClient(c *notifications_clients.CourierClient) {
 	client = c
+}
+
+// for failover simulation
+func DropClient() {
+	client = nil
+}
+
+func EnableTestMode() {
+	testMode = true
+}
+
+func DisableTestMode() {
+	testMode = false
 }
 
 func setMetadata(notif *Notification) {
@@ -54,7 +70,10 @@ func setMetadata(notif *Notification) {
 func Notify(notif *Notification) error {
 	setClient()
 	setMetadata(notif)
-	stream.ProduceKafkaMessage("notifications", notif.Data.Msg)
+
+	if !testMode {
+		stream.ProduceKafkaMessage("notifications", notif.Data.Msg)
+	}
 
 	err := client.SendNotification(notif.Data, notif.Metadata)
 	if err != nil {
@@ -64,17 +83,27 @@ func Notify(notif *Notification) error {
 	return nil
 }
 
-func NotifyCommunicationSent(from, fromId, toId, msg string) {
-	var recip *v1.User
-	var err error
-
-	cachedUser := users.UserFromCache(toId)
+func getUserWithCache(
+	id string,
+	failIfNotFound bool,
+) (*biz.User, error) {
+	cachedUser := users.UserFromCache(id)
 	if cachedUser == nil {
-		recip, err = users.Get(toId, true)
-		cache.CacheRecord("user", users.UserCacheKey(toId), toId, recip)
+		u, err := users.Get(id, true)
+		if err != nil {
+			return nil, err
+		}
+		cache.CacheRecord("user", users.UserCacheKey(id), id, u)
+		return biz.ProtoToUserData(u), nil
 	} else {
-		recip = biz.UserToProtoData(cachedUser)
+		return cachedUser, nil
 	}
+
+	return nil, nil
+}
+
+func NotifyCommunicationSent(from, fromId, toId, msg string) {
+	recip, err := getUserWithCache(toId, false)
 	if err != nil {
 		return
 	}
@@ -98,7 +127,7 @@ func NotifyCommunicationSent(from, fromId, toId, msg string) {
 }
 
 func NotifyError(uid string, reportedErr error) error {
-	u, err := users.Get(uid, true)
+	u, err := getUserWithCache(uid, false)
 	if err != nil {
 		return err
 	}
@@ -129,7 +158,7 @@ func NotifyError(uid string, reportedErr error) error {
 }
 
 func SendSystemAlert(uid, msg string, options map[string]bool) error {
-	u, err := users.Get(uid, true)
+	u, err := getUserWithCache(uid, false)
 	if err != nil {
 		return err
 	}

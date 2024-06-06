@@ -39,7 +39,7 @@ func (r *propertyRepo) Save(ctx context.Context, p *lodging_biz.Property) (*lodg
 		}
 	}
 
-	if err := server.DB.Omit("ID").FirstOrCreate(&p).Error; err != nil {
+	if err := server.DB.FirstOrCreate(&p).Error; err != nil {
 		return nil, err
 	}
 

@@ -80,7 +80,7 @@ func (CommunicationType) EnumDescriptor() ([]byte, []int) {
 	return file_v1_communications_communications_proto_rawDescGZIP(), []int{0}
 }
 
-// communication between professional and client
+// communication between users, or e.g. a professional and client
 type Communication struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

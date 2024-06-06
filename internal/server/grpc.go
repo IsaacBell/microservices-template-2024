@@ -1,14 +1,18 @@
 package server
 
 import (
+	"context"
+	helloworld "core/api/helloworld/v1"
+	v1 "core/api/v1"
+	"core/internal/auth"
+	"core/internal/conf"
+	"core/internal/service"
+	analyticsengine "core/pkg/analyticsEngine"
 	"fmt"
 	"io/ioutil"
-	helloworld "microservices-template-2024/api/helloworld/v1"
-	v1 "microservices-template-2024/api/v1"
-	"microservices-template-2024/internal/conf"
-	"microservices-template-2024/internal/service"
 
 	"github.com/go-kratos/kratos/v2/log"
+
 	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
@@ -41,12 +45,17 @@ func GRPCServerFactory(name string, c *conf.Server, logger log.Logger) *grpc.Ser
 	counter := prometheus.NewCounterVec(
 		prometheus.CounterOpts{Name: name + "_counter"}, []string{"kind", "operation", "code", "reason"})
 
+	ctx := context.WithValue(context.Background(), "server_type", "grpc")
+	authCtx := auth.NewAuthCtxFrom(ctx)
+
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),
 			logging.Server(logger),
 			tracing.Server(tracing.WithTracerProvider(tp)),
 			metrics.Server(metrics.WithRequests(kmetrics.NewCounter(counter))),
+			auth.JwtMiddleware(authCtx), // must come before analytics
+			analyticsengine.MoesifMiddleware(authCtx),
 		),
 	}
 	if c.Grpc.Network != "" {
@@ -77,6 +86,6 @@ func NewCoreGRPCServer(
 	v1.RegisterUsersServer(srv, user)
 	v1.RegisterTransactionsServer(srv, trans)
 	v1.RegisterLiabilitiesServer(srv, lias)
-	v1.RegisterLogServer(srv, log)
+	// v1.RegisterLogServer(srv, log)
 	return srv
 }

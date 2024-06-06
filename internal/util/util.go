@@ -1,8 +1,8 @@
 package util
 
 import (
+	"core/pkg/influx"
 	"fmt"
-	"microservices-template-2024/pkg/influx"
 	"os"
 	"runtime"
 	"strconv"
@@ -16,6 +16,12 @@ import (
 	"github.com/shirou/gopsutil/net"
 	"github.com/shirou/gopsutil/process"
 )
+
+// func handle(w http.ResponseWriter, r *http.Request) {
+// 	// Your API Logic
+// }
+
+// http.Handle("/api", moesifmiddleware.MoesifMiddleware(http.HandlerFunc(handle), moesifOption))
 
 // defer Benchmark("my-process")()
 func Benchmark(processName string) func() {
@@ -35,7 +41,7 @@ func Benchmark(processName string) func() {
 	}()
 
 	return func() {
-		fmt.Println("Benchmarks: \n->  ", processName, "ran in "+time.Since(start).String())
+		PrintLnInColor(AnsiColorCyan, "Benchmarks: \n->  ", processName, "ran in "+time.Since(start).String())
 		ticker.Stop()
 		influx.LogRuntime(processName, time.Since(start))
 	}
@@ -45,7 +51,10 @@ func RecordSystemMetrics() {
 	os.Stdout.Sync()
 
 	for {
+		fmt.Println(AnsiColorYellow)
+		defer fmt.Println(AnsiColorReset)
 		fmt.Println("-->recording system metrics...")
+
 		metrics := make(map[string]map[string]interface{})
 		timestamp := time.Now().Local().Format(time.RFC3339)
 		metrics[timestamp] = make(map[string]interface{})
@@ -55,14 +64,14 @@ func RecordSystemMetrics() {
 		// CPU metrics
 		cpuPercent, err := cpu.Percent(0, false)
 		if err != nil {
-			fmt.Println("Caught error retrieving CPU percentage: ", err, "\n")
+			PrintLnInColor(AnsiColorRed, "Caught error retrieving CPU percentage: ", err, "\n")
 		} else {
 			metrics[timestamp]["cpu.usage"] = cpuPercent[0]
 		}
 
 		cpuLoad, err := load.Avg()
 		if err != nil {
-			fmt.Println("Caught error retrieving CPU load:", err)
+			PrintLnInColor(AnsiColorRed, "Caught error retrieving CPU load:\n. -> ", err)
 		} else {
 			metrics[timestamp]["cpu.load.1m"] = cpuLoad.Load1
 			metrics[timestamp]["cpu.load.5m"] = cpuLoad.Load5
@@ -72,7 +81,7 @@ func RecordSystemMetrics() {
 		// Memory metrics
 		vmStat, err := mem.VirtualMemory()
 		if err != nil {
-			fmt.Println("Caught error retrieving virtual memory stats:", err)
+			PrintLnInColor(AnsiColorRed, "Caught error retrieving virtual memory stats:\n. -> ", err)
 		} else {
 			metrics[timestamp]["memory.used"] = vmStat.Used
 			metrics[timestamp]["memory.total"] = vmStat.Total
@@ -81,7 +90,7 @@ func RecordSystemMetrics() {
 
 		swapStat, err := mem.SwapMemory()
 		if err != nil {
-			fmt.Println("Caught error retrieving swap memory stats:", err)
+			PrintLnInColor(AnsiColorRed, "Caught error retrieving swap memory stats:\n. -> ", err)
 		} else {
 			metrics[timestamp]["swap.used"] = swapStat.Used
 			metrics[timestamp]["swap.total"] = swapStat.Total
@@ -91,7 +100,7 @@ func RecordSystemMetrics() {
 		// Disk metrics
 		diskStat, err := disk.Usage("/")
 		if err != nil {
-			fmt.Println("Caught error retrieving disk usage stats:", err)
+			PrintLnInColor(AnsiColorRed, "Caught error retrieving disk usage stats:\n. -> ", err)
 		} else {
 			metrics[timestamp]["disk.used"] = diskStat.Used
 			metrics[timestamp]["disk.total"] = diskStat.Total
@@ -100,7 +109,7 @@ func RecordSystemMetrics() {
 
 		diskIOCounters, err := disk.IOCounters()
 		if err != nil {
-			fmt.Println("Caught error retrieving disk IO counters:", err)
+			PrintLnInColor(AnsiColorRed, "Caught error retrieving disk IO counters:\n. -> ", err)
 		} else {
 			for idx, counter := range diskIOCounters {
 				metrics[timestamp]["disk["+idx+"].read_bytes"] = counter.ReadBytes
@@ -113,7 +122,7 @@ func RecordSystemMetrics() {
 		// Network metrics
 		netIOCounters, err := net.IOCounters(false)
 		if err != nil {
-			fmt.Println("Caught error retrieving network IO counters:", err)
+			PrintLnInColor(AnsiColorRed, "Caught error retrieving network IO counters:\n. -> ", err)
 		} else {
 			metrics[timestamp]["network.bytes_sent"] = netIOCounters[0].BytesSent
 			metrics[timestamp]["network.bytes_recv"] = netIOCounters[0].BytesRecv
@@ -126,7 +135,7 @@ func RecordSystemMetrics() {
 		// Process-level metrics
 		processes, err := process.Processes()
 		if err != nil {
-			fmt.Println("Caught error retrieving processes:", err)
+			PrintLnInColor(AnsiColorRed, "Caught error retrieving processes:\n. -> ", err)
 		} else {
 			metrics[timestamp]["process.count"] = len(processes)
 			for _, p := range processes {
@@ -139,7 +148,7 @@ func RecordSystemMetrics() {
 
 				mem, err := p.MemoryInfo()
 				if err != nil {
-					fmt.Printf("Caught error retrieving memory info for process %d: %v", p.Pid, err)
+					PrintLnInColor(AnsiColorRed, "Caught error retrieving memory info for process %d: %v", p.Pid, err)
 				} else {
 					metrics[timestamp][fmt.Sprintf("process.%d.memory", p.Pid)] = mem.RSS
 				}
@@ -149,14 +158,14 @@ func RecordSystemMetrics() {
 		// System metrics
 		uptime, err := host.Uptime()
 		if err != nil {
-			fmt.Println("Caught error retrieving system uptime:", err)
+			PrintLnInColor(AnsiColorRed, "Caught error retrieving system uptime:\n. -> ", err)
 		} else {
 			metrics[timestamp]["system.uptime"] = uptime
 		}
 
 		bootTime, err := host.BootTime()
 		if err != nil {
-			fmt.Println("Caught error retrieving system boot time:", err)
+			PrintLnInColor(AnsiColorRed, "Caught error retrieving system boot time:\n. -> ", err)
 		} else {
 			metrics[timestamp]["system.boot_time"] = bootTime
 		}
@@ -172,7 +181,7 @@ func RecordSystemMetrics() {
 
 		times, err := cpu.Times(true)
 		if err != nil {
-			fmt.Println("Caught error retrieving CPU times:", err)
+			PrintLnInColor(AnsiColorRed, "Caught error retrieving CPU times:\n. -> ", err)
 		} else {
 			cpus := make(map[string]interface{})
 			metrics[timestamp]["cpu.count"] = len(times)
@@ -195,7 +204,7 @@ func RecordSystemMetrics() {
 
 		err = influx.LogSystemMetrics(metrics)
 		if err != nil {
-			fmt.Println("Caught error logging system metrics:", err)
+			PrintLnInColor(AnsiColorRed, "Caught error logging system metrics:\n. -> ", err)
 		}
 
 		// Sleep for a specific interval before collecting metrics again
