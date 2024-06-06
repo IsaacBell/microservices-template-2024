@@ -53,7 +53,7 @@ func RecordSystemMetrics() {
 	for {
 		fmt.Println(AnsiColorYellow)
 		defer fmt.Println(AnsiColorReset)
-		fmt.Println("-->recording system metrics...")
+		fmt.Println("-->recording system performance metrics...")
 
 		metrics := make(map[string]map[string]interface{})
 		timestamp := time.Now().Local().Format(time.RFC3339)
@@ -141,14 +141,14 @@ func RecordSystemMetrics() {
 			for _, p := range processes {
 				cpu, err := p.CPUPercent()
 				if err != nil {
-					fmt.Printf("Caught error retrieving CPU percentage for process %d: %v", p.Pid, err)
+					PrintLnInColor(AnsiColorRed, "Caught error retrieving CPU percentage for process: ", p.Pid, "\n-->err: ", err)
 				} else {
 					metrics[timestamp][fmt.Sprintf("process.%d.cpu", p.Pid)] = cpu
 				}
 
 				mem, err := p.MemoryInfo()
 				if err != nil {
-					PrintLnInColor(AnsiColorRed, "Caught error retrieving memory info for process %d: %v", p.Pid, err)
+					PrintLnInColor(AnsiColorRed, "Caught error retrieving memory info for process: ", p.Pid, "\n-->err: ", err)
 				} else {
 					metrics[timestamp][fmt.Sprintf("process.%d.memory", p.Pid)] = mem.RSS
 				}
@@ -208,6 +208,6 @@ func RecordSystemMetrics() {
 		}
 
 		// Sleep for a specific interval before collecting metrics again
-		time.Sleep(10 * time.Second)
+		time.Sleep(30 * time.Second)
 	}
 }

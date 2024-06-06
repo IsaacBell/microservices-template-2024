@@ -5,10 +5,8 @@ import (
 	"core/internal/biz"
 	"core/internal/constants"
 	zap "core/internal/logs"
-	"core/pkg/cache"
 	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/go-kratos/kratos/v2/middleware"
 	jwtMiddleware "github.com/go-kratos/kratos/v2/middleware/auth/jwt"
@@ -123,11 +121,9 @@ func (j *JwtHandler) DecodeJwt(token *jwtv5.Token) (interface{}, error) {
 		fmt.Printf("err: %v\n", err)
 	}
 
-	// temp
-	cache.Cache(context.Background()).Set("auth:"+user["sub"], data, time.Hour*2)
+	// cache.Cache(context.Background()).Set("auth:"+user["sub"], data, time.Hour*2)
 
 	ctx := context.WithValue(currCtx.Ctx, "session", data)
-	fmt.Printf("currCtx: %v\n", ctx, "session: ", currCtx.Ctx.Value("session"))
 	currCtx.Ctx = ctx
 
 	return []byte(constants.JwtKey), nil
