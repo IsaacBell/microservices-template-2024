@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	cache_provider "microservices-template-2024/pkg/cache/provider"
-	"microservices-template-2024/pkg/stream"
+	cache_provider "core/pkg/cache/provider"
+	"core/pkg/stream"
 
 	"github.com/google/wire"
 )
@@ -18,6 +18,16 @@ var (
 	once  sync.Once
 	cache cache_provider.RedisCache
 )
+
+func setCache() {
+	if cache == nil {
+		cache = Cache(context.Background())
+		if cache == nil { // if cache nil after setting it, assume redis is down
+			fmt.Println("---ISSUE: Can't retrieve Redis client---")
+			AlertRedisConnectionError()
+		}
+	}
+}
 
 func AlertRedisConnectionError() {}
 
@@ -31,14 +41,13 @@ func Cache(ctx context.Context) cache_provider.RedisCache {
 	return cache
 }
 
+func GetUserSession(id string) (string, error) {
+	setCache()
+	return cache.Get("auth:" + id).Result()
+}
+
 func CacheRecord(recordType, cacheKey, id string, data interface{}) {
-	if cache == nil {
-		cache = Cache(context.Background())
-		if cache == nil { // if cache nil after setting it, assume redis is down
-			fmt.Println("---ISSUE: Can't retrieve Redis client---")
-			AlertRedisConnectionError()
-		}
-	}
+	setCache()
 	go func() {
 		if data == nil || cacheKey == "" || recordType == "" || id == "" {
 			return

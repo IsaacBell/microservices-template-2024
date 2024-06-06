@@ -7,7 +7,7 @@ The cache package provides a simple caching mechanism using Redis. It allows you
 To use the cache package, import it in your Go code:
 
 ```go
-import "microservices-template-2024/pkg/cache"
+import "core/pkg/cache"
 ```
 
 ### Cache Initialization
@@ -105,7 +105,7 @@ The cache package depends on the following packages:
 import (
     "context"
     "fmt"
-    "microservices-template-2024/pkg/cache"
+    "core/pkg/cache"
     "time"
 )
 

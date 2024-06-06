@@ -1,7 +1,7 @@
 package service
 
 import (
-	finService "microservices-template-2024/pkg/finance/service"
+	finService "core/pkg/finance/service"
 
 	"github.com/google/wire"
 )

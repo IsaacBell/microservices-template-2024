@@ -2,8 +2,8 @@ package mocks
 
 import (
 	"context"
+	consultants_biz "core/pkg/consultants/biz"
 	"fmt"
-	consultants_biz "microservices-template-2024/pkg/consultants/biz"
 
 	"github.com/stretchr/testify/mock"
 	"gorm.io/gorm"

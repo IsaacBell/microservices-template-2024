@@ -11,8 +11,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	v1 "microservices-template-2024/api/v1"
-	communications "microservices-template-2024/api/v1/communications"
+	v1 "core/api/v1"
+	communications "core/api/v1/communications"
 	reflect "reflect"
 	sync "sync"
 )

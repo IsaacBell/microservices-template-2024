@@ -2,11 +2,11 @@ package finance_data
 
 import (
 	"context"
+	v1 "core/api/v1"
+	"core/internal/server"
+	biz "core/pkg/finance/biz"
+	finance_util "core/pkg/finance/util"
 	"fmt"
-	v1 "microservices-template-2024/api/v1"
-	"microservices-template-2024/internal/server"
-	biz "microservices-template-2024/pkg/finance/biz"
-	finance_util "microservices-template-2024/pkg/finance/util"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"

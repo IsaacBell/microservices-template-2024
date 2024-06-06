@@ -1,8 +1,8 @@
 package data
 
 import (
-	"microservices-template-2024/internal/conf"
-	finance_data "microservices-template-2024/pkg/finance/data"
+	"core/internal/conf"
+	finance_data "core/pkg/finance/data"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"

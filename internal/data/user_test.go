@@ -7,10 +7,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"microservices-template-2024/internal/biz"
-	"microservices-template-2024/internal/data"
-	"microservices-template-2024/internal/server"
-	"microservices-template-2024/test"
+	"core/internal/biz"
+	"core/internal/data"
+	"core/internal/server"
+	"core/test"
 )
 
 func TestUserRepo(t *testing.T) {

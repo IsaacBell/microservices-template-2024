@@ -9,11 +9,11 @@ package main
 import (
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
-	"microservices-template-2024/internal/conf"
-	"microservices-template-2024/pkg/consultants/biz"
-	"microservices-template-2024/pkg/consultants/data"
-	"microservices-template-2024/pkg/consultants/server"
-	"microservices-template-2024/pkg/consultants/service"
+	"core/internal/conf"
+	"core/pkg/consultants/biz"
+	"core/pkg/consultants/data"
+	"core/pkg/consultants/server"
+	"core/pkg/consultants/service"
 )
 
 // Injectors from wire.go:

@@ -45,9 +45,9 @@ Make sure to set the FINNHUB_API_TOKEN environment variable with your Finnhub AP
 The leads package has the following dependencies:
 
 ```
-microservices-template-2024/api/v1: Provides the generated gRPC service definitions.
-microservices-template-2024/api/v1/b2b: Provides the generated gRPC service definitions specific to B2B.
-microservices-template-2024/pkg/leads/biz: Provides the business logic for leads.
+core/api/v1: Provides the generated gRPC service definitions.
+core/api/v1/b2b: Provides the generated gRPC service definitions specific to B2B.
+core/pkg/leads/biz: Provides the business logic for leads.
 github.com/Finnhub-Stock-API/finnhub-go/v2: Provides the Finnhub API client for retrieving financial data.
 ```
 

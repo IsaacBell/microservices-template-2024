@@ -1,7 +1,7 @@
 package notifications_data
 
 import (
-	"microservices-template-2024/internal/server"
+	"core/internal/server"
 )
 
 func SaveNotification(notif *interface{}) error {

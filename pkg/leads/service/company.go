@@ -2,10 +2,11 @@ package leads_service
 
 import (
 	"context"
+	"errors"
 
-	v1 "microservices-template-2024/api/v1"
-	leadsV1 "microservices-template-2024/api/v1/b2b"
-	leads_biz "microservices-template-2024/pkg/leads/biz"
+	v1 "core/api/v1"
+	leadsV1 "core/api/v1/b2b"
+	leads_biz "core/pkg/leads/biz"
 )
 
 type CompanyService struct {

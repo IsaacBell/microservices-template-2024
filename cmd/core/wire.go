@@ -6,11 +6,11 @@
 package main
 
 import (
-	"microservices-template-2024/internal/biz"
-	"microservices-template-2024/internal/conf"
-	"microservices-template-2024/internal/data"
-	"microservices-template-2024/internal/server"
-	"microservices-template-2024/internal/service"
+	"core/internal/biz"
+	"core/internal/conf"
+	"core/internal/data"
+	"core/internal/server"
+	"core/internal/service"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"

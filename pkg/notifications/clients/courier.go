@@ -2,8 +2,8 @@ package notifications_clients
 
 import (
 	"context"
+	notifications_biz "core/pkg/notifications/biz"
 	"fmt"
-	notifications_biz "microservices-template-2024/pkg/notifications/biz"
 	"os"
 	"sync"
 
@@ -29,6 +29,10 @@ func connect() *courier.Client {
 
 func NewCourierClient() *CourierClient {
 	return &CourierClient{client: connect()}
+}
+
+func NewCourierTestClient() *CourierClient {
+	return &CourierClient{client: &courier.Client{}}
 }
 
 func (c *CourierClient) SendNotification(

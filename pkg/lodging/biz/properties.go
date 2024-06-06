@@ -2,8 +2,8 @@ package lodging_biz
 
 import (
 	"context"
+	lodgingV1 "core/api/v1/lodging"
 	"fmt"
-	lodgingV1 "microservices-template-2024/api/v1/lodging"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"

@@ -2,8 +2,8 @@ package cache_provider_test
 
 import (
 	"context"
+	cache_provider "core/pkg/cache/provider"
 	"fmt"
-	cache_provider "microservices-template-2024/pkg/cache/provider"
 	"testing"
 	"time"
 

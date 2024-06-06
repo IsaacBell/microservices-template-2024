@@ -2,8 +2,8 @@ package cache_provider
 
 import (
 	"context"
+	"core/internal/conf"
 	"fmt"
-	"microservices-template-2024/internal/conf"
 	"sync"
 	"time"
 

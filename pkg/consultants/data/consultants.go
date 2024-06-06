@@ -2,10 +2,10 @@ package consultants_data
 
 import (
 	"context"
+	"core/internal/server"
+	consultants_biz "core/pkg/consultants/biz"
+	"core/pkg/notifications"
 	"fmt"
-	"microservices-template-2024/internal/server"
-	consultants_biz "microservices-template-2024/pkg/consultants/biz"
-	"microservices-template-2024/pkg/notifications"
 
 	"github.com/go-kratos/kratos/v2/log"
 )

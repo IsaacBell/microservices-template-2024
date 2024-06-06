@@ -5,12 +5,12 @@ import (
 	"errors"
 	"testing"
 
-	consultants_biz "microservices-template-2024/pkg/consultants/biz"
+	consultants_biz "core/pkg/consultants/biz"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	mocks "microservices-template-2024/test/mocks"
+	mocks "core/test/mocks"
 )
 
 const id = "fake-uuid"

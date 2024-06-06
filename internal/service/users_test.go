@@ -5,9 +5,9 @@ import (
 	"errors"
 	"testing"
 
-	v1 "microservices-template-2024/api/v1"
-	"microservices-template-2024/internal/biz"
-	"microservices-template-2024/internal/service"
+	v1 "core/api/v1"
+	"core/internal/biz"
+	"core/internal/service"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

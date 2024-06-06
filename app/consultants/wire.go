@@ -6,11 +6,11 @@
 package main
 
 import (
-	"microservices-template-2024/internal/conf"
-	consultants_biz "microservices-template-2024/pkg/consultants/biz"
-	consultants_data "microservices-template-2024/pkg/consultants/data"
-	consultants_server "microservices-template-2024/pkg/consultants/server"
-	consultants_service "microservices-template-2024/pkg/consultants/service"
+	"core/internal/conf"
+	consultants_biz "core/pkg/consultants/biz"
+	consultants_data "core/pkg/consultants/data"
+	consultants_server "core/pkg/consultants/server"
+	consultants_service "core/pkg/consultants/service"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"

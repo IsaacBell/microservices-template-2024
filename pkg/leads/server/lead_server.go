@@ -1,10 +1,10 @@
 package leads_server
 
 import (
-	leadsV1 "microservices-template-2024/api/v1/b2b"
-	"microservices-template-2024/internal/conf"
-	"microservices-template-2024/internal/server"
-	leadService "microservices-template-2024/pkg/leads/service"
+	leadsV1 "core/api/v1/b2b"
+	"core/internal/conf"
+	"core/internal/server"
+	leadService "core/pkg/leads/service"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/grpc"

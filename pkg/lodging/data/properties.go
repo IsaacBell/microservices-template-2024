@@ -2,8 +2,8 @@ package lodging_data
 
 import (
 	"context"
-	"microservices-template-2024/internal/server"
-	lodging_biz "microservices-template-2024/pkg/lodging/biz"
+	"core/internal/server"
+	lodging_biz "core/pkg/lodging/biz"
 
 	"github.com/go-kratos/kratos/v2/log"
 )

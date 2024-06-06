@@ -6,11 +6,11 @@
 package main
 
 import (
-	"microservices-template-2024/internal/conf"
-	finance_biz "microservices-template-2024/pkg/finance/biz"
-	finance_data "microservices-template-2024/pkg/finance/data"
-	finance_server "microservices-template-2024/pkg/finance/server"
-	finance_service "microservices-template-2024/pkg/finance/service"
+	"core/internal/conf"
+	finance_biz "core/pkg/finance/biz"
+	finance_data "core/pkg/finance/data"
+	finance_server "core/pkg/finance/server"
+	finance_service "core/pkg/finance/service"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"

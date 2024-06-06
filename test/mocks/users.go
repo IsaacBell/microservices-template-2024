@@ -1,6 +1,6 @@
 package mocks
 
-import v1 "microservices-template-2024/api/v1"
+import v1 "core/api/v1"
 
 func User() *v1.User {
 	return &v1.User{

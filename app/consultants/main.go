@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"microservices-template-2024/internal/server"
+	"core/internal/server"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"

@@ -1,12 +1,12 @@
 package server
 
 import (
+	"core/internal/biz"
+	"core/internal/conf"
+	consultants_biz "core/pkg/consultants/biz"
+	"core/pkg/notifications"
 	"fmt"
 	"log"
-	"microservices-template-2024/internal/biz"
-	"microservices-template-2024/internal/conf"
-	consultants_biz "microservices-template-2024/pkg/consultants/biz"
-	"microservices-template-2024/pkg/notifications"
 	"os"
 	"time"
 

@@ -7,11 +7,11 @@ import (
 	"fmt"
 	"strconv"
 
-	communicationsV1 "microservices-template-2024/api/v1/communications"
-	consultantsV1 "microservices-template-2024/api/v1/consultants"
-	consultants_biz "microservices-template-2024/pkg/consultants/biz"
+	communicationsV1 "core/api/v1/communications"
+	consultantsV1 "core/api/v1/consultants"
+	consultants_biz "core/pkg/consultants/biz"
 
-	cache "microservices-template-2024/pkg/cache"
+	cache "core/pkg/cache"
 )
 
 type ConsultantService struct {

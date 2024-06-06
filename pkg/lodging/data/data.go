@@ -1,8 +1,8 @@
 package lodging_data
 
 import (
-	"microservices-template-2024/internal/conf"
-	"microservices-template-2024/internal/data"
+	"core/internal/conf"
+	"core/internal/data"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"

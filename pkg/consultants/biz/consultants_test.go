@@ -6,9 +6,9 @@ import (
 	"os"
 	"testing"
 
-	communicationsV1 "microservices-template-2024/api/v1/communications"
-	consultants_biz "microservices-template-2024/pkg/consultants/biz"
-	mocks "microservices-template-2024/test/mocks"
+	communicationsV1 "core/api/v1/communications"
+	consultants_biz "core/pkg/consultants/biz"
+	mocks "core/test/mocks"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/stretchr/testify/assert"

@@ -3,7 +3,7 @@ package data
 import (
 	"context"
 
-	"microservices-template-2024/internal/biz"
+	"core/internal/biz"
 
 	"github.com/go-kratos/kratos/v2/log"
 )

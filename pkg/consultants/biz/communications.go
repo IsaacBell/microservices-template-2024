@@ -1,9 +1,9 @@
 package consultants_biz
 
 import (
+	communicationsV1 "core/api/v1/communications"
 	"errors"
 	"fmt"
-	communicationsV1 "microservices-template-2024/api/v1/communications"
 
 	"gorm.io/gorm"
 )

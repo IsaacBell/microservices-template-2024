@@ -86,10 +86,10 @@ func LogSystemMetrics(data map[string]map[string]interface{}) error {
 		// Set the timestamp as the point's timestamp
 		point.SetTimestamp(t)
 
-		// Set the fields
-		for fieldKey, fieldValue := range data[timestamp] {
-			point.SetField(fieldKey, fieldValue)
-		}
+		// Set the fields with a fixed set of keys
+		point.SetField("cpu_usage", data[timestamp]["cpu_usage"])
+		point.SetField("memory_usage", data[timestamp]["memory_usage"])
+		// Add more fixed fields as needed
 
 		if err := client.WritePointsWithOptions(context.Background(), &options, point); err != nil {
 			fmt.Println("error writing point:", err)

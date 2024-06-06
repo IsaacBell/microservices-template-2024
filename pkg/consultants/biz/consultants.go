@@ -2,10 +2,10 @@ package consultants_biz
 
 import (
 	"context"
+	v1 "core/api/v1"
+	consultantsV1 "core/api/v1/consultants"
+	biz "core/internal/biz"
 	"fmt"
-	v1 "microservices-template-2024/api/v1"
-	consultantsV1 "microservices-template-2024/api/v1/consultants"
-	biz "microservices-template-2024/internal/biz"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"

@@ -2,11 +2,11 @@ package biz
 
 import (
 	"context"
+	v1 "core/api/v1"
 	"fmt"
-	v1 "microservices-template-2024/api/v1"
 	"time"
 
-	// v1 "microservices-template-2024/api/helloworld/v1"
+	// v1 "core/api/helloworld/v1"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"

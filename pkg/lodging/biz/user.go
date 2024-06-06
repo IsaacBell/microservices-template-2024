@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	v1 "microservices-template-2024/api/v1"
+	v1 "core/api/v1"
 
 	"github.com/go-kratos/kratos/v2/log"
 )

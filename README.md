@@ -114,7 +114,7 @@ syntax = "proto3";
 
 package api.v1.consultants;
 
-option go_package = "microservices-template-2024/api/v1/consultants;consultant";
+option go_package = "core/api/v1/consultants;consultant";
 option java_multiple_files = true;
 option java_package = "api.v1.consultants";
 
@@ -353,8 +353,8 @@ package consultants_service
 import (
 	"context"
 
-	consultantsV1 "microservices-template-2024/api/v1/consultant"
-	consultants_biz "microservices-template-2024/pkg/consultants/biz"
+	consultantsV1 "core/api/v1/consultant"
+	consultants_biz "core/pkg/consultants/biz"
 )
 
 type ConsultantService struct {
@@ -401,10 +401,10 @@ Create gRPC and HTTP servers for the consulting service:
 package consultants_server
 
 import (
-	consultantsV1 "microservices-template-2024/api/v1/consultant"
-	"microservices-template-2024/internal/conf"
-	"microservices-template-2024/internal/server"
-	consultantsService "microservices-template-2024/pkg/consultants/service"
+	consultantsV1 "core/api/v1/consultant"
+	"core/internal/conf"
+	"core/internal/server"
+	consultantsService "core/pkg/consultants/service"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
@@ -464,7 +464,7 @@ package main
 import (
 	"os"
 
-	"microservices-template-2024/internal/server"
+	"core/internal/server"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"

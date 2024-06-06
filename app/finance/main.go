@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"microservices-template-2024/internal/server"
-	finance_util "microservices-template-2024/pkg/finance/util"
+	"core/internal/server"
+	finance_util "core/pkg/finance/util"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"

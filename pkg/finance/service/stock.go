@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	v1 "microservices-template-2024/api/v1"
-	biz "microservices-template-2024/pkg/finance/biz"
+	v1 "core/api/v1"
+	biz "core/pkg/finance/biz"
 )
 
 type FinanceService struct {

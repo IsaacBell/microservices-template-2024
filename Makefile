@@ -89,11 +89,11 @@ all:
 		echo "Running $$app_name"; \
 		./bin/$$app_name & \
 	done
-	./bin/microservices-template-2024 &
+	./bin/core &
 
 .PHONY: execute
 execute: $(APPS)
-	./bin/microservices-template-2024 &
+	./bin/core &
 
 .PHONY: compile
 compile:

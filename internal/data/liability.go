@@ -2,11 +2,11 @@ package data
 
 import (
 	"context"
+	v1 "core/api/v1"
+	"core/internal/biz"
+	"core/internal/server"
+	"core/internal/util"
 	"fmt"
-	v1 "microservices-template-2024/api/v1"
-	"microservices-template-2024/internal/biz"
-	"microservices-template-2024/internal/server"
-	"microservices-template-2024/internal/util"
 
 	"github.com/go-kratos/kratos/v2/log"
 )

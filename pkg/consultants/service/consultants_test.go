@@ -6,11 +6,11 @@ import (
 	"os"
 	"testing"
 
-	communicationsV1 "microservices-template-2024/api/v1/communications"
-	consultantsV1 "microservices-template-2024/api/v1/consultants"
-	consultants_biz "microservices-template-2024/pkg/consultants/biz"
-	consultants_service "microservices-template-2024/pkg/consultants/service"
-	mocks "microservices-template-2024/test/mocks"
+	communicationsV1 "core/api/v1/communications"
+	consultantsV1 "core/api/v1/consultants"
+	consultants_biz "core/pkg/consultants/biz"
+	consultants_service "core/pkg/consultants/service"
+	mocks "core/test/mocks"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/stretchr/testify/assert"

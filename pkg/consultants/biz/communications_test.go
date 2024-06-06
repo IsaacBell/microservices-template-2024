@@ -3,8 +3,8 @@ package consultants_biz_test
 import (
 	"testing"
 
-	communicationsV1 "microservices-template-2024/api/v1/communications"
-	consultants_biz "microservices-template-2024/pkg/consultants/biz"
+	communicationsV1 "core/api/v1/communications"
+	consultants_biz "core/pkg/consultants/biz"
 )
 
 func TestCommunicationTypeString(t *testing.T) {

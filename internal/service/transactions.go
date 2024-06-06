@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	v1 "microservices-template-2024/api/v1"
-	"microservices-template-2024/internal/biz"
-	// log "microservices-template-2024/internal/service/log"
+	v1 "core/api/v1"
+	"core/internal/biz"
+	// log "core/internal/service/log"
 )
 
 type TransactionsService struct {

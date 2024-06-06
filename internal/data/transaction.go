@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	v1 "microservices-template-2024/api/v1"
-	"microservices-template-2024/internal/biz"
-	"microservices-template-2024/internal/server"
-	"microservices-template-2024/internal/util"
+	v1 "core/api/v1"
+	"core/internal/biz"
+	"core/internal/server"
+	"core/internal/util"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"

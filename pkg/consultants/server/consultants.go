@@ -1,10 +1,10 @@
 package consultants_server
 
 import (
-	consultantsV1 "microservices-template-2024/api/v1/consultants"
-	"microservices-template-2024/internal/conf"
-	"microservices-template-2024/internal/server"
-	consultantsService "microservices-template-2024/pkg/consultants/service"
+	consultantsV1 "core/api/v1/consultants"
+	"core/internal/conf"
+	"core/internal/server"
+	consultantsService "core/pkg/consultants/service"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/grpc"

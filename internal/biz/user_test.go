@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"microservices-template-2024/internal/biz"
-	"microservices-template-2024/test"
+	"core/internal/biz"
+	"core/test"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"

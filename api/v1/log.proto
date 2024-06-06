@@ -3,7 +3,7 @@ syntax = "proto3";
 import "google/api/annotations.proto";
 
 package api.v1;
-option go_package = "microservices-template-2024/api/v1/server;v1";
+option go_package = "core/api/v1/server;v1";
 
 service Log {
   rpc Produce(ProduceRequest) returns (ProduceResponse) {

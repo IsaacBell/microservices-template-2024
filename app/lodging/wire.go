@@ -6,11 +6,11 @@
 package main
 
 import (
-	"microservices-template-2024/internal/conf"
-	lodging_biz "microservices-template-2024/pkg/lodging/biz"
-	lodging_data "microservices-template-2024/pkg/lodging/data"
-	lodging_server "microservices-template-2024/pkg/lodging/server"
-	lodging_service "microservices-template-2024/pkg/lodging/service"
+	"core/internal/conf"
+	lodging_biz "core/pkg/lodging/biz"
+	lodging_data "core/pkg/lodging/data"
+	lodging_server "core/pkg/lodging/server"
+	lodging_service "core/pkg/lodging/service"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"

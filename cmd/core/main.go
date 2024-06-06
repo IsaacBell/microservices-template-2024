@@ -3,7 +3,8 @@ package main
 import (
 	"os"
 
-	"microservices-template-2024/internal/server"
+	zap "core/internal/logs"
+	"core/internal/server"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
@@ -15,9 +16,10 @@ import (
 
 // go build -ldflags "-X main.Version=x.y.z"
 var (
-	Name string = "core" // name of the compiled software.
-	Version string 
+	Name     string = "core" // name of the compiled software.
+	Version  string
 	flagconf string // config flag.
+	Log      zap.Logger
 
 	id, _ = os.Hostname()
 

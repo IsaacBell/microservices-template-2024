@@ -5,12 +5,13 @@ import (
 	"errors"
 	"fmt"
 
-	v1 "microservices-template-2024/api/v1"
-	"microservices-template-2024/internal/biz"
-	"microservices-template-2024/internal/util"
-	cache "microservices-template-2024/pkg/cache"
-	stream "microservices-template-2024/pkg/stream"
-	"microservices-template-2024/pkg/users"
+	v1 "core/api/v1"
+	"core/internal/auth"
+	"core/internal/biz"
+	"core/internal/util"
+	cache "core/pkg/cache"
+	stream "core/pkg/stream"
+	"core/pkg/users"
 )
 
 type UsersService struct {
@@ -33,6 +34,12 @@ func (s *UsersService) CreateUser(ctx context.Context, req *v1.CreateUserRequest
 	user := biz.ProtoToUserData(req.User)
 	fmt.Println("++++New user: ", user.Email)
 	res, err := s.action.CreateUser(ctx, user)
+
+	ctx, token, err := auth.Encode(ctx, user)
+	if err != nil {
+		fmt.Printf("err: %v\n", err)
+	}
+	fmt.Printf("\n\n--->token: %v\n\n", token)
 
 	fmt.Println("++++CreateUser response: ", res)
 	stream.ProduceKafkaMessage("main", "New User: "+user.Email)

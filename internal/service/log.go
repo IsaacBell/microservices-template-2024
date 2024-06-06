@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io"
 
-	v1 "microservices-template-2024/api/v1"
-	"microservices-template-2024/pkg/stream"
+	v1 "core/api/v1"
+	"core/pkg/stream"
 )
 
 type LogService struct {
@@ -74,7 +74,7 @@ func (s *LogService) ProduceStream(conn v1.Log_ProduceStreamServer) error {
 			return err
 		}
 
-		// conn.Send undefined (type "microservices-template-2024/api/v1".Log_ProduceStreamServer has no field or method Send)compilerMissingFieldOrMethod
+		// conn.Send undefined (type "core/api/v1".Log_ProduceStreamServer has no field or method Send)compilerMissingFieldOrMethod
 		err = conn.SendMsg(&v1.ProduceResponse{Offset: rec.Record.Offset})
 		if err != nil {
 			return err

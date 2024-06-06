@@ -2,8 +2,8 @@ package leads_biz
 
 import (
 	"context"
+	leadsV1 "core/api/v1/b2b"
 	"fmt"
-	leadsV1 "microservices-template-2024/api/v1/b2b"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"

@@ -1,10 +1,10 @@
 package finance_server
 
 import (
-	v1 "microservices-template-2024/api/v1"
-	"microservices-template-2024/internal/conf"
-	"microservices-template-2024/internal/server"
-	finance_service "microservices-template-2024/pkg/finance/service"
+	v1 "core/api/v1"
+	"core/internal/conf"
+	"core/internal/server"
+	finance_service "core/pkg/finance/service"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/grpc"

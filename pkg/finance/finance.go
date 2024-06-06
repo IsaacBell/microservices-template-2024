@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	finance_util "microservices-template-2024/pkg/finance/util"
+	finance_util "core/pkg/finance/util"
+
+	"github.com/Finnhub-Stock-API/finnhub-go"
 )
 
 var (

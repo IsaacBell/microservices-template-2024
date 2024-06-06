@@ -5,9 +5,9 @@ import (
 	"errors"
 	"testing"
 
-	v1 "microservices-template-2024/api/v1"
-	"microservices-template-2024/internal/biz"
-	"microservices-template-2024/test"
+	v1 "core/api/v1"
+	"core/internal/biz"
+	"core/test"
 
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"

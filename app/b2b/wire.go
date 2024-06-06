@@ -6,11 +6,11 @@
 package main
 
 import (
-	"microservices-template-2024/internal/conf"
-	leads_biz "microservices-template-2024/pkg/leads/biz"
-	leads_data "microservices-template-2024/pkg/leads/data"
-	leads_server "microservices-template-2024/pkg/leads/server"
-	leads_service "microservices-template-2024/pkg/leads/service"
+	"core/internal/conf"
+	leads_biz "core/pkg/leads/biz"
+	leads_data "core/pkg/leads/data"
+	leads_server "core/pkg/leads/server"
+	leads_service "core/pkg/leads/service"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"

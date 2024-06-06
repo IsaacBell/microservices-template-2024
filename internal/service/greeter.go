@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	v1 "microservices-template-2024/api/helloworld/v1"
-	"microservices-template-2024/internal/biz"
+	v1 "core/api/helloworld/v1"
+	"core/internal/biz"
 )
 
 // GreeterService is a greeter service.

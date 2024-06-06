@@ -1,10 +1,10 @@
 package lodging_server
 
 import (
-	lodgingV1 "microservices-template-2024/api/v1/lodging"
-	"microservices-template-2024/internal/conf"
-	"microservices-template-2024/internal/server"
-	lodgingService "microservices-template-2024/pkg/lodging/service"
+	lodgingV1 "core/api/v1/lodging"
+	"core/internal/conf"
+	"core/internal/server"
+	lodgingService "core/pkg/lodging/service"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/grpc"

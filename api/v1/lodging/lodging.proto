@@ -6,7 +6,7 @@ import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
 import "v1/users.proto";
 
-option go_package = "microservices-template-2024/api/v1/lodging;v1";
+option go_package = "core/api/v1/lodging;v1";
 option java_multiple_files = true;
 option java_package = "api.v1";
 

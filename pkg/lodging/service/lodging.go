@@ -7,11 +7,11 @@ import (
 	"fmt"
 	"time"
 
-	lodgingV1 "microservices-template-2024/api/v1/lodging"
-	lodging_biz "microservices-template-2024/pkg/lodging/biz"
+	lodgingV1 "core/api/v1/lodging"
+	lodging_biz "core/pkg/lodging/biz"
 
-	cache "microservices-template-2024/pkg/cache"
-	stream "microservices-template-2024/pkg/stream"
+	cache "core/pkg/cache"
+	stream "core/pkg/stream"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

@@ -2,10 +2,10 @@ package data
 
 import (
 	"context"
+	"core/internal/biz"
+	"core/internal/server"
+	"core/internal/util"
 	"errors"
-	"microservices-template-2024/internal/biz"
-	"microservices-template-2024/internal/server"
-	"microservices-template-2024/internal/util"
 
 	"github.com/go-kratos/kratos/v2/log"
 )

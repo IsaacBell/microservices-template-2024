@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	v1 "microservices-template-2024/api/v1"
-	"microservices-template-2024/internal/biz"
+	v1 "core/api/v1"
+	"core/internal/biz"
 )
 
 type LiabilitiesService struct {

@@ -2,8 +2,8 @@ package leads_data
 
 import (
 	"context"
-	"microservices-template-2024/internal/server"
-	leads_biz "microservices-template-2024/pkg/leads/biz"
+	"core/internal/server"
+	leads_biz "core/pkg/leads/biz"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
