@@ -3,13 +3,19 @@ package server
 import (
 	"context"
 	"core/internal/conf"
+	discovery_etcd "core/internal/discovery/etcd"
 	"core/internal/util"
 	"core/pkg/influx"
 	"core/pkg/stream"
 	"flag"
 	"fmt"
 	"os"
+	"sync"
+	"time"
 
+	etcdClient "go.etcd.io/etcd/client/v3"
+
+	"github.com/go-kratos/etcd/registry"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
@@ -23,6 +29,8 @@ import (
 
 var (
 	flagconf string // config flag
+	Watcher  *discovery_etcd.Watcher
+	reg      *registry.Registry
 )
 
 func InitKafkaConsumer(serviceName string, topics []string) {
@@ -61,12 +69,74 @@ func InitEnv(serviceName string, flagconf *string, topics []string) {
 
 	InitKafkaConsumer(serviceName, topics)
 	StartInfluxDb()
+
+	// service discovery-level context
+	ctx := AppCtx(serviceName)
+
+	// Create etcd registrar
+	etcdClient, regTmp := discovery_etcd.Register(ctx, serviceName)
+	reg = regTmp
+	Watcher, _ = discovery_etcd.NewWatcher(ctx, serviceName, etcdClient)
 }
 
-func NewApp(name, id, ver string, logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
+func watchServiceDiscovery(watcher *discovery_etcd.Watcher) {
+	util.PrintLnInColor(util.AnsiColorBlue, "Running service discovery...")
+	for {
+		instances, err := watcher.Next()
+		if err != nil {
+			util.PrintLnInColor(util.AnsiColorRed, "Failed to get next instances:", err)
+			if err == context.Canceled {
+				// Watcher has been stopped, exit the loop
+				break
+			}
+			time.Sleep(time.Second)
+			continue
+		}
+
+		if len(instances) == 0 {
+			util.PrintLnInColor(util.AnsiColorYellow, "No services discovered")
+		} else {
+			util.PrintLnInColor(util.AnsiColorMagenta, "::::::::Currently registered services::::::::")
+			for _, instance := range instances {
+				util.PrintLnInColor(util.AnsiColorCyan, "Service instance", util.AnsiColorGreen, instance)
+			}
+		}
+		time.Sleep(time.Second)
+	}
+	util.PrintLnInColor(util.AnsiColorBlue, "Service discovery stopped.")
+}
+
+func StartServiceDiscovery(w *discovery_etcd.Watcher) {
+	var wg sync.WaitGroup
+	defer wg.Done()
+
+	if w == nil {
+		log.Fatalf("can't start service discovery: watcher not found")
+		// return nil
+	} else {
+		wg.Add(1)
+		go func() {
+			w.StartDiscovery()
+		}()
+		wg.Wait()
+	}
+}
+
+func AppCtx(serviceName string) context.Context {
+	ctx := context.WithValue(context.Background(), "_app_service_name", serviceName)
+	return context.WithValue(ctx, "_app_config", flagconf)
+}
+
+/*
+Initializes an instance of the app.
+
+Returns the app as well as an etcd watcher for service discovery.
+*/
+func NewApp(name, id, ver string, logger log.Logger, gs *grpc.Server, hs *http.Server) (*discovery_etcd.Watcher, *kratos.App) {
 	fmt.Println("service name:", name)
 	fmt.Println("machine user id:", id)
-	return kratos.New(
+
+	return Watcher, kratos.New(
 		kratos.ID(id),
 		kratos.Name(name),
 		kratos.Version(ver),
@@ -76,11 +146,15 @@ func NewApp(name, id, ver string, logger log.Logger, gs *grpc.Server, hs *http.S
 			gs,
 			hs,
 		),
+		kratos.Registrar(reg),
 	)
 }
 
+/*
+ */
 func RunApp(
 	name, version, flagconf string,
+	watcher *discovery_etcd.Watcher,
 	wireAppFunc func(*conf.Server, *conf.Data, log.Logger) (*kratos.App, func(), error),
 	afterStartCb func(),
 ) {
@@ -108,6 +182,10 @@ func RunApp(
 	if err := c.Load(); err != nil {
 		panic(err)
 	}
+
+	// Get config from the `configs/config.yaml` file
+	// Config values must be set for each available service
+	// Each service must have an http address and grpc address configured
 
 	var configPath string
 	if name == "core" {
@@ -179,12 +257,73 @@ func RunApp(
 		panic(err)
 	}
 
-	fmt.Printf("::::: %s service booting :::::\n", name)
-	defer fmt.Printf("::::: %s Service shutting down :::::\n", name)
+	util.PrintLnInColor(util.AnsiColorGreen, "\n:::::", util.AnsiColorYellow, "service booting...", util.AnsiColorGreen, ":::::\n\n", name)
+	defer util.PrintLnInColor(util.AnsiColorGreen, "\n:::::", util.AnsiColorYellow, "service shutting down...", util.AnsiColorGreen, ":::::\n\n", name)
 
 	go util.RecordSystemMetrics()
-	kratos.AfterStart(func(context.Context) error {
+	StartServiceDiscovery(Watcher)
+	discovery_etcd.Watch(context.Background(), Watcher.Client, "/"+name, func(event *etcdClient.Event) {
+		fmt.Println("------------------------")
+		fmt.Printf("event.Kv: %v\n", event.Kv)
+		fmt.Printf("event.Type: %v\n", event.Type)
+		fmt.Printf("event.PrevKv: %v\n", event.PrevKv)
+		fmt.Println("------------------------")
+	})
+	discovery_etcd.Watch(context.Background(), Watcher.Client, "/example", func(event *etcdClient.Event) {
+		fmt.Println("------------------------")
+		fmt.Printf("event.Kv: %v\n", event.Kv)
+		fmt.Printf("event.Type: %v\n", event.Type)
+		fmt.Printf("event.PrevKv: %v\n", event.PrevKv)
+		fmt.Println("------------------------")
+	})
+	go discovery_etcd.Watch(context.Background(), Watcher.Client, "/example", func(event *etcdClient.Event) {
+		fmt.Println("------------------------")
+		fmt.Printf("event.Kv: %v\n", event.Kv)
+		fmt.Printf("event.Type: %v\n", event.Type)
+		fmt.Printf("event.PrevKv: %v\n", event.PrevKv)
+		fmt.Println("------------------------")
+	})
+	discovery_etcd.Watch(context.Background(), Watcher.Client, "/system", func(event *etcdClient.Event) {
+		fmt.Println("------------------------")
+		fmt.Printf("event.Kv: %v\n", event.Kv)
+		fmt.Printf("event.Type: %v\n", event.Type)
+		fmt.Printf("event.PrevKv: %v\n", event.PrevKv)
+		fmt.Println("------------------------")
+	})
+	go discovery_etcd.Watch(context.Background(), Watcher.Client, "/system", func(event *etcdClient.Event) {
+		fmt.Println("------------------------")
+		fmt.Printf("event.Kv: %v\n", event.Kv)
+		fmt.Printf("event.Type: %v\n", event.Type)
+		fmt.Printf("event.PrevKv: %v\n", event.PrevKv)
+		fmt.Println("------------------------")
+	})
 
+	util.PrintLnInColor(util.AnsiColorGray, "Starting service discovery...")
+
+	kratos.AfterStart(func(context.Context) error {
+		if watcher != nil {
+			util.PrintLnInColor(util.AnsiColorGreen, "yes3!!")
+			Watcher = watcher
+			discovery_etcd.Watch(context.Background(), Watcher.Client, "/"+name, func(event *etcdClient.Event) {
+				fmt.Println("------------------------")
+				fmt.Printf("event.Kv: %v\n", event.Kv)
+				fmt.Printf("event.Type: %v\n", event.Type)
+				fmt.Printf("event.PrevKv: %v\n", event.PrevKv)
+				fmt.Println("------------------------")
+			})
+			go watcher.StartDiscovery()
+		} else if Watcher != nil {
+			util.PrintLnInColor(util.AnsiColorGreen, "yes2!!")
+			discovery_etcd.Watch(context.Background(), Watcher.Client, "/"+name, func(event *etcdClient.Event) {
+				fmt.Println("------------------------")
+				fmt.Printf("event.Kv: %v\n", event.Kv)
+				fmt.Printf("event.Type: %v\n", event.Type)
+				fmt.Printf("event.PrevKv: %v\n", event.PrevKv)
+				fmt.Println("------------------------")
+			})
+		} else {
+			util.PrintLnInColor(util.AnsiColorYellow, "No watcher found after starting kratos")
+		}
 		stream.ProduceKafkaMessage(name, name+" server started")
 
 		if afterStartCb != nil {
@@ -194,9 +333,16 @@ func RunApp(
 		return nil
 	})
 	kratos.AfterStop(func(context.Context) error {
-		stream.ProduceKafkaMessage(name, name+" server stopped")
+		if watcher != nil {
+			Watcher = watcher
+			util.PrintLnInColor(util.AnsiColorMagenta, "Stopping service discovery watcher")
+			defer watcher.Stop()
+		}
+		stream.ProduceKafkaMessage(name, name+" server de-registered")
+		stream.ProduceKafkaMessage("system", name+" server de-registered")
 		return nil
 	})
+	fmt.Printf("app.Run watcher: %v\n", Watcher)
 
 	// start and wait for stop signal
 	if err := app.Run(); err != nil {

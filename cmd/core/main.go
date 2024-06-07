@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	discovery_etcd "core/internal/discovery/etcd"
 	zap "core/internal/logs"
 	"core/internal/server"
 
@@ -10,8 +11,6 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
-
-	_ "go.uber.org/automaxprocs"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -20,6 +19,7 @@ var (
 	Version  string
 	flagconf string // config flag.
 	Log      zap.Logger
+	Watcher  *discovery_etcd.Watcher // service discovery
 
 	id, _ = os.Hostname()
 
@@ -31,9 +31,11 @@ func init() {
 }
 
 func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
-	return server.NewApp(Name, id, Version, logger, gs, hs)
+	w, app := server.NewApp(Name, id, Version, logger, gs, hs)
+	Watcher = w
+	return app
 }
 
 func main() {
-	server.RunApp(Name, Version, flagconf, wireApp, nil)
+	server.RunApp(Name, Version, flagconf, Watcher, wireApp, nil)
 }

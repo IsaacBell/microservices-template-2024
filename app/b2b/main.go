@@ -5,21 +5,21 @@ import (
 
 	"core/internal/server"
 
+	discovery_etcd "core/internal/discovery/etcd"
+
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	// "google.golang.org/grpc"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
 var (
-	// Name is the name of the compiled software.
-	Name string = "leads"
-	// Version is the version of the compiled software.
-	Version string
-	// flagconf is the config flag.
-	flagconf string
+	Name     string = "leads" // name of the compiled software.
+	Version  string           // version of the compiled software.
+	flagconf string           // flagconf is the config flag.
+
+	Watcher *discovery_etcd.Watcher // service discovery
 
 	id, _ = os.Hostname()
 
@@ -31,9 +31,11 @@ func init() {
 }
 
 func newB2bApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
-	return server.NewApp(Name, id, Version, logger, gs, hs)
+	watcher, app := server.NewApp(Name, id, Version, logger, gs, hs)
+	Watcher = watcher
+	return app
 }
 
 func main() {
-	server.RunApp(Name, Version, flagconf, wireApp, nil)
+	server.RunApp(Name, Version, flagconf, Watcher, wireApp, nil)
 }

@@ -148,7 +148,11 @@ func RecordSystemMetrics() {
 
 				mem, err := p.MemoryInfo()
 				if err != nil {
-					PrintLnInColor(AnsiColorRed, "Caught error retrieving memory info for process: ", p.Pid, "\n-->err: ", err)
+					PrintLnInColor(
+						AnsiColorRed, "Caught error retrieving memory info for process: ",
+						AnsiColorYellow, p.Pid,
+						AnsiColorGray, "\n-->err: ",
+						AnsiColorRed, err)
 				} else {
 					metrics[timestamp][fmt.Sprintf("process.%d.memory", p.Pid)] = mem.RSS
 				}
