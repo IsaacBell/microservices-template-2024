@@ -1,10 +1,57 @@
 # Micro-Services Template
 
-This template is intended to be used by teams or companies, to create enterprise-scale microservice architectures quickly with a reasonable set of defaults. The architecture is built on top of [Kratos](https://go-kratos.dev/en/), a framework for rolling out microservices. A growing team will quickly find need to convert sections of the app into submodules for organization and repo size management - this is expected and the template code is structured to not lose organization as systems grow.
+This template allows for the to quick generation of enterprise-scale microservice architectures with a reasonable set of defaults. 
 
-This template uses gRPC as well as REST. They are configured together using protofiles. Both gRPC and HTTP servers are run concurrently for each service. Services are modular are isolated - they can be configured to run independently on many machines, horizontally scaled, auto-scaled, or otherwise deployed as needed.
+## Features
 
-The main (core) service can be run using `make execute`. This service, by default, handles user operations and some financial services. End users should choose what services they will need.
+### Service Discovery and Configuration:
+
+- etcd: Distributed key-value store for service discovery and configuration management.
+
+### Framework and Libraries:
+
+- Kratos: Go microservices framework with built-in support for gRPC and other features.
+- gRPC: High-performance RPC framework for inter-service communication.
+- gorm: ORM library for database interactions.
+- JWT: JSON Web Tokens for authentication and authorization.
+
+
+### Databases:
+
+- Redis: In-memory data store for caching and quick data access.
+- CockroachDB: Distributed SQL database for persistent data storage.
+
+
+### Messaging and Streaming:
+
+- Kafka: Distributed streaming platform for event-driven communication and data pipelines.
+
+
+### Observability and Monitoring:
+
+- Prometheus: Monitoring and alerting system for collecting metrics.
+- Jaeger: Distributed tracing system for monitoring and troubleshooting microservices.
+- OpenTelemetry: Observability framework for distributed tracing, metrics, and logging.
+
+
+### API Analytics and Monitoring:
+
+- Moesif: API analytics and monitoring platform for insights into API usage and customer behavior.
+
+
+### Potential Additions (TBA):
+
+- Sentry or Datadog: Error tracking and monitoring platforms for identifying and resolving issues.
+- Docker: Containerization platform for packaging and deploying microservices.
+- Kubernetes: Container orchestration system for automating deployment, scaling, and management of containerized applications.
+
+## Architecture
+
+The architecture is built on top of [Kratos](https://go-kratos.dev/en/), a framework for rolling out microservices. A growing codebase will eventually bring about the need to convert sections of the app into submodules for organization and repo size management - the folder structure is designed to easily support this scenario.
+
+When a service is started, it runs gRPC and REST servers concurrently. They are configured jointly using protofiles (see: [protobuf docs](api)). Both gRPC and HTTP servers are run concurrently for each service. Services are modular are isolated - they can be configured to run independently on many machines, horizontally scaled, auto-scaled, or otherwise deployed as needed.
+
+The main (core) service can be run using `make execute`. This service handles user operations and (optionally) some others. End users should choose what services they will need.
 
 Google's [Wire](https://github.com/google/wire/tree/main) tool is used for compile-time dependency injection. See Wire's [User Guide](https://github.com/google/wire/blob/main/docs/guide.md), [FAQ](https://github.com/google/wire/blob/main/docs/faq.md), and [Best Practices](https://github.com/google/wire/blob/main/docs/best-practices.md) document for further reference on how Wire works.
 
@@ -12,7 +59,7 @@ Caching and Kafka streaming are provided via [Upstash](https://upstash.com/). In
 
 ## Setup
 
-You will need a `.env` file. Ask a team member for a copy.
+You will need a `.env` file. Ask a team member for a copy or make your own based on [.env.example](.env.example). 
 
 ## Working with the code
 
@@ -20,15 +67,11 @@ The workflow to create new services is roughly as follows:
 
 - Define a proto service: 
   - If defining an internal service: `kratos proto add api/v1/my_service.proto`
-  - For a public-facing service: `kratos proto add api/v1/my_namespace/my_service.proto`
+  - For a namespaced or public-facing service: `kratos proto add api/v1/my_namespace/my_service.proto`
 - Convert the protofile to Go code: `kratos proto client api/v1/my_namespace/my_service.proto`
 - Define a service
   - If defining an internal service: `kratos proto server api/v1/my_service.proto -t internal/service`
-  - For a public-facing service: `kratos proto server api/v1/my_namespace/my_service.proto -t pkg/my_service/service`
-  - Follow the structure of packages such as the `lodging` and `finance` packages for public packages
-  - For internal services, follow the example of the Users service
-
-Further documentation is ongoing. Check various directories for documentation of specific services and internal tooling.
+  - For a publicly accessible service: `kratos proto server api/v1/my_namespace/my_service.proto -t pkg/my_service/service`
 
 ## Install Kratos
 
@@ -40,17 +83,29 @@ go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
 
 ```shell
 # Add a proto template
-kratos proto add api/v1/foobar.proto
+kratos proto add api/v1/<filename>.proto
 # Generate the proto code
-kratos proto client api/v1/foobar.proto
-# Generate the source code of service by proto file
-kratos proto server api/v1/foobar.proto -t internal/service
-
-make api # Build protofiles
-make build # Build Go code
+make proto
 ```
 
-Make sure to update the Makefile, adding a build step for the new service.
+To generate the code for a new service, use the following.
+
+If creating an internal service (such as a user auth service, system service, or transaction processing service) then use the following:
+
+```shell
+# Generate the code layout for the service
+kratos proto server api/v1/<filename>.proto -t internal/service
+```
+
+For a publicly available service, create a [package](https://www.golang-book.com/books/intro/11) for it. Make a new folder for your package in the `pkg` directory. Add a subfolder called `service`. Then run the following:
+
+```shell
+# Generate the code layout for the service
+kratos proto server api/v1/<filename>.proto -t pkg/<pkg_folder_name>/service
+```
+
+
+Make sure to update the Makefile, adding an available build step for the new service. See following example.
 
 Add a build step for the `foobar` service:
 ```dart
@@ -59,13 +114,26 @@ fin:
 	./bin/foobar &
 ```
 
+## Compile services
+
+Services cannot currently be compiled independently.
+
+```shell
+make api # Build protofiles
+make build # Build Go code
+```
+
 ## Generate auxiliary files
 
 ```shell
 # Generate API files (include: pb.go, http, grpc, validate, swagger) by proto file
 make api
-# Build all files
-make compile
+```
+
+## Build all files
+
+```shell
+make compile # Build all files
 ```
 
 ## Automated Initialization (wire)
