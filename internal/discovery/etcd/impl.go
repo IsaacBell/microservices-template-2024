@@ -6,6 +6,7 @@ import (
 	"core/internal/util"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	zap "go.uber.org/zap"
@@ -20,7 +21,7 @@ var (
 	zlogger       *zap.Logger
 	watcher       *Watcher
 	watchers      []*Watcher = make([]*Watcher, 0)
-	endpoints     []string   = []string{"http://localhost:2379"}
+	endpoints     []string   = []string{os.Getenv("ETCDCTL_ENDPOINT")}
 )
 
 func GetClient() *etcdClient.Client {
@@ -41,7 +42,7 @@ func Register(ctx context.Context, name string) (*etcdClient.Client, *registry.R
 		log.Fatalf("%v", err)
 	}
 
-	_, err = etcd.Put(ctx, "/system/last_registered_service", name)
+	_, err = etcd.Put(ctx, "/system/"+name+"/last_registered_at", time.Now().String())
 	if err != nil {
 		util.PrintLnInColor(
 			util.AnsiColorRed,
@@ -60,12 +61,29 @@ func Register(ctx context.Context, name string) (*etcdClient.Client, *registry.R
 	return client, etcdRegistrar
 }
 
-// stores a key-value pair in etcd
-func Store(ctx context.Context, etcd *etcdClient.Client, key, value string) error {
-	_, err := etcd.Put(ctx, key, value)
+// store a key-value pair in etcd
+// runs a PUT command in etcd
+// .
+// usage:
+//
+//	import discovery_etcd "core/internal/discovery/etcd"
+//	client := *etcdClient.NewCtxClient(context.Background())
+//	err := discovery_etcd.Store(client, "/example", "1234")
+func Store(etcd *etcdClient.Client, key, value string) error {
+	res, err := etcd.Put(client.Ctx(), key, value)
 	if err != nil {
 		return fmt.Errorf("failed to store key-value pair: %v", err)
 	}
+	header := res.Header.String()
+	// prev := res.PrevKv
+	// ClusterId := res.Header.ClusterId
+	// mId := res.Header.MemberId
+	util.PrintLnInColor(
+		util.AnsiColorMagenta, "etcd: ",
+		"put "+key+" "+value,
+		"\nheader: ", header,
+	)
+
 	return nil
 }
 
@@ -94,8 +112,9 @@ func Delete(ctx context.Context, etcd *etcdClient.Client, key string) error {
 //
 //	watcher, err := discovery_etcd.NewWatcher(ctx, "/your/service/key/prefix", serviceName, discovery_etcd.GetClient())
 //	defer watcher.Stop()
-func NewWatcher(ctx context.Context, name string, client *etcdClient.Client) (*Watcher, error) {
-	w, err := newWatcher(ctx, "/"+name+"/service", name, client)
+func NewWatcher(ctx context.Context, name, id string, client *etcdClient.Client) (*Watcher, error) {
+	key := "/" + name + "/service"
+	w, err := newWatcher(ctx, key, name, id, client)
 	if err != nil {
 		log.Fatalln("Failed to create service discovery watcher: ", err)
 	}
@@ -132,9 +151,10 @@ func (w *Watcher) StartDiscovery() {
 	util.PrintLnInColor(util.AnsiColorGray, "etcd: Starting service discovery...")
 
 	for {
-		defer time.Sleep(time.Second * 2)
-		util.PrintLnInColor(util.AnsiColorGreen, "etcd: Service discovery active...")
+		defer time.Sleep(time.Second * 5)
 		servicesFound := true
+
+		_, err := w.Client.Put(context.Background(), "/services/"+w.ServiceName, w.ServiceId)
 
 		instances, err := w.Next()
 		if err != nil {

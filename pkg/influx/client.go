@@ -20,17 +20,20 @@ func InfluxClientV2() (*influxdb2.Client, error) {
 	hostUrl := os.Getenv("INFLUXDB_URL")
 
 	if token == "" || hostUrl == "" {
-		return nil, errors.New("InfluxDB couldn't be located.")
+		return nil, errors.New("InfluxDB couldn't be located. Ensure that INFLUXDB_TOKEN and INFLUXDB_URL are set.")
 	}
 
 	client := influxdb2.NewClient(hostUrl, token)
 	return &client, nil
 }
 
+// usage:
+//
+//	client, closeInfluxClient := influx.InfluxClientV3()
+//	defer closeInfluxClient(client)
 func InfluxClientV3() (*influxdb3.Client, func(*influxdb3.Client)) {
 	url := os.Getenv("INFLUXDB_URL")
 	token := os.Getenv("INFLUXDB_TOKEN")
-	fmt.Printf("INFLUXDB_URL: %s\n", url)
 
 	client, err := influxdb3.New(influxdb3.ClientConfig{
 		Host:         url,
@@ -43,7 +46,9 @@ func InfluxClientV3() (*influxdb3.Client, func(*influxdb3.Client)) {
 		panic(err)
 	}
 	callback := func(client *influxdb3.Client) {
-		fmt.Println("closing influx client")
+		backgroundCyan := "\033[46m"
+		resetColor := "\033[0m"
+		fmt.Println(backgroundCyan, "closing influx client\n", resetColor)
 		err := client.Close()
 		if err != nil {
 			panic(err)

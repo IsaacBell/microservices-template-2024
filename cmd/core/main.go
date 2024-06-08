@@ -1,8 +1,6 @@
 package main
 
 import (
-	"os"
-
 	discovery_etcd "core/internal/discovery/etcd"
 	zap "core/internal/logs"
 	"core/internal/server"
@@ -21,13 +19,13 @@ var (
 	Log      zap.Logger
 	Watcher  *discovery_etcd.Watcher // service discovery
 
-	id, _ = os.Hostname()
+	id string = server.GenerateServiceInstanceID()
 
 	KafkaTopics = []string{"core", "default", "critical", "main"}
 )
 
 func init() {
-	server.InitEnv(Name, &flagconf, KafkaTopics)
+	server.InitEnv(id, Name, &flagconf, KafkaTopics)
 }
 
 func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {

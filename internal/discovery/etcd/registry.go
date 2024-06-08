@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"strings"
 	"time"
 
 	clientv3 "go.etcd.io/etcd/client/v3"
@@ -139,8 +140,14 @@ func (r *Registry) GetService(ctx context.Context, name string) ([]*registry.Ser
 
 // Watch creates a watcher according to the service name.
 func (r *Registry) Watch(ctx context.Context, name string) (registry.Watcher, error) {
+	var id string = ""
+	strs := strings.Split(name, "+->split")
+	if len(strs) == 3 {
+		id = strs[0]
+		name = strs[1]
+	}
 	key := fmt.Sprintf("%s/%s", r.opts.namespace, name)
-	return newWatcher(ctx, key, name, r.client)
+	return newWatcher(ctx, key, name, id, r.client)
 }
 
 // registerWithKV create a new lease, return current leaseID

@@ -1,8 +1,6 @@
 package main
 
 import (
-	"os"
-
 	"core/internal/server"
 
 	discovery_etcd "core/internal/discovery/etcd"
@@ -20,13 +18,13 @@ var (
 	flagconf string                              // flagconf is the config flag.
 	Watcher  *discovery_etcd.Watcher             // service discovery
 
-	id, _ = os.Hostname()
+	id string = server.GenerateServiceInstanceID()
 
 	KafkaTopics = []string{"lodging", "properties", "properties/cdc"}
 )
 
 func init() {
-	server.InitEnv(Name, &flagconf, KafkaTopics)
+	server.InitEnv(id, Name, &flagconf, KafkaTopics)
 }
 
 func newLodgingApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
