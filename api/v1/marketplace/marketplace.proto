@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package api.v1.marketplace;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "core/api/v1/market;v1";
+option java_multiple_files = true;
+option java_package = "api.v1";
+
+// WIP
+service Marketplace {
+	rpc CreateMarketplace (CreateMarketplaceRequest) returns (CreateMarketplaceReply) {};
+	rpc GetMarketplace (GetMarketplaceRequest) returns (GetMarketplaceReply) {};
+	rpc ListMarketplaces (google.protobuf.Empty) returns (ListMarketplacesReply) {};
+	rpc CategoriesMenu(CategoriesMenuRequest) returns (CategoriesMenuResponse) {};
+  rpc CategoryBreadcrumb(CategoryRequest) returns (CategoriesMenuResponse) {};
+  rpc CategoriesSideMenu(CategoryRequest) returns (CategoriesMenuResponse) {};
+}
+
+message CategoryRequest { string slug = 1; }
+message CategoriesMenuRequest { string marketplace_id = 1; }
+message CategoriesMenuResponse { repeated Category categories = 1; }
+
+message Category {
+  string id = 1;
+  string name = 2;
+  string slug = 3;
+  repeated Category ancestors = 4;
+  repeated Category childrens = 5;
+  google.protobuf.Timestamp last_updated = 6;
+  string marketplace_id = 7;
+}
+
+message Product {
+  string id = 1;
+  string name = 2;
+  string slug = 3;
+  string image = 4;
+  int32 quantity = 5;
+  float value = 6;
+  Category category = 7;
+  google.protobuf.Timestamp last_updated = 8;
+  string marketplace_id = 9;
+  string owner_id = 10;
+}
+
+message CreateMarketplaceRequest {}
+message CreateMarketplaceReply {}
+
+message UpdateMarketplacesRequest {}
+message UpdateMarketplacesReply {}
+
+message DeleteMarketplacesRequest {}
+message DeleteMarketplacesReply {}
+
+message GetMarketplaceRequest {}
+message GetMarketplaceReply {}
+
+message ListMarketplacesRequest {}
+message ListMarketplacesReply {}
