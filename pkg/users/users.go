@@ -13,18 +13,24 @@ import (
 	"os"
 	"time"
 
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"github.com/go-kratos/kratos/v2/middleware/circuitbreaker"
+	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"google.golang.org/grpc/metadata"
 )
 
-/* public-facing user functions
+/* users client
  */
 
 type grpcCloseConn func() error
 
 func grpcConn() (v1.UsersClient, grpcCloseConn, error) {
-	conn, err := grpc.Dial(os.Getenv("CORE_SERVICE_ADDRESS"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.DialInsecure(
+		context.Background(),
+		grpc.WithEndpoint(os.Getenv("CORE_SERVICE_ADDRESS")),
+		grpc.WithMiddleware(
+			circuitbreaker.Client(),
+		),
+	)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -61,7 +67,6 @@ func Get(uid string, raiseErrIfNotFound bool) (*v1.User, error) {
 	}
 	defer closeConn()
 	ctx := context.WithValue(context.Background(), util.ContextKeyMethod, "GET")
-	fmt.Printf("ctx: %v\n", ctx)
 
 	resp, err := client.GetUser(ctx, &v1.GetUserRequest{Id: &uid})
 	if err != nil {
@@ -83,7 +88,6 @@ func AuthorizeUser(u *v1.User) (context.Context, string, error) {
 	if err != nil {
 		return nil, "", fmt.Errorf("failed to generate JWT token: %v", err)
 	}
-	fmt.Printf("\n\n--->token: %v\n\n", token)
 
 	ctx = metadata.NewOutgoingContext(ctx, metadata.Pairs("authorization", "Bearer "+token))
 	ctx = context.WithValue(ctx, util.ContextKeyMethod, "POST")
