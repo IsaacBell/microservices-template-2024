@@ -82,10 +82,8 @@ go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ## Create a service
 
 ```shell
-# Add a proto template
-kratos proto add api/v1/<filename>.proto
-# Generate the proto code
-make proto
+kratos proto add api/v1/<filename>.proto # Add a proto template
+make proto # Generate the proto code
 ```
 
 To generate the code for a new service, use the following.
