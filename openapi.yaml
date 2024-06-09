@@ -459,36 +459,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.v1.GetLiabilityReply'
-    /log:
-        post:
-            tags:
-                - Log
-            operationId: Log_Produce
-            parameters:
-                - name: message
-                  in: query
-                  schema:
-                    type: string
-                - name: topic
-                  in: query
-                  schema:
-                    type: string
-                - name: record.value
-                  in: query
-                  schema:
-                    type: string
-                    format: bytes
-                - name: record.offset
-                  in: query
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/api.v1.ProduceResponse'
     /properties:
         get:
             tags:
@@ -1582,17 +1552,6 @@ components:
                     type: string
                 confidenceLevel:
                     type: string
-        api.v1.ProduceResponse:
-            type: object
-            properties:
-                ok:
-                    type: boolean
-                offset:
-                    type: string
-                topic:
-                    type: string
-                record:
-                    $ref: '#/components/schemas/api.v1.Record'
         api.v1.PropertyAddress:
             type: object
             properties:
@@ -1617,14 +1576,6 @@ components:
                 paymentsRemaining:
                     type: integer
                     format: int32
-        api.v1.Record:
-            type: object
-            properties:
-                value:
-                    type: string
-                    format: bytes
-                offset:
-                    type: string
         api.v1.RepaymentPlan:
             type: object
             properties:
@@ -2165,6 +2116,5 @@ tags:
     - name: Leads
     - name: Liabilities
     - name: Lodging
-    - name: Log
     - name: Transactions
     - name: Users

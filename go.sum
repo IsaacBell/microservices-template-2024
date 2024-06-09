@@ -169,6 +169,8 @@ cloud.google.com/go/workflows v1.7.0/go.mod h1:JhSrZuVZWuiDfKEFxU0/F1PQjmpnpcoIS
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
+github.com/Finnhub-Stock-API/finnhub-go v1.2.1 h1:w87sofevisqJEqQVQRrCXZtba++Us0GKMEnBNh3LzKk=
+github.com/Finnhub-Stock-API/finnhub-go v1.2.1/go.mod h1:nldVqdx3R6XAuYvZz6Kx1FJsuwCnv402fVLhR/GO2U8=
 github.com/Finnhub-Stock-API/finnhub-go/v2 v2.0.17 h1:rq/M2dfAuv+8iyn1blCk6UzlKkxzewzat+KizsATlqo=
 github.com/Finnhub-Stock-API/finnhub-go/v2 v2.0.17/go.mod h1:QMfTqyJoQPPsDu6yAvVaTXSLtN0v8rBIn61fgzUN6CM=
 github.com/InfluxCommunity/influxdb3-go v0.7.0 h1:ayGtlgv47+49xaCvCn7jlYtiHAZsytvE9Wvnoz/fjJ4=
@@ -186,6 +188,7 @@ github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751/go.mod h1:LOuy
 github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf/go.mod h1:ybxpYRFXyAe+OPACYpWeL0wqObRcbAqCMya13uyzqw0=
 github.com/alecthomas/units v0.0.0-20190717042225-c3de453c63f4/go.mod h1:ybxpYRFXyAe+OPACYpWeL0wqObRcbAqCMya13uyzqw0=
 github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d/go.mod h1:rBZYJk541a8SKzHPHnH3zbiI+7dagKZ0cgpgrD7Fyho=
+github.com/antihax/optional v1.0.0 h1:xK2lYat7ZLaVVcIuj82J8kIro4V6kDe0AUDFboUCwcg=
 github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kdvxnR2qWY=
 github.com/apache/arrow/go/v15 v15.0.2 h1:60IliRbiyTWCWjERBCkO1W4Qun9svcYoZrSLcyOsMLE=
 github.com/apache/arrow/go/v15 v15.0.2/go.mod h1:DGXsR3ajT524njufqf95822i+KTh+yea1jass9YXgjA=

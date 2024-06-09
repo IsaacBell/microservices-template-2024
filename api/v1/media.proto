@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package api.v1;
+
+option go_package = "core/api/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.v1";
+
+service Media {
+    rpc CacheMedia (CacheMediaRequest) returns (CacheMediaReply);
+    rpc DeleteMedia (DeleteMediaRequest) returns (DeleteMediaReply);
+    rpc GetMedia (GetMediaRequest) returns (GetMediaReply);
+    rpc ListMedia (ListMediaRequest) returns (ListMediaReply);
+}
+
+message MediaMetadata {
+	string id = 1;
+	string name = 2;
+	string extension = 3;
+	string url = 4;
+	int64 size = 5;
+	string content_type = 6;
+	string created_at = 7;
+	string updated_at = 8;
+	string owner_id = 9;
+}
+
+message CacheMediaRequest {
+	string name = 1;
+	string extension = 2;
+	string url = 3;
+	int64 size = 4;
+	string content_type = 5;
+	string owner_id = 6;
+}
+
+message CacheMediaReply {
+    MediaMetadata media = 1;
+}
+
+message DeleteMediaRequest {
+    string id = 1;
+}
+
+message DeleteMediaReply {
+    bool success = 1;
+}
+
+message GetMediaRequest {
+    string id = 1;
+}
+
+message GetMediaReply {
+    MediaMetadata media = 1;
+}
+
+message ListMediaRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListMediaReply {
+    repeated MediaMetadata media = 1;
+    int32 total_count = 2;
+}

@@ -67,7 +67,10 @@ func (r *transactionRepo) FindByID(ctx context.Context, id string) (*biz.Transac
 }
 
 func (r *transactionRepo) SyncTransactions(ctx context.Context, owner string, stream v1.Transactions_SyncTransactionsServer) error {
+	const loopTime = 150 * time.Millisecond
 	for {
+		defer time.Sleep(loopTime)
+
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
@@ -101,9 +104,6 @@ func (r *transactionRepo) SyncTransactions(ctx context.Context, owner string, st
 					return err
 				}
 			}
-
-			// Loop time
-			time.Sleep(150 * time.Millisecond)
 		}
 	}
 

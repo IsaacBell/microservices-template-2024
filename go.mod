@@ -31,6 +31,8 @@ require (
 )
 
 require (
+	github.com/Finnhub-Stock-API/finnhub-go v1.2.1 // indirect
+	github.com/antihax/optional v1.0.0 // indirect
 	github.com/apache/arrow/go/v15 v15.0.2 // indirect
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
