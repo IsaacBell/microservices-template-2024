@@ -25,6 +25,14 @@ $(APPS):
 	@echo "Running $@"
 	./bin/$@ &
 
+.PHONY: docker_build
+docker_build:
+	docker build -t service-orchestrator:latest .
+
+.PHONY: docker_run
+docker_run:
+	docker run --rm -p 8000:8000 -p 9000:9000 -v ./data/conf service-orchestrator:latest
+
 .PHONY: init
 # init env
 init:
@@ -97,8 +105,8 @@ execute: $(APPS)
 
 .PHONY: compile
 compile:
+	make init;
 	make build;
-	make execute;
 
 .PHONY: run
 run:

@@ -45,6 +45,20 @@ This template allows for the to quick generation of enterprise-scale microservic
 - Docker: Containerization platform for packaging and deploying microservices.
 - Kubernetes: Container orchestration system for automating deployment, scaling, and management of containerized applications.
 
+## Internal Dependencies
+
+- Go v. 1.22.2
+- Docker
+- Etcd
+- Kubernetes
+
+## External Dependencies
+
+- CockroachDB
+- InfluxDB (via InfluxDB Cloud)
+- Redis (via Upstash)
+- Kafka (via Upstash)
+
 ## Architecture
 
 The architecture is built on top of [Kratos](https://go-kratos.dev/en/), a framework for rolling out microservices. A growing codebase will eventually bring about the need to convert sections of the app into submodules for organization and repo size management - the folder structure is designed to easily support this scenario.
@@ -60,6 +74,10 @@ Caching and Kafka streaming are provided via [Upstash](https://upstash.com/). In
 ## Setup
 
 You will need a `.env` file. Ask a team member for a copy or make your own based on [.env.example](.env.example). 
+
+### Installation
+
+Build a Docker image.
 
 ## Working with the code
 
@@ -178,6 +196,9 @@ This will generate a blank Protofile:
 ```proto
 syntax = "proto3";
 
+// this package now available like so:
+//   import consultantsV1 "core/api/v1/consultants"
+// use package api.v1 for internal services
 package api.v1.consultants;
 
 option go_package = "core/api/v1/consultants;consultant";

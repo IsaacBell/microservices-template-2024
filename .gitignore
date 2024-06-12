@@ -31,8 +31,9 @@ Thumbs.db
 *.key
 *.log
 bin/
+tmp/
 
-# Develop tools
+# Developer tools
 .vscode/
 .idea/
 *.swp
@@ -40,3 +41,4 @@ bin/
 .env
 cmd/**/__debug_bin*
 *notes.md
+encoded_secrets*

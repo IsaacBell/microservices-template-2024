@@ -44,7 +44,7 @@ func GenerateServiceInstanceID() string {
 func InitKafkaConsumer(serviceName string, topics []string) {
 	for _, topic := range topics {
 		stream.StartKafkaConsumer(topic, serviceName, func(msg string) {
-			log.Infof("Kafka: [", topic, "] ", msg)
+			util.PrintLnInColor(util.AnsiBrightYellow, "Kafka: [", topic, "] ", msg)
 		})
 		fmt.Println("consuming kafka topic: ", topic)
 	}
@@ -254,11 +254,10 @@ func RunApp(
 
 		return nil
 	})
-	kratos.AfterStop(func(context.Context) error {
-		if watcher != nil {
-			Watcher = watcher
+	kratos.AfterStop(func(ctx context.Context) error {
+		if Watcher != nil {
 			util.PrintLnInColor(util.AnsiColorMagenta, "Stopping service discovery watcher")
-			defer watcher.Stop()
+			defer Watcher.Stop()
 		}
 
 		if influxClient != nil {
@@ -267,6 +266,7 @@ func RunApp(
 
 		stream.ProduceKafkaMessage(name, name+" server de-registered")
 		stream.ProduceKafkaMessage("system", name+" server de-registered")
+		stream.StopKafka(ctx)
 		return nil
 	})
 	fmt.Printf("app.Run watcher: %v\n", Watcher)

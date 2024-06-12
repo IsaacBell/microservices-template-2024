@@ -1,9 +1,12 @@
-FROM golang:1.19 AS builder
+FROM golang:1.22.2 AS builder
 
 COPY . /src
 WORKDIR /src
 
-RUN GOPROXY=https://goproxy.cn make build
+# use the GOPROXY flag to avoid restrictions
+# RUN GOPROXY=https://goproxy.cn make build
+
+RUN make compile
 
 FROM debian:stable-slim
 
