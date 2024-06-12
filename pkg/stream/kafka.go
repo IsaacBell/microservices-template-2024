@@ -2,6 +2,7 @@ package stream
 
 import (
 	"context"
+	"core/internal/util"
 	"crypto/tls"
 	"fmt"
 	"log"
@@ -22,6 +23,8 @@ var (
 
 	readersMu sync.Mutex
 	readers   map[string]*kafka.Reader
+	writersMu sync.Mutex
+	writers   map[string]*kafka.Writer
 
 	batchSize uint16 = 100
 
@@ -42,10 +45,10 @@ func initKafka() {
 		sigs = make(chan os.Signal, 1)
 		readers = make(map[string]*kafka.Reader) // 1 reader for each topic
 
-		fmt.Println("Kafka brokers:")
+		util.PrintLnInColor(util.AnsiBrightGreen, "Kafka initialized")
+		util.PrintLnInColor(util.AnsiBackgroundMagenta, "  Brokers:")
 		for _, broker := range brokers {
-			fmt.Printf("-> %s, ", broker)
-			fmt.Print("\n")
+			util.PrintLnInColor(util.AnsiBackgroundMagenta, "    -> %s, ", broker)
 		}
 	})
 }
@@ -65,6 +68,20 @@ func createReader(topic, groupID string) *kafka.Reader {
 	readers[topic] = reader
 	// reader.SetOffset(42)
 	return reader
+}
+
+func createWriter(topic string) *kafka.Writer {
+	initKafka()
+	writer := &kafka.Writer{
+		Addr:  kafka.TCP(os.Getenv("KAFKA_URL")),
+		Topic: topic,
+		Transport: &kafka.Transport{
+			SASL: saslMechanism(),
+			TLS:  &tls.Config{},
+		},
+	}
+	writers[topic] = writer
+	return writer
 }
 
 func saslMechanism() sasl.Mechanism {
@@ -122,44 +139,24 @@ func consumeKafkaMessages(ctx context.Context, topic string, groupID string, cal
 }
 
 func ProduceKafkaMessage(topic, msg string) error {
-	w := &kafka.Writer{
-		Addr:  kafka.TCP(os.Getenv("KAFKA_URL")),
-		Topic: topic,
-		Transport: &kafka.Transport{
-			SASL: saslMechanism(),
-			TLS:  &tls.Config{},
-		},
+	writersMu.Lock()
+	writer, ok := writers[topic]
+	if !ok {
+		writer = createWriter(topic)
 	}
-	defer w.Close()
+	writersMu.Unlock()
 
-	return w.WriteMessages(context.Background(), kafka.Message{Value: []byte(msg)})
+	return writer.WriteMessages(context.Background(), kafka.Message{Value: []byte(msg)})
 }
 
 /*
 		Full Kafka Example:
-		ctx1, cancel1 := StartKafkaConsumer("topic1", "group1", func(msg string) {
+		ctx, cancel := StartKafkaConsumer("topic1", "group1", func(msg string) {
 	    // Process the message
 		})
-		defer cancel1()
-
-		ctx2, cancel2 := StartKafkaConsumer("topic2", "group2", func(msg string) {
-				// Process the message
-		})
-		defer cancel2()
-
-		err := ProduceKafkaMessage("topic1", "message1")
-		if err != nil {
-				// Handle the error
+		if someCondition == true {
+			cancel()
 		}
-
-		err = ProduceKafkaMessage("topic2", "message2")
-		if err != nil {
-				// Handle the error
-		}
-
-		// Stop the consumers when needed
-		StopKafkaConsumer(ctx1, "topic1")
-		StopKafkaConsumer(ctx2, "topic2")
 */
 func StartKafkaConsumer(topic string, groupID string, callback callbackFn) (context.Context, func()) {
 	ctx, cancel := context.WithCancel(context.Background())
@@ -175,7 +172,7 @@ func StartKafkaConsumer(topic string, groupID string, callback callbackFn) (cont
 }
 
 /*
-// Stop the consumers when needed
+// Stop a consumer
 StopKafkaConsumer(ctx1, "topic1")
 StopKafkaConsumer(ctx2, "topic2")
 */
@@ -193,12 +190,16 @@ func StopKafkaConsumer(ctx context.Context, topic string) {
 
 func StopKafka(ctx context.Context) {
 	readersMu.Lock()
-
 	for _, reader := range readers {
 		reader.Close()
 	}
 	readers = make(map[string]*kafka.Reader)
 	readersMu.Unlock()
 
-	ctx.Done()
+	writersMu.Lock()
+	for _, writer := range writers {
+		writer.Close()
+	}
+	writers = make(map[string]*kafka.Writer)
+	writersMu.Unlock()
 }
