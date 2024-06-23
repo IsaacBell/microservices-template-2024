@@ -68,9 +68,7 @@ wire:
 
 .PHONY: build
 build:
-	make init
-	mkdir -p bin/
-	go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/core ./cmd/core/main.go
+	mkdir -p bin/ && go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/ ./...
 	make proto
 	make wire
 
@@ -102,6 +100,7 @@ execute: $(APPS)
 
 .PHONY: compile
 compile:
+	make init
 	make build
 
 .PHONY: run
