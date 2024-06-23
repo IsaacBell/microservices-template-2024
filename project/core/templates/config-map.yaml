@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: core-config
+data:
+ httpPort: {{ .Values.httpPort }}
+ grpcPort: {{ .Values.grpcPort }}
+ language: "english"
+ environments: production, development, production
+ signup.features: |
+    experimental.signup=true
+    plans.available=[starter, growth, scale]

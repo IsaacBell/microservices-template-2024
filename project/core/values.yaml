@@ -1,0 +1,66 @@
+replicaCount: 1
+
+release:
+  name: core
+
+image:
+  repository: nginx
+  tag: 1.16.0
+  pullPolicy: IfNotPresent
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+secrets:
+  secretKey: V2luZG93c1hQSXNPdXRkYXRlZFdvdWxkWW91TGlrZVRvVXBncmFkZT8=
+  kafkaUrl: aGVyb2ljLXNxdWlycmVsLTk5NzgtdXMxLWthZmthLnVwc3Rhc2guaW86OTA5Mg==
+  kafkaUsername: YUdWeWIybGpMWE54ZFdseWNtVnNMVGs1Tnpna1Vycm5fRXFXNVZsbEdvUGhwSlVvaGFSUWJydkRxYkp0czlN
+  kafkaPassword: WkRjMlpqVTFZakF0WVRoaFppMDBZVE13TFdKbE4ySXROMkk1WkRjNE5XWTVZelF5
+  cockroachDbUser: c29hcHN0b25l
+  cockroachDbPass: WmgwQUdOX3ZzWlRUa3piVU9maHFRUQ==
+  cockroachDbUrl: c29hcHN0b25lLTc0NzEuZzh6LmdjcC11cy1lYXN0MS5jb2Nrcm9hY2hsYWJzLmNsb3VkOjI2MjU3
+  cockroachDbDbname: ZGVmYXVsdGRi
+  finnhubApiToken: Y29uZ29tOXIwMXF0YmVlMGNiM2djb25nb205cjAxcXRiZWUwY2I0MA==
+  upstashRedisPass: MmIyMmJhYjg4ZjFiNGZlYWE1YmE1NTYxMzg2YWVjMWQ=
+  upstashRedisUrl: dXMxLXVuaXRlZC13b21iYXQtMzg0OTgudXBzdGFzaC5pbzozODQ5OA==
+  esCloudid: ""
+  esApikey: ""
+  courierAuthToken: cGtfcHJvZF8yNU5KUUdaUk5DNDM5VkpOWEU1NDI2UUFKWjNE
+  courierDefaultMsgTemplate: RDFTVzlLNEdOWjRWRVpIMjBQQlc5OUpDWUYzSA==
+  systemSenderId: c3lzdGVtIiAjIHdoYXQgSUQvdGFnIGRvIHdlIGdpdmUgb3VyIGR1bW15IHN5c3RlbSB1c2VyPw==
+  jwtAuthKey: dGVzdA==
+  coreServiceAddress: bG9jYWxob3N0OjgwMDA=
+  influxdbUrl: aHR0cHM6Ly91cy1lYXN0LTEtMS5hd3MuY2xvdWQyLmluZmx1eGRhdGEuY29t
+  influxdbToken: ZWtYbS1FWHVmRWVhLW5Va0tDZkxCZ1R1djlGbm80S2g4dlNnVWFOak02RnRDZnRZVjU2UkMxR1NsNWwyRThMVmhlS0Y2dHlTZU50RUg4NHgzTHZvN1E9PQ==
+  etcdctlEndpoint: bG9jYWxob3N0OjIzNzk=
+  moesifAppId: ZXlKaGNIQWlPaUkwT1RNNk5UVXlJaXdpZG1WeUlqb2lNaTR4SWl3aWIzSm5Jam9pTlRjek9qUTBOQ0lzSW1saGRDSTZNVGN4TnpJd01EQXdNSDAuWWJrMnEycjE1MDhsNV8xQzJzWGk2WEFjbEtvUUpnTVVxRkdIRmpFajN3UQ==
+  moesifAppUrl: ""
+  k8sBase64SecretKey: V2luZG93c1hQSXNPdXRkYXRlZFdvdWxkWW91TGlrZVRvVXBncmFkZT8=
+
+ingress:
+  enabled: false
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths: []
+  tls: []
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+  grpcPort: 90
+  grpcTargetPort: 90
+  

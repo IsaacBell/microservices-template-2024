@@ -1,27 +1,46 @@
+# Define the first stage for building the application
 FROM golang:1.22.2 AS builder
+   
+# Install dependencies
+RUN apt-get update && apt-get install -y make protobuf-compiler
 
-COPY . /src
+# Set the working directory
 WORKDIR /src
 
-# use the GOPROXY flag to avoid restrictions
-# RUN GOPROXY=https://goproxy.cn make build
+# Copy go.mod and go.sum files
+COPY go.mod go.sum ./
 
-RUN make compile
+# Download dependencies
+RUN go mod download
 
+# Copy the entire project
+COPY . .
+
+# Ensure Google Wire is installed and generate necessary files
+RUN go install github.com/google/wire/cmd/wire@latest
+RUN make init
+RUN make config
+RUN make api
+RUN make wire
+
+# Build the application
+RUN make build
+
+# Define the second stage to reduce the final image size
 FROM debian:stable-slim
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-		ca-certificates  \
-        netbase \
-        && rm -rf /var/lib/apt/lists/ \
-        && apt-get autoremove -y && apt-get autoclean -y
+# Install essential packages
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates netbase
 
-COPY --from=builder /src/bin /app
-
+# Set the working directory
 WORKDIR /app
 
+# Copy the built binary from the builder stage
+COPY --from=builder /src/bin /app/bin
+
+# Expose application ports
 EXPOSE 8000
 EXPOSE 9000
-VOLUME /data/conf
 
-CMD ["./server", "-conf", "/data/conf"]
+# Run the application
+CMD ["./bin/core"]
