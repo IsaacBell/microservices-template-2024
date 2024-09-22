@@ -69,11 +69,13 @@ func InitEnv(id, serviceName string, flagconf *string, topics []string) {
 	err = godotenv.Load()
 	if err != nil {
 		fmt.Println("Current working directory: ", cwd)
-		fmt.Println("err loading .env: ", err)
+		fmt.Println("no env vars found in root", err)
 
 		err = godotenv.Load("../../.env")
 		if err != nil {
-			log.Fatalf("err loading .env: %v", err)
+			if port := os.Getenv("CORE_SERVICE_ADDRESS"); port == "" {
+				log.Fatalf("error loading .env: %v", err)
+			}
 		}
 	}
 
@@ -227,7 +229,7 @@ func RunApp(
 	path := "rediss://default:" + pass + "@" + url
 	bc.Data.Redis.Addr = path
 
-	fmt.Printf("%s %s %v\n", servers.String(), data.String(), logger.Log)
+	fmt.Printf("%s %s %v\n", servers.String(), data.String(), logger.Log(log.LevelInfo))
 
 	app, cleanup, err := wireAppFunc(servers, data, logger)
 	if err != nil {

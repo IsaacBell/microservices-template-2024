@@ -6,9 +6,9 @@ For each service, we define services (which establish available requests) and me
 
 ## Example 
 
-The following example define a `Users` service and `User` message, along with messages that define what parameters we expect in the Request and Reply. The service holds a request called `GetUser` - which can be accessed via REST at the endpoint `"<server_url>/users/{id}"`.
+The following example defines a `Users` service and `User` message, along with messages that define what parameters we expect in the Request and Reply. The service holds a request called `GetUser` - which can be accessed via REST at the endpoint `"<server_url>/users/{id}"`.
 
-```grpc
+```protobuf
 service Users {
   rpc GetUser (GetUserRequest) returns (GetUserReply) {
     option (google.api.http) = {
@@ -37,7 +37,7 @@ message User {
 
 DO NOT manually create proto files.
 
-Use the following command:
+Use the following command to generate a template proto file:
 
 ```shell
 kratos proto add api/v1/my_service.proto
@@ -46,6 +46,8 @@ kratos proto add api/v1/my_service.proto
 Replace "my_service" above with the name of your service. Prefer plural spellings, such as "users" over singular, such as "user" where applicable.
 
 ## Compiling ProtoBuffers
+
+To compile all proto files into Go code, use the following command:
 
 ```shell
 make proto

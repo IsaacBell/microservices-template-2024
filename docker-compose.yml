@@ -3,6 +3,9 @@ version: '3.8'
 services:
   core:
     image: microservice:core
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
       - KAFKA_URL=${KAFKA_URL}
       - KAFKA_USERNAME=${KAFKA_USERNAME}

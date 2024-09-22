@@ -68,9 +68,10 @@ wire:
 
 .PHONY: build
 build:
-	mkdir -p bin/ && go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/ ./...
 	make proto
+	make generate
 	make wire
+	mkdir -p bin/ && go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/ ./...
 
 .PHONY: clean
 clean:

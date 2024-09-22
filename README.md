@@ -1,6 +1,6 @@
 # Micro-Services Template
 
-This template allows for the to quick generation of enterprise-scale microservice architectures with a reasonable set of defaults. 
+This template allows for the quick generation of enterprise-scale microservice architectures with a reasonable set of defaults.
 
 ## Features
 
@@ -15,17 +15,14 @@ This template allows for the to quick generation of enterprise-scale microservic
 - gorm: ORM library for database interactions.
 - JWT: JSON Web Tokens for authentication and authorization.
 
-
 ### Databases:
 
 - Redis: In-memory data store for caching and quick data access.
 - CockroachDB: Distributed SQL database for persistent data storage.
 
-
 ### Messaging and Streaming:
 
 - Kafka: Distributed streaming platform for event-driven communication and data pipelines.
-
 
 ### Observability and Monitoring:
 
@@ -33,11 +30,9 @@ This template allows for the to quick generation of enterprise-scale microservic
 - Jaeger: Distributed tracing system for monitoring and troubleshooting microservices.
 - OpenTelemetry: Observability framework for distributed tracing, metrics, and logging.
 
-
 ### API Analytics and Monitoring:
 
 - Moesif: API analytics and monitoring platform for insights into API usage and customer behavior.
-
 
 ### Potential Additions (TBA):
 
@@ -63,17 +58,17 @@ This template allows for the to quick generation of enterprise-scale microservic
 
 The architecture is built on top of [Kratos](https://go-kratos.dev/en/), a framework for rolling out microservices. A growing codebase will eventually bring about the need to convert sections of the app into submodules for organization and repo size management - the folder structure is designed to easily support this scenario.
 
-When a service is started, it runs gRPC and REST servers concurrently. They are configured jointly using protofiles (see: [protobuf docs](api)). Both gRPC and HTTP servers are run concurrently for each service. Services are modular are isolated - they can be configured to run independently on many machines, horizontally scaled, auto-scaled, or otherwise deployed as needed.
+When a service is started, it runs gRPC and REST servers concurrently. They are configured jointly using protofiles (see: [protobuf docs](api)). Both gRPC and HTTP servers are run concurrently for each service. Services are modular and isolated - they can be configured to run independently on many machines, horizontally scaled, auto-scaled, or otherwise deployed as needed.
 
 The main (core) service can be run using `make execute`. This service handles user operations and (optionally) some others. End users should choose what services they will need.
 
 Google's [Wire](https://github.com/google/wire/tree/main) tool is used for compile-time dependency injection. See Wire's [User Guide](https://github.com/google/wire/blob/main/docs/guide.md), [FAQ](https://github.com/google/wire/blob/main/docs/faq.md), and [Best Practices](https://github.com/google/wire/blob/main/docs/best-practices.md) document for further reference on how Wire works.
 
-Caching and Kafka streaming are provided via [Upstash](https://upstash.com/). Instrumentation is provided using [Jaegar](https://www.jaegertracing.io/), and the [Prometheus](https://prometheus.io/) stack.
+Caching and Kafka streaming are provided via [Upstash](https://upstash.com/). Instrumentation is provided using [Jaeger](https://www.jaegertracing.io/), and the [Prometheus](https://prometheus.io/) stack.
 
 ## Setup
 
-You will need a `.env` file. Ask a team member for a copy or make your own based on [.env.example](.env.example). 
+You will need a `.env` file. Ask a team member for a copy or make your own based on [.env.example](.env.example).
 
 ### Installation
 
@@ -99,7 +94,7 @@ go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
 
 ## Create a service
 
-```shell
+```
 kratos proto add api/v1/<filename>.proto # Add a proto template
 make proto # Generate the proto code
 ```
@@ -108,23 +103,22 @@ To generate the code for a new service, use the following.
 
 If creating an internal service (such as a user auth service, system service, or transaction processing service) then use the following:
 
-```shell
+```
 # Generate the code layout for the service
 kratos proto server api/v1/<filename>.proto -t internal/service
 ```
 
 For a publicly available service, create a [package](https://www.golang-book.com/books/intro/11) for it. Make a new folder for your package in the `pkg` directory. Add a subfolder called `service`. Then run the following:
 
-```shell
+```
 # Generate the code layout for the service
 kratos proto server api/v1/<filename>.proto -t pkg/<pkg_folder_name>/service
 ```
 
-
 Make sure to update the Makefile, adding an available build step for the new service. See following example.
 
 Add a build step for the `foobar` service:
-```dart
+```
 .PHONY: foobar
 fin:
 	./bin/foobar &
@@ -134,26 +128,26 @@ fin:
 
 Services cannot currently be compiled independently.
 
-```shell
+```
 make api # Build protofiles
 make build # Build Go code
 ```
 
 ## Generate auxiliary files
 
-```shell
+```
 # Generate API files (include: pb.go, http, grpc, validate, swagger) by proto file
 make api
 ```
 
 ## Build all files
 
-```shell
+```
 make compile # Build all files
 ```
 
 ## Automated Initialization (wire)
-```shell
+```
 # install wire
 go get github.com/google/wire/cmd/wire
 
@@ -164,7 +158,7 @@ wire
 
 Make sure to add a wire build step to your make file when a service is ready to be deployed.
 
-```go
+```
 build:
 	mkdir -p bin/ && go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/ ./...
 	cd app/finance && wire
@@ -187,13 +181,13 @@ For other services, especially publicly exposed or re-usable ones, we want to de
 
 First, we create our protofile:
 
-```shell
+```
 kratos proto add api/v1/consultants/consultants.proto
 ```
 
 This will generate a blank Protofile:
 
-```proto
+```
 syntax = "proto3";
 
 // this package now available like so:
@@ -235,7 +229,7 @@ For example, to use timestamps we can import Google's *timestamp.proto* specific
 
 Our Consultants protofile might now look like this:
 
-```proto
+```
 syntax = "proto3";
 
 package api.v1.consultant;
@@ -261,7 +255,7 @@ message Consultant {
 
 Run the makefile command to generate code from protofiles:
 
-```shell
+```
 make proto
 ```
 
@@ -283,7 +277,7 @@ In our `consultant_biz` sub-package, we define a [gORM](https://gorm.io/) model 
 
 For our example, we will define `Get` and `Save` functions.
 
-```go
+```
 package consultants_biz
 
 type Consultant struct {
@@ -292,7 +286,7 @@ type Consultant struct {
 	User              *biz.User              `protobuf:"bytes,2,opt,name=user,proto3" json:"user,omitempty"`
 	...
 	CreatedAt         *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt         *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	UpdatedAt         *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=updated_at,json=UpdatedAt,proto3" json:"updated_at,omitempty"`
 }
 
 // See: GORM Hooks - https://gorm.io/docs/hooks.html
@@ -316,35 +310,13 @@ type ConsultantAction struct {
 func NewConsultantAction(repo ConsultantRepo, logger log.Logger) *ConsultantAction {
 	return &ConsultantAction{repo: repo, log: log.NewHelper(logger)}
 }
-
-// Public function, calls our repo internally
-func (uc *ConsultantAction) GetConsultant(ctx context.Context, id string) (*Consultant, error) {
-	uc.log.WithContext(ctx).Infof("GetConsultant: %s", id)
-	consultant, err := uc.repo.Get(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	return consultant, nil
-}
-
-// Public function, calls our private repo.Save() function
-func (uc *ConsultantAction) CreateConsultant(ctx context.Context, c *Consultant) (*Consultant, error) {
-	uc.log.WithContext(ctx).Infof("CreateConsultant: %s", c.ID)
-	res, err := uc.repo.Save(ctx, c)
-	if err != nil {
-		fmt.Println("error creating consultant: ", err)
-	}
-	fmt.Println("create consultant result: ", res)
-	return res, err
-}
 ```
 
 With our business logic code finished, we need to configure what parts of the sub-package we want to make available in other packages. We do this by defining a `ProviderSet` for each package (and sub-package).
 
 Expose the Consultant's available business actions:
 
-```go
+```
 package consultants_biz
 
 import "github.com/google/wire"
@@ -360,7 +332,7 @@ We will define the lower-level actions behind our business logic here. Database 
 
 Our `pkg/consultants/data/consultants.go` file may look like this:
 
-```go
+```
 package consultants_data
 
 // ...
@@ -406,7 +378,7 @@ func (r *consultantRepo) Save(ctx context.Context, c *consultants_biz.Consultant
 
 Again we expose this sub-package using wire.
 
-```go
+```
 package consultants_data
 
 var ProviderSet = wire.NewSet(
@@ -434,7 +406,7 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 
 This may be familiar to those with backgrounds using MVC frameworks such as Rails or Django. The service layer is comparable to the "controller" concept in MVC. Here we process a request, trigger any business logic, and reply with the appropriate response data.
 
-```go
+```
 package consultants_service
 
 import (
@@ -484,7 +456,7 @@ This step is relatively simple. We'll set up our GRPC and HTTP servers, and regi
 
 Create gRPC and HTTP servers for the consulting service:
 
-```go
+```
 package consultants_server
 
 import (
@@ -525,7 +497,7 @@ func NewConsultantsHTTPServer(
 As before, in the sub-package we register these functions as publicly available to use at compile time.
 
 `pkg/consultants/server/server.go`:
-```go
+```
 package consultants_server
 
 import (
@@ -536,7 +508,6 @@ import (
 var ProviderSet = wire.NewSet(
 	NewConsultantsGrpcServer, NewConsultantsHTTPServer,
 )
-
 ```
 
 ## Compilation
@@ -545,7 +516,7 @@ To build and compile our service, add a folder to the `app/` directory. We will 
 
 First, we'll need a main entrypoint for our service to run from. You'll add something like the following in `app/consultants/main.go`:
 
-```go
+```
 package main
 
 import (
@@ -585,14 +556,13 @@ func newConsultantsApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kra
 func main() {
 	server.RunApp(Name, Version, flagconf, wireApp)
 }
-
 ```
 
 Meanwhile, we'll need to pull in the code from our sub-packages using Wire to compile all code exposed in our sub-packages' Provider Sets at build time.
 
 In `app/consultants/wire.go`, add the following:
 
-```go
+```
 //go:build wireinject
 // +build wireinject
 
@@ -601,7 +571,6 @@ In `app/consultants/wire.go`, add the following:
 package main
 
 import (
-	...
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
@@ -614,14 +583,13 @@ func wireApp(*conf.Server, *conf.Data, log.Logger) (*kratos.App, func(), error) 
 		consultants_biz.ProviderSet, consultants_service.ProviderSet, newConsultantsApp,
 	))
 }
-
 ```
 
 (Note that `newConsultantsApp` was just defined in the previous step in our main package.)
 
 Don't forget to add any new DB tables to the autoMigration list like so:
 
-```go
+```
 func automigrateDBTables(*gorm.DB) {
 	DB.AutoMigrate(&consultants_biz.Consultant{})
 }
@@ -629,7 +597,7 @@ func automigrateDBTables(*gorm.DB) {
 
 An important final step is to configure the endpoint the service will will run on. This can be configured in `configs/config.yaml` by adding something like the following:
 
-```yaml
+```
 consultants:
   http:
     addr: 0.0.0.0:8103
@@ -650,7 +618,7 @@ consultants:
 
 To build our new service, simply run the following commands:
 
-```shell
+```
 make build # if needed
 make consultants
 ```
